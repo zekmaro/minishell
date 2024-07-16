@@ -6,11 +6,19 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 09:32:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 14:55:54 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void	restore_fd(int original_stdin, int original_stdout)
+{
+	dup2(original_stdin, STDIN_FILENO);
+	dup2(original_stdout, STDOUT_FILENO);
+	close(original_stdin);
+	close(original_stdout);
+}
 
 bool	buildin_execute(char const *command, char const **argv)
 {
@@ -21,6 +29,18 @@ bool	buildin_execute(char const *command, char const **argv)
 		ft_chdir(argv[1]);
 		return (true);
 	}
+	// if (ft_strncmp(command, "echo", ft_strlen(command)) == 0)
+	// {
+	// 	ft_echo(argv, STDOUT_FILENO);
+	// }
+	// else if (ft_strncmp(tokens[0], "pwd", ft_strlen(tokens[0])) == 0)
+	// {
+	// 	ft_pwd(STDOUT_FILENO, env);
+	// }
+	// else if (ft_strncmp(tokens[0], "env", ft_strlen(tokens[0])) == 0)
+	// {
+	// 	ft_env(env, STDOUT_FILENO);
+	// }
 	return (false);
 }
 
@@ -45,18 +65,29 @@ void	command_execute(char const *command_path,
 
 void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
 {
-	char		**input_split;
-	char		*command_path;
+	char	**tokens;
+	char	*command_path;
+	int		original_stdin = dup(STDIN_FILENO);
+	int		original_stdout = dup(STDOUT_FILENO);
 
-	input_split = ft_split(input, ' ');
-	lst_memory(input_split, &free_split, ADD);
-	if (!*input_split)
+	tokens = ft_split(input, ' ');
+	lst_memory(tokens, &free_split, ADD);
+	if (!*tokens)
 		return (NULL);
-	if (buildin_execute(*input_split, (char const **)input_split))
+	execute(tokens, (char **)env);
+	if (buildin_execute(tokens[0], (char const **)tokens))
+	{
+		restore_fd(original_stdin, original_stdout);
 		return (NULL);
-	command_path = find_absolute_path(path_variable, (char *)*input_split);
+	}
+	command_path = find_absolute_path(path_variable, (char *)*tokens);
 	if (command_path == 0)
+	{
+		restore_fd(original_stdin, original_stdout);
 		return (NULL);
-	command_execute(command_path, (char const **)input_split, env);
+	}
+	command_execute(command_path, (char const **)tokens, env);
+	restore_fd(original_stdin, original_stdout);
+	free_split(tokens);
 	return (NULL);
 }

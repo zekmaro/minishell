@@ -6,10 +6,10 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 13:56:13 by vvobis           ###   ########.fr       */
-/*   Updated: 2024/07/07 20:14:06 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/16 14:52:08 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -133,8 +133,7 @@ void		prompt_buffer_size_manage(char **input, uint32_t input_new_size);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 
 /* Redirections */
-void		check_redirections(char **tokens, char **env);
-
+void		execute(char **tokens, char **env);
 /* Tab Completion */
 uint32_t		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
 

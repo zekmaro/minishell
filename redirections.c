@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 00:06:08 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/15 15:30:20 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/16 16:41:07 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	handle_heredoc(char *delimiter, char **tokens, int i, int tokens_count)
 	char	*line;
 	int		pipefd[2];
 
+	terminal_raw_mode_disable();
 	if ((i == 0 && tokens_count == 1) || tokens[i + 1] == NULL)
 	{
 		perror("minishell: syntax error near unexpected token `newline'");
@@ -50,7 +51,8 @@ void	handle_heredoc(char *delimiter, char **tokens, int i, int tokens_count)
 	line = NULL;
 	while (1)
 	{
-		line = readline("minishell> ");
+		ft_putstr_fd("minishell> ", 1);
+		line = get_next_line(0);
 		if (!line)
 		{
 			perror("Readline failed!");
@@ -78,31 +80,10 @@ void	handle_heredoc(char *delimiter, char **tokens, int i, int tokens_count)
 	free(tokens[i + 1]);
 	tokens[i + 1] = NULL;
 	custom_memmove_strings(tokens + i, tokens + i + 2);
+	terminal_raw_mode_enable();
 }
 
-void	exec_command(char **tokens) // i know that you have this function already. i will use it instead of this one
-{
-	pid_t	pid;
-	
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("Fork failed. Redirections");
-		lst_memory(NULL, NULL, CLEAN);
-	}
-	else if (pid == 0)
-	{
-		execvp(tokens[0], tokens);
-		perror("execvp. redirections");
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		waitpid(pid, NULL, 0);
-	}
-}
-
-void	check_redirections(char **tokens, char **env)
+void	execute(char **tokens, char **env)
 {
 	int		i;
 	int		tokens_count;
@@ -139,18 +120,4 @@ void	check_redirections(char **tokens, char **env)
 		}
 		i++;
 	}
-	if (ft_strncmp(tokens[0], "echo", ft_strlen(tokens[0])) == 0)
-	{
-		ft_echo(tokens, STDOUT_FILENO);
-	}
-	else if (ft_strncmp(tokens[0], "pwd", ft_strlen(tokens[0])) == 0)
-	{
-		ft_pwd(STDOUT_FILENO, env);
-	}
-	else if (ft_strncmp(tokens[0], "env", ft_strlen(tokens[0])) == 0)
-	{
-		ft_env(env, STDOUT_FILENO);
-	}
-	else
-		exec_command(tokens); // if its a command from subject call ft_"command" instead of exec command
 }
