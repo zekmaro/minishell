@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/16 11:09:29 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 14:20:46 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ char	*prompt_get(t_prompt *prompt)
 {
 	prompt->prompt_length = prompt_display();
 	prompt_get_input(prompt);
+	if (!prompt->command || !*prompt->command)
+		return (NULL);
 	return (ft_strdup(prompt->command));
 }
 
