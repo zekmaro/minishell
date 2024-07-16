@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/16 09:11:56 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 11:01:37 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ static void	handle_input(	t_prompt *prompt, \
 	prompt->command = input;
 }
 
-uint8_t	prompt_get_input(t_prompt *prompt)
+char	*prompt_get_input(t_prompt *prompt)
 {
 	char		*input;
 	uint32_t	cursor_position_base;
@@ -103,5 +103,5 @@ uint8_t	prompt_get_input(t_prompt *prompt)
 	lst_memory(input, free, ADD);
 	cursor_position_save();
 	handle_input(prompt, input, cursor_position_base);
-	return (1);
+	return (input);
 }

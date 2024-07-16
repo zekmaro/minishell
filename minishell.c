@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 10:26:59 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 11:11:56 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ int	main(int argc, char **argv, char **env)
 {
 	t_prompt	*prompt;
 	char		*path_variable;
+	char		*command_input;
 
 	(void)argv;
 	(void)argc;
@@ -39,8 +40,8 @@ int	main(int argc, char **argv, char **env)
 	prompt = prompt_create((const char **)env);
 	while (1)
 	{
-		prompt_get(prompt);
-		if (g_signal_flag == 1 || !*prompt->command)
+		command_input = prompt_get(prompt);
+		if (g_signal_flag == 1 || !command_input)
 		{
 			if (g_signal_flag == 1)
 			{
@@ -50,9 +51,9 @@ int	main(int argc, char **argv, char **env)
 			g_signal_flag = 0;
 			continue ;
 		}
-		if (*prompt->command && *prompt->command != '\n')
+		if (command_input && *command_input != '\n')
 		{
-			m_tokenizer(prompt->command, (const char **)env, path_variable);
+			m_tokenizer(command_input, (const char **)env, path_variable);
 			prompt->history_entries[prompt->history_count++] = prompt->command;
 		}
 		prompt->history_position_current = prompt->history_count;

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 10:32:26 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 11:08:31 by vvobis           ###   ########.fr       */
 /*   Updated: 2024/07/07 20:14:06 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -121,7 +121,7 @@ char		*find_absolute_path(const char *path_variable, char *input);
 void		prompt_destroy(void *prompt);
 uint32_t	prompt_display();
 t_prompt	*prompt_create(const char **env);
-void		prompt_get(t_prompt *prompt);
+char		*prompt_get(t_prompt *prompt);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -129,7 +129,7 @@ void		cursor_position_save(void);
 void		cursor_position_restore(void);
 
 uint8_t		handle_escape_sequence(t_prompt *prompt, char	**input, uint32_t *cursor_position_current);
-uint8_t		prompt_get_input(t_prompt *prompt);
+char		*prompt_get_input(t_prompt *prompt);
 
 /* Prompt Buffer Management */
 void		prompt_refresh_line(char *input, uint32_t cursor_position_current[2]);
