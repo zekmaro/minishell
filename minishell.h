@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 11:08:31 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/16 13:56:13 by vvobis           ###   ########.fr       */
 /*   Updated: 2024/07/07 20:14:06 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -64,10 +64,6 @@ typedef struct s_prompt
 	uint32_t	history_count;
 	char		**history_entries;
 	char		**env_ptr;
-	/*char	**commands;*/
-	/*char	***command_argv;*/
-	/*uint32_t	number_of_commands;*/
-	/*uint32_t	total_prompt_lenght;*/
 }				t_prompt;
 
 enum e_alloc
@@ -167,5 +163,12 @@ void		handle_dollar_sign(char **single_token, char **env);
 void		ft_echo(char **tokens, int fd);
 void		ft_pwd(int fd, char **env);
 void		ft_env(char **env, int fd);
+
+/* Environment_variable */
+
+void		environment_variable_print(const char *variable, const char **environment);
+void		environment_print(char **environment);
+char		**environment_create(const char **env);
+char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
 
 #endif
