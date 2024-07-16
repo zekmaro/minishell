@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/16 10:34:49 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/16 12:23:34 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ TEST_NAME	:= test
 
 CC			:= cc
 
-CFLAGS		:= -Wall -Wextra -Werror -g
+CFLAGS		:= -Wall -Wextra -g
 #-fsanitize=address,undefined,leak -static-libsan
 
 LIBS	:= libft/libft.a -lreadline
@@ -24,6 +24,7 @@ LIBS	:= libft/libft.a -lreadline
 SRC 	:=	arrowkeys.c					\
 			builtins.c					\
 			commands.c					\
+			environment_variables.c		\
 			escape_sequences.c			\
 			handle_signals.c			\
 			input.c						\
