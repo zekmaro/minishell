@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 14:52:08 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/16 19:56:21 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,30 @@ typedef struct s_prompt
 	char		**history_entries;
 	char		**env_ptr;
 }				t_prompt;
+
+typedef enum
+{
+	TOKEN_WORD,
+    TOKEN_REDIRECT_IN,
+    TOKEN_REDIRECT_OUT,
+    TOKEN_REDIRECT_APPEND,
+    TOKEN_HEREDOC,
+	TOKEN_SINGLE_QUOTE,
+	TOKEN_DOUBLE_QUOTE,
+    TOKEN_PIPE,
+    TOKEN_AND,
+    TOKEN_OR,
+    TOKEN_SEMICOLON,
+    TOKEN_ENV,
+    TOKEN_EXIT_STATUS
+} t_token_type;
+
+typedef struct s_tokens
+{
+	t_token_type	token_type;
+	const char		*token_value;
+	struct s_tokens	*next;
+}	t_tokens;
 
 enum e_alloc
 {
