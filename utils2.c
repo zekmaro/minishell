@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 13:50:41 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/15 13:54:03 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/17 10:49:43 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,6 @@ void	custom_memmove_strings(char **dest, char **src)
 		free(*dest);
 		*dest = NULL;
 		dest++;
-	}
-}
-
-void	print_tokens(char **tokens)
-{
-	while (*tokens)
-	{
-		printf("%s\n", *tokens);
-		tokens++;
 	}
 }
 

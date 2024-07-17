@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 19:56:21 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/17 17:38:23 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@
 # define SCREEN_CLEAR "\033[2J"
 # define SCREEN_CLEAR_TO_EOF "\033[J"
 
+# define INITIAL_TOKEN_CAPACITY 10
 typedef struct s_prompt
 {
 	char		*command;
@@ -83,12 +84,31 @@ typedef enum
     TOKEN_EXIT_STATUS
 } t_token_type;
 
-typedef struct s_tokens
+typedef struct s_token
 {
 	t_token_type	token_type;
-	const char		*token_value;
-	struct s_tokens	*next;
-}	t_tokens;
+	char		*token_value;
+}	t_token;
+
+typedef enum 
+{
+    NODE_COMMAND,
+    NODE_REDIRECTION,
+    NODE_PIPE,
+    NODE_LOGICAL_OPERATOR,
+} t_node_type;
+
+typedef struct s_ast 
+{
+    t_node_type type;
+    char **args; // Used if type is NODE_COMMAND
+    struct s_ast *left;
+    struct s_ast *right;
+    char *file; // Used for redirections and heredocs
+    int	fd_in;
+	int fd_out;
+} t_ast;
+
 
 enum e_alloc
 {
@@ -179,7 +199,6 @@ void		error_log(char *specifier, void *info);
 
 /* Utils2 */
 void		custom_memmove_strings(char **dest, char **src);
-void		print_tokens(char **tokens);
 int			get_tokens_count(char **tokens);
 void		custom_free_split(char **arr);
 void		handle_dollar_sign(char **single_token, char **env);
@@ -194,4 +213,7 @@ void		environment_print(char **environment);
 char		**environment_create(const char **env);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
 
+/* TOKENIZER MOTHERFUCKER!!! */
+t_token		**lexical_analysis(const char *input, char **env);
+void		print_tokens(t_token **tokens);
 #endif

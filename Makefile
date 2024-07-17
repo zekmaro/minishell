@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/16 12:23:34 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/17 11:11:01 by anarama          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,19 +44,30 @@ SRC 	:=	arrowkeys.c					\
 			dollar_sign.c				\
 			ft_env.c					\
 			utils2.c					\
+			tokenizer.c
 
-TEST_SRC :=	builtins.c		\
-			redirections.c	\
-			list.c			\
-			list_memory.c	\
-			input.c			\
-			utils.c			\
-			ft_echo.c		\
-			ft_pwd.c		\
-			dollar_sign.c	\
-			ft_env.c		\
-			utils2.c
-			
+TEST_SRC 	:=	arrowkeys.c					\
+			builtins.c					\
+			commands.c					\
+			environment_variables.c		\
+			escape_sequences.c			\
+			input.c						\
+			list_memory.c				\
+			list.c						\
+			test.c						\
+			path_utils.c				\
+			prompt_string_management.c	\
+			tab_completion.c			\
+			termios.c					\
+			utils.c						\
+			redirections.c				\
+			ft_echo.c					\
+			ft_pwd.c					\
+			dollar_sign.c				\
+			ft_env.c					\
+			utils2.c					\
+			tokenizer.c
+
 
 OBJ := $(SRC:%.c=%.o)
 

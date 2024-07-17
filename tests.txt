@@ -1,0 +1,14 @@
+ls -la | grep "example" > output.txt
+echo "Hello, $USER" 'This is a test' > file1.txt
+cat file.txt && echo "File exists" || echo "File not found"
+echo "Start" | grep 'pattern' | awk '{print $1}' | sort > sorted.txt
+
+cat << 'EOF'
+This is a test
+EOF
+
+echo "Hello, world" && cat 'file with spaces.txt' | grep "pattern" || echo "Pattern not found" >> log.txt
+echo "This is a backslash: \\" and a dollar sign: \$"
+cat input.txt > output1.txt >> output2.txt 2> error.log
+echo "Special characters: | > < & ;"
+ps aux | grep "myprocess" && echo "Process running" || echo "Process not running"
