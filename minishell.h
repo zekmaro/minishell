@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/17 17:38:23 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/18 16:59:30 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,13 +100,14 @@ typedef enum
 
 typedef struct s_ast 
 {
-    t_node_type type;
-    char **args; // Used if type is NODE_COMMAND
-    struct s_ast *left;
-    struct s_ast *right;
-    char *file; // Used for redirections and heredocs
-    int	fd_in;
-	int fd_out;
+    t_node_type		type;
+	t_token_type	token_type;
+    char 			**args; // Used if type is NODE_COMMAND
+    struct s_ast	*left;
+    struct s_ast	*right;
+    char			*file; // Used for redirections and heredocs
+    int				fd_in;
+	int				fd_out;
 } t_ast;
 
 
@@ -216,4 +217,15 @@ char		**environment_variable_add(char **environment, const char *variable_new_na
 /* TOKENIZER MOTHERFUCKER!!! */
 t_token		**lexical_analysis(const char *input, char **env);
 void		print_tokens(t_token **tokens);
+void 		**custom_realloc(void **tokens, int old_capacity, int new_capacity);
+t_ast		*parse_tokens(t_token **tokens);
+void		print_ast(t_ast *head);
+
+int			get_tokens_len(t_token **tokens);
+void		ft_free_split(char **args);
+
+t_ast		*create_command_node(t_token_type token_type, char **args);
+t_ast		*create_redireciton_node(t_token_type token_type, char *file_name);
+t_ast		*create_pipe_node(t_token_type token_type);
+t_ast		*create_logical_node(t_token_type token_type);
 #endif

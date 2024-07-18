@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/17 11:11:01 by anarama          ###   ########.fr        #
+#    Updated: 2024/07/18 12:17:50 by anarama          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,8 @@ SRC 	:=	arrowkeys.c					\
 			dollar_sign.c				\
 			ft_env.c					\
 			utils2.c					\
-			tokenizer.c
+			tokenizer.c					\
+			ast.c
 
 TEST_SRC 	:=	arrowkeys.c					\
 			builtins.c					\
@@ -66,7 +67,8 @@ TEST_SRC 	:=	arrowkeys.c					\
 			dollar_sign.c				\
 			ft_env.c					\
 			utils2.c					\
-			tokenizer.c
+			tokenizer.c					\
+			ast.c
 
 
 OBJ := $(SRC:%.c=%.o)

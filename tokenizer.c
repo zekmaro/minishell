@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/17 18:03:35 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/18 11:58:09 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,10 @@ int get_len_next_double_quote(const char *input)
     return (i + 1);
 }
 
-t_token **custom_realloc(t_token **tokens, int old_capacity, int new_capacity) 
+void **custom_realloc(void **tokens, int old_capacity, int new_capacity)
 {
 	int i;
-    t_token **new_tokens = ft_calloc(1, (new_capacity + 1) * sizeof(t_token *));
+    void **new_tokens = ft_calloc((new_capacity + 1) , sizeof(void *));
     if (!new_tokens) 
 	{
         perror("malloc");
@@ -220,7 +220,10 @@ t_token	**lexical_analysis(const char *input, char **env)
             exit(1);
 		}
         if (count >= capacity)
-            tokens = custom_realloc(tokens, capacity, capacity * 2);
+		{
+			tokens = (t_token **)custom_realloc((void **)tokens, capacity, capacity * 2);
+			capacity *= 2;
+		}
         tokens[count++] = temp_token;
 		temp_token = NULL;
     }
