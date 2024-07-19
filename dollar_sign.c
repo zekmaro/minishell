@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/15 13:48:27 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/17 18:01:35 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/19 12:27:44 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ void	handle_dollar_sign(char **single_token, char **env)
 		if (ft_strncmp(*single_token, *env, ft_strlen(*single_token)) == 0)
 		{
 			temp = ft_strdup(*env);
+			if (!temp)
+			{
+				perror("strdup failed trying to copy env var");
+				lst_memory(NULL, NULL, CLEAN);
+			}
+			else
+				lst_memory((void *)temp, free, ADD);
 			break;
 		}
 		env++;
@@ -58,6 +65,6 @@ void	handle_dollar_sign(char **single_token, char **env)
 	}
 	free(*single_token);
 	*single_token = temp;
-	custom_memmove_chars(*single_token, *single_token + save_len, 0);
+	custom_memmove_chars(*single_token, *single_token + save_len + 1, 0);
 	temp = NULL;
 }

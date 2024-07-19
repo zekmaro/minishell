@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/18 17:09:20 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/19 13:23:34 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ void	ft_free_split(char **args)
 	free(temp);
 }
 
-//put protection inside the fucntions. free and exit inside
+// put protection inside the fucntions. free and exit inside
 // doubling capacity can be out of INT boundaries: do long / size_t or somethign?
 
 t_ast	*parse_tokens(t_token **tokens)
@@ -213,7 +213,7 @@ t_ast	*parse_tokens(t_token **tokens)
 		if (tokens[i]->token_type == TOKEN_WORD)
 		{
 			printf("word\n");
-			args = ft_calloc(capacity + 1, sizeof(t_token));
+			args = ft_calloc(capacity + 1, sizeof(char *));
 			if (!args)
 			{
 				perror("calloc in parse tokens");

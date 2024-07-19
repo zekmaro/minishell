@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/18 16:59:30 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/19 15:30:56 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ typedef enum
 typedef struct s_token
 {
 	t_token_type	token_type;
-	char		*token_value;
+	char			*token_value;
 }	t_token;
 
 typedef enum 
