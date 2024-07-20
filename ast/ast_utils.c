@@ -1,0 +1,95 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
+/*   Updated: 2024/07/20 17:54:22 by anarama          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../minishell.h"
+
+int	get_tokens_len(t_token **tokens)
+{
+	int	i;
+
+	i = 0;
+	while (*tokens)
+	{
+		i++;
+		tokens++;
+	}
+	return (i);
+}
+
+char	**copy_args(char **dest, char **src)
+{
+	int		i;
+	char	**temp;
+
+	i = get_tokens_len((t_token **)src);
+	dest = ft_calloc(i + 1, sizeof(char *));
+	if (!dest)
+	{
+		perror("calloc in copy args");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+	lst_memory(dest, free_split, ADD);
+	temp = dest;
+	while (*src)
+	{
+		*dest = ft_strdup(*src);
+		if (!*dest)
+		{
+			perror("strdup in copy args");
+			lst_memory(NULL, NULL, CLEAN);
+		}
+		src++;
+		dest++;
+	}
+	return (temp);
+}
+
+void	append_node(t_ast **head, t_ast *new_node)
+{
+	t_ast	*tmp;
+
+	if (!new_node)
+		return ;
+	if (*head)
+	{
+		tmp = *head;
+		while (tmp->right)
+			tmp = tmp->right;
+		new_node->left = tmp;
+		tmp->right = new_node;
+	}
+	else
+		*head = new_node;
+}
+
+void	clear_ast(void *head)
+{
+	t_ast	*copy_head;
+	t_ast	*temp;
+
+	temp = NULL;
+	copy_head = (t_ast *)head;
+	while (copy_head)
+	{
+		temp = copy_head;
+		copy_head = copy_head->right;
+		free(temp);
+	}
+}
+
+int	is_redirection(t_token_type	token_type)
+{
+	return (token_type == TOKEN_REDIRECT_IN
+		|| token_type == TOKEN_REDIRECT_OUT
+		|| token_type == TOKEN_REDIRECT_APPEND
+		|| token_type == TOKEN_HEREDOC);
+}

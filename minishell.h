@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 13:44:03 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/20 17:52:42 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,10 +222,27 @@ t_ast		*parse_tokens(t_token **tokens);
 void		print_ast(t_ast *head);
 
 int			get_tokens_len(t_token **tokens);
-void		ft_free_split(char **args);
 
+/* PARSING AND AST */
+/*ast_create_node.c*/
 t_ast		*create_command_node(t_token_type token_type, char **args);
 t_ast		*create_redireciton_node(t_token_type token_type, char *file_name);
 t_ast		*create_pipe_node(t_token_type token_type);
 t_ast		*create_logical_node(t_token_type token_type);
+/*ats_print.c*/
+void		print_ast(t_ast *head);
+/*ats_utils.c*/
+int			get_tokens_len(t_token **tokens);
+char		**copy_args(char **dest, char **src);
+void		append_node(t_ast **head, t_ast *new_node);
+void		clear_ast(void *head);
+int			is_redirection(t_token_type	token_type);
+/*parse_tokens.c*/
+t_ast		*parse_tokens(t_token **tokens);
+/*parser.c*/
+void		fill_args(char **args, int count, char *token_value, int *capacity);
+void		parse_word(t_ast **head, int *i, t_token **tokens);
+void		parse_logical_operator(t_ast **head, int *i, t_token **tokens);
+void		parse_redirection(t_ast **head, int *i, t_token **tokens);
+void		parse_pipe(t_ast **head, int *i, t_token **tokens);
 #endif
