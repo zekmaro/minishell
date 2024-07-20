@@ -6,47 +6,42 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/19 15:33:58 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/20 13:28:49 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// void	ft_free_2(void *addr_ptr)
-// {
-// 	void **temp;
+void	free_token(void *addr_token)
+{
+	t_token *temp;
 
-// 	temp = (void **)addr_ptr;
-// 	free(*temp);
-// 	*temp = NULL;
-// }
-
-// void	free_token(void *addr_token)
-// {
-// 	t_token *temp;
-
-// 	temp = (t_token *)addr_token;
-// 	ft_free_2(&temp->token_value);
-// 	ft_free_2(&temp);
-// }
+	temp = (t_token *)addr_token;
+	if (temp)
+	{
+		if (temp->token_value)
+		{
+			free(temp->token_value);
+			temp->token_value = NULL;	
+		}
+		free(temp);
+	}
+}
 
 void	free_tokens_arr(void *addr_tokens)
 {
-	t_token **temp;
-	t_token **save_head_addr;
+	t_token	**temp;
+	int		i;
 
 	temp = (t_token **)addr_tokens;
-	save_head_addr = temp;
-	while (*temp)
+	i = 0;
+	while (temp[i] !=NULL)
 	{
-		// free_token(*temp);
-		free((*temp)->token_value);
-		(*temp)->token_value = NULL;
-		free(*temp);
-		*temp = NULL;
-		temp++;
+		free_token(temp[i]);
+		i++;
 	}
-	free(addr_tokens);
+	if (temp)
+		free(temp);
 }
 
 int	is_special_char(char c)
@@ -155,22 +150,18 @@ int get_len_next_double_quote(const char *input, char **env, char **new_input)
 		{
 			initial_var_len = get_len_next_space_or_quote(input + i + 1);
 			env_string = ft_substr(input + i + 1, 0, initial_var_len);
-			// if (!env_string)
-			// {
-			// 	perror("substr failed while expanding env var in quotes");
-			// 	lst_memory(NULL, NULL, CLEAN);
-			// }
-			// else
-			// 	lst_memory((void *)&env_string, ft_free_2, ADD);
+			if (!env_string)
+			{
+				perror("substr failed while expanding env var in quotes");
+				lst_memory(NULL, NULL, CLEAN);
+			}
             handle_dollar_sign(&env_string, env);
 			*new_input = ft_calloc(ft_strlen(input) - initial_var_len + 1 + ft_strlen(env_string) + 1, sizeof(char));
-			// if (!*new_input)
-			// {
-			// 	perror("substr failed while expanding env var in quotes");
-			// 	lst_memory(NULL, NULL, CLEAN);
-			// }
-			// else
-			// 	lst_memory((void *)*new_input, free, ADD);
+			if (!*new_input)
+			{
+				perror("substr failed while expanding env var in quotes");
+				lst_memory(NULL, NULL, CLEAN);
+			}
 			copy_with_new_env_var(*new_input, input, env_string, initial_var_len);
 		}
 		i++;
@@ -182,51 +173,57 @@ int get_len_next_double_quote(const char *input, char **env, char **new_input)
     return (i + 1);
 }
 
-void **custom_realloc(void **tokens, int old_capacity, int new_capacity)
-{
-	int		i;
-    void	**new_tokens;
-
-	new_tokens = ft_calloc((new_capacity + 1) , sizeof(void *));
-	if (!new_tokens) 
-	{
-        perror("malloc failed while reallocing memory");
-        lst_memory(NULL, NULL, CLEAN);
-    }
-	else
-		lst_memory(new_tokens, free_tokens_arr, ADD);
-	i = 0;
-	while (i < old_capacity)
-	{
-		new_tokens[i] = tokens[i];
-		i++;	
-	}
-    //free_tokens_arr(tokens);
-    return (new_tokens);
-}
-
 t_token *create_token(t_token_type token_type, const char *value) 
 {
     t_token	*token;
 
 	token = malloc(sizeof(t_token));
-	// if (!token) 
-	// {
-    //     perror("malloc failed while creating token");
-    //     lst_memory(NULL, NULL, CLEAN);
-    // }
-	// else
-	// 	lst_memory(token, free_token, ADD);
+	if (!token) 
+	{
+        perror("malloc failed while creating token");
+        lst_memory(NULL, NULL, CLEAN);
+    }
     token->token_type = token_type;
     token->token_value = ft_strdup(value);
-	// if (!token->token_value) 
-	// {
-    //     perror("malloc in strdup failed while creating token");
-    //     lst_memory(NULL, NULL, CLEAN);
-    // }
-	// else
-	// 	lst_memory(token->token_value, free, ADD);
+	if (!token->token_value) 
+	{
+        perror("malloc in strdup failed while creating token");
+        lst_memory(NULL, NULL, CLEAN);
+    }
     return (token);
+}
+
+void	copy_token_info(void **dest, t_token *src)
+{
+	char	*temp;
+
+	*dest = create_token(src->token_type, src->token_value);
+	if (!*dest)
+	{
+		perror("Token creation failed");
+        lst_memory(NULL, NULL, CLEAN);
+	}
+}
+
+void **custom_realloc(void **tokens, int old_capacity, int new_capacity)
+{
+	int		i;
+    void	**new_tokens;
+
+	new_tokens = ft_calloc(new_capacity + 1, sizeof(void *));
+	if (!new_tokens) 
+	{
+        perror("malloc failed while reallocing memory");
+        lst_memory(NULL, NULL, CLEAN);
+    }
+	lst_memory(new_tokens, free_tokens_arr, ADD);
+	i = 0;
+	while (i < old_capacity)
+	{
+		copy_token_info(&new_tokens[i], tokens[i]);
+		i++;
+	}
+    return (new_tokens);
 }
 
 void print_tokens(t_token **tokens) 
@@ -241,9 +238,6 @@ void print_tokens(t_token **tokens)
 	}
 }
 
-// do i need to free all the tokens and then again do it in the free tokens arr? or if i added all single tokens
-// in lst_mem then i can just free the double arr without the inside tokens?
-
 t_token	**lexical_analysis(const char *input, char **env)
 {
     int capacity = INITIAL_TOKEN_CAPACITY;
@@ -254,7 +248,7 @@ t_token	**lexical_analysis(const char *input, char **env)
     char *temp_str;
 	char *new_input;
 	
-	tokens = ft_calloc(1 , (capacity + 1) * sizeof(t_token *));
+	tokens = ft_calloc((capacity + 1), sizeof(t_token *));
 	if (!tokens) 
 	{
         perror("malloc in calloc for initialising tokens");
@@ -271,7 +265,6 @@ t_token	**lexical_analysis(const char *input, char **env)
             input++;
         if (*input == '\0')
             break ;
-		//printf("%s\n", input);
 		if (ft_strncmp(input, ">>", 2) == 0) 
 		{
             temp_token = create_token(TOKEN_REDIRECT_APPEND, ">>");
@@ -316,10 +309,9 @@ t_token	**lexical_analysis(const char *input, char **env)
 				perror("substr failed while expanding env var");
 				lst_memory(NULL, NULL, CLEAN);
 			}
-			else
-				lst_memory((void *)temp_str, free, ADD);
             handle_dollar_sign(&temp_str, env);
             temp_token = create_token(TOKEN_ENV, temp_str);
+			free(temp_str);
             input += temp + 1;
         } 
 		else if (*input == '\'') 
@@ -331,9 +323,8 @@ t_token	**lexical_analysis(const char *input, char **env)
 				perror("substr failed in single quote");
 				lst_memory(NULL, NULL, CLEAN);
 			}
-			else
-				lst_memory((void *)temp_str, free, ADD);
             temp_token = create_token(TOKEN_WORD, temp_str);
+			free(temp_str);
             input += temp + 1;
         } 
 		else if (*input == '"') 
@@ -347,12 +338,14 @@ t_token	**lexical_analysis(const char *input, char **env)
 					perror("substr failed in single quote");
 					lst_memory(NULL, NULL, CLEAN);
 				}
-				else
-					lst_memory((void *)temp_str, free, ADD);
 				temp_token = create_token(TOKEN_WORD, temp_str);
+				free(temp_str);
 			}
 			else
+			{
 				temp_token = create_token(TOKEN_WORD, new_input);
+				free(new_input);	
+			}
             input += temp + 1;
         } 
 		else 
@@ -364,9 +357,8 @@ t_token	**lexical_analysis(const char *input, char **env)
 				perror("substr failed in single quote");
 				lst_memory(NULL, NULL, CLEAN);
 			}
-			else
-				lst_memory((void *)temp_str, free, ADD);
             temp_token = create_token(TOKEN_WORD, temp_str);
+			free(temp_str);
             input += temp;
         }
         if (!temp_token) 
