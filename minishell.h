@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 17:52:42 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/20 19:52:40 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,13 +215,29 @@ char		**environment_create(const char **env);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
 
 /* TOKENIZER MOTHERFUCKER!!! */
-t_token		**lexical_analysis(const char *input, char **env);
+/*check_special_symbol.c*/
+int			is_special_char(char c);
+int			ft_isspace(char c);
+int			ft_is_single_quote(char c, int *second_quote_found);
+int			ft_is_double_quote(char c, int *second_double_found);
+/*create_token.c*/
+t_token		*create_token(t_token_type token_type, const char *value);
+void		copy_token_info(void **dest, t_token *src);
+/*env_utils.c*/
+void		copy_with_new_env_var(char *new_input, const char *original_input, char *env_string, int initial_var_len);
+int 		get_len_next_double_quote(const char *input, char **env, char **new_input);
+/*string_utils.c*/
+int 		get_len_next_special_char(const char *input);
+int 		get_len_next_space_or_quote(const char *input);
+int 		get_len_next_space(const char *input);
+int			get_len_next_single_quote(const char *input);
+/*token_utils.c*/
+void		free_token(void *addr_token);
+void		free_tokens_arr(void *addr_tokens);
 void		print_tokens(t_token **tokens);
-void 		**custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst);
-t_ast		*parse_tokens(t_token **tokens);
-void		print_ast(t_ast *head);
-
-int			get_tokens_len(t_token **tokens);
+void		**custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst);
+/*tokenizer.c*/
+t_token		**lexical_analysis(const char *input, char **env);
 
 /* PARSING AND AST */
 /*ast_create_node.c*/
