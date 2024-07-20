@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 13:04:17 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/20 13:44:03 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ char		**environment_variable_add(char **environment, const char *variable_new_na
 /* TOKENIZER MOTHERFUCKER!!! */
 t_token		**lexical_analysis(const char *input, char **env);
 void		print_tokens(t_token **tokens);
-void 		**custom_realloc(void **tokens, int old_capacity, int new_capacity);
+void 		**custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst);
 t_ast		*parse_tokens(t_token **tokens);
 void		print_ast(t_ast *head);
 

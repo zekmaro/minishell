@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 13:28:49 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/20 15:49:05 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,7 @@ void	copy_token_info(void **dest, t_token *src)
 	}
 }
 
-void **custom_realloc(void **tokens, int old_capacity, int new_capacity)
+void **custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst)
 {
 	int		i;
     void	**new_tokens;
@@ -216,7 +216,8 @@ void **custom_realloc(void **tokens, int old_capacity, int new_capacity)
         perror("malloc failed while reallocing memory");
         lst_memory(NULL, NULL, CLEAN);
     }
-	lst_memory(new_tokens, free_tokens_arr, ADD);
+	if (add_to_lst)
+		lst_memory(new_tokens, free_tokens_arr, ADD);
 	i = 0;
 	while (i < old_capacity)
 	{
@@ -287,12 +288,12 @@ t_token	**lexical_analysis(const char *input, char **env)
         } 
 		else if (*input == '<') 
 		{
-            temp_token = create_token(TOKEN_REDIRECT_IN, "<");
+            temp_token = create_token(TOKEN_REDIRECT_OUT, "<");
             input++;
         } 
 		else if (*input == '>') 
 		{
-            temp_token = create_token(TOKEN_REDIRECT_OUT, ">");
+            temp_token = create_token(TOKEN_REDIRECT_IN, ">");
             input++;
         } 
 		else if (*input == '|') 
@@ -368,7 +369,7 @@ t_token	**lexical_analysis(const char *input, char **env)
 		}
         if (count >= capacity)
 		{
-			tokens = (t_token **)custom_realloc((void **)tokens, capacity, capacity * 2);
+			tokens = (t_token **)custom_realloc((void **)tokens, capacity, capacity * 2, 1);
 			capacity *= 2;
 		}
         tokens[count++] = temp_token;

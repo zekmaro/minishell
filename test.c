@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 10:58:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 12:49:36 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/20 14:05:43 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,10 @@ int	main(int argc, char **argv, char **env)
 	printf("---TOKENS---\n");
 	print_tokens(tokens);
 	printf("------------\n");
-	// ast = parse_tokens(tokens);
-	// printf("----AST----\n");
-	// print_ast(ast);
-	// printf("-----------\n");
+	ast = parse_tokens(tokens);
+	printf("----AST----\n");
+	print_ast(ast);
+	printf("-----------\n");
 	lst_memory(NULL, NULL, CLEAN);
 	// while (ast)
 	// {
