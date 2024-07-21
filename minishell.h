@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/21 16:22:38 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 16:59:16 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,8 +135,7 @@ void		ft_exit();
 /* Commands */
 bool		buildin_execute(char const *command, char const **argv);
 void 		command_execute(char const *command_path, char const *argv[], char const **env);
-void		*m_tokenizer(const char *input, char **env, const char *path_variable);
-
+void		*m_tokenizer(const char *input, const char **env, const char *path_variable);
 /* Handle signal */
 void		handle_sigint(int sig);
 void		setup_signal_handlers();

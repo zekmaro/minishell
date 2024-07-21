@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/21 14:21:34 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 17:00:55 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,29 +55,20 @@ void	command_execute(char const *command_path,
 	}
 }
 
-void	*m_tokenizer(const char *input, char **env, const char *path_variable)
+void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
 {
-	char	**tokens;
-	char	*command_path;
-	int		original_stdin = dup(STDIN_FILENO);
-	int		original_stdout = dup(STDOUT_FILENO);
+	t_token	**tokens;
+	t_ast	*ast;
 
-	tokens = ft_split(input, ' ');
-	lst_memory(tokens, &free_split, ADD);
-	if (!*tokens)
-		return (NULL);
-	execute(tokens, (char **)env);
-	if (buildin_execute(tokens[0], (char const **)tokens))
-	{
-		return (NULL);
-	}
-	command_path = find_absolute_path(path_variable, (char *)*tokens);
-	if (command_path == 0)
-	{
-		return (NULL);
-	}
-	command_execute(command_path, (char const **)tokens, env);
-	free_split(tokens);
+	ft_printf("%s\n", input);
+	tokens = lexical_analysis(input, env);
+	printf("---TOKENS---\n");
+	print_tokens(tokens);
+	printf("------------\n");
+	ast = parse_tokens(tokens);
+	printf("----AST----\n");
+	print_ast(ast);
+	printf("-----------\n");
 	return (NULL);
 }
 
