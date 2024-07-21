@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/21 13:45:34 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 16:22:38 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,8 +240,8 @@ t_token		*create_token_word(const char **input);
 t_token		*create_token(t_token_type token_type, const char *value);
 void		copy_token_info(void **dest, t_token *src);
 /*env_utils.c*/
-void		copy_with_new_env_var(char *new_input, const char *original_input, char *env_string, int initial_var_len);
-int 		get_len_next_double_quote(const char *input, char **env, char **new_input);
+void		copy_input_with_new_env_var(char *new_input, const char *original_input, char *env_string, int initial_var_len);
+int 		get_len_next_double_quote(const char *input, const char **env, char **new_input);
 /*string_utils.c*/
 int 		get_len_next_special_char(const char *input);
 int 		get_len_next_space_or_quote(const char *input);

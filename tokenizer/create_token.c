@@ -6,29 +6,29 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:47:21 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 13:38:19 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 16:43:46 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_token *create_token(t_token_type token_type, const char *value) 
+t_token	*create_token(t_token_type token_type, const char *value)
 {
-    t_token	*token;
+	t_token	*token;
 
 	token = malloc(sizeof(t_token));
-	if (!token) 
+	if (!token)
 	{
-        perror("malloc failed while creating token");
-        lst_memory(NULL, NULL, CLEAN);
-    }
-    token->token_type = token_type;
-    token->token_value = ft_strdup(value);
-	if (!token->token_value) 
+		perror("malloc failed while creating token");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+	token->token_type = token_type;
+	token->token_value = ft_strdup(value);
+	if (!token->token_value)
 	{
 		free(token);
-        perror("malloc in strdup failed while creating token");
-        lst_memory(NULL, NULL, CLEAN);
-    }
-    return (token);
+		perror("malloc in strdup failed while creating token");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+	return (token);
 }
