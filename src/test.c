@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 10:58:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:48 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 13:25:09 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@
 	
 // }
 
-int	main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, const char **env)
 {
 	char		*input = argv[1];
 	t_token		**tokens;
@@ -119,7 +119,7 @@ int	main(int argc, char **argv, char **env)
 	// int	original_stdin = dup(STDIN_FILENO);
 	// int	original_stdout = dup(STDOUT_FILENO);
 
-	ft_printf("%s\n", argv[1]);
+	ft_printf("%s\n", input);
 	tokens = lexical_analysis(input, env);
 	printf("---TOKENS---\n");
 	print_tokens(tokens);

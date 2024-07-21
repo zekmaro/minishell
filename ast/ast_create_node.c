@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:45:01 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 17:53:07 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 13:49:29 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ t_ast	*create_command_node(t_token_type token_type, char **args)
 	node->type = NODE_COMMAND;
 	node->token_type = token_type;
 	if (args)
-		node->args = copy_args(node->args, args);
+		node->args = copy_args(node, args);
 	node->fd_in = STDIN_FILENO;
 	node->fd_out = STDOUT_FILENO;
 	return (node);

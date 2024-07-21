@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 17:54:22 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 13:58:38 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,30 +25,32 @@ int	get_tokens_len(t_token **tokens)
 	return (i);
 }
 
-char	**copy_args(char **dest, char **src)
+char	**copy_args(t_ast *node, char **src)
 {
 	int		i;
 	char	**temp;
 
 	i = get_tokens_len((t_token **)src);
-	dest = ft_calloc(i + 1, sizeof(char *));
-	if (!dest)
+	node->args = ft_calloc(i + 1, sizeof(char *));
+	if (!node->args)
 	{
+		free(node);
 		perror("calloc in copy args");
 		lst_memory(NULL, NULL, CLEAN);
 	}
-	lst_memory(dest, free_split, ADD);
-	temp = dest;
+	lst_memory(node->args, free_split, ADD);
+	temp = node->args;
 	while (*src)
 	{
-		*dest = ft_strdup(*src);
-		if (!*dest)
+		*node->args = ft_strdup(*src);
+		if (!*node->args)
 		{
+			free(node);
 			perror("strdup in copy args");
 			lst_memory(NULL, NULL, CLEAN);
 		}
 		src++;
-		dest++;
+		node->args++;
 	}
 	return (temp);
 }

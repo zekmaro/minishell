@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/21 12:46:08 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 13:45:34 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,7 +266,7 @@ t_ast		*create_logical_node(t_token_type token_type);
 void		print_ast(t_ast *head);
 /*ats_utils.c*/
 int			get_tokens_len(t_token **tokens);
-char		**copy_args(char **dest, char **src);
+char		**copy_args(t_ast *node, char **src);
 void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);

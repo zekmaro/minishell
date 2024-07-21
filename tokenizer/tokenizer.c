@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 12:40:21 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 13:31:45 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_token	**lexical_analysis(const char *input, const char **env)
     int		count;
     t_token	**tokens;
 	t_token	*temp_token;
-	
+
 	tokens = initialise_tokens();
 	capacity = INITIAL_TOKEN_CAPACITY;
 	count = 0;
