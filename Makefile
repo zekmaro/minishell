@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/20 20:20:08 by anarama          ###   ########.fr        #
+#    Updated: 2024/07/21 12:48:15 by anarama          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,7 +31,13 @@ SRC			:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 AST_SRC		:=	ast/ast_create_node.c ast/ast_print.c ast/ast_utils.c \
 				ast/parse_tokens.c ast/parser.c
 
-TOKEN_SRC	:=	tokenizer/check_special_symbol.c tokenizer/create_token.c \
+TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
+				tokenizer/create_token_double_special_symbol.c \
+				tokenizer/create_token_env_var.c \
+				tokenizer/create_token_quotes.c \
+				tokenizer/create_token_single_special_symbol.c \
+				tokenizer/create_token_word.c \
+				tokenizer/create_token.c \
 				tokenizer/env_utils.c tokenizer/string_utils.c \
 				tokenizer/token_utils.c tokenizer/tokenizer.c
 

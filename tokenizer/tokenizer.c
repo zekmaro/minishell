@@ -6,22 +6,18 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 19:47:14 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 12:40:21 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_token	**lexical_analysis(const char *input, char **env)
+t_token	**initialise_tokens()
 {
-    int capacity = INITIAL_TOKEN_CAPACITY;
-    int count = 0;
-    t_token **tokens;
-	t_token *temp_token = NULL;
-    int temp;
-    char *temp_str;
-	char *new_input;
-	
+	int		capacity;
+	t_token	**tokens;
+
+	capacity = INITIAL_TOKEN_CAPACITY;
 	tokens = ft_calloc((capacity + 1), sizeof(t_token *));
 	if (!tokens) 
 	{
@@ -30,123 +26,53 @@ t_token	**lexical_analysis(const char *input, char **env)
     }
 	else
 		lst_memory((void *)tokens, free_tokens_arr, ADD);
+	return (tokens);
+}
+
+t_token	**lexical_analysis(const char *input, const char **env)
+{
+    int		capacity;
+    int		count;
+    t_token	**tokens;
+	t_token	*temp_token;
+	
+	tokens = initialise_tokens();
+	capacity = INITIAL_TOKEN_CAPACITY;
+	count = 0;
     while (*input) 
 	{
-		temp = 0;
-        temp_str = NULL;
-		new_input = NULL;
+		temp_token = NULL;
         while (ft_isspace(*input))
             input++;
         if (*input == '\0')
             break ;
-		if (ft_strncmp(input, ">>", 2) == 0) 
-		{
-            temp_token = create_token(TOKEN_REDIRECT_APPEND, ">>");
-            input += 2;
-        } 
-		else if (ft_strncmp(input, "<<", 2) == 0) 
-		{
-            temp_token = create_token(TOKEN_HEREDOC, "<<");
-            input += 2;
-        } 
-		else if (ft_strncmp(input, "&&", 2) == 0) 
-		{
-            temp_token = create_token(TOKEN_AND, "&&");
-            input += 2;
-        } 
-		else if (ft_strncmp(input, "||", 2) == 0) 
-		{
-            temp_token = create_token(TOKEN_OR, "||");
-            input += 2;
-        } 
-		else if (*input == '<') 
-		{
-            temp_token = create_token(TOKEN_REDIRECT_OUT, "<");
-            input++;
-        } 
-		else if (*input == '>') 
-		{
-            temp_token = create_token(TOKEN_REDIRECT_IN, ">");
-            input++;
-        } 
-		else if (*input == '|') 
-		{
-            temp_token = create_token(TOKEN_PIPE, "|");
-            input++;
-        } 
-		else if (*input == '$') 
-		{
-            temp = get_len_next_space(input + 1);
-            temp_str = ft_substr(input + 1, 0, temp);
-			if (!temp_str)
-			{
-				perror("substr failed while expanding env var");
-				lst_memory(NULL, NULL, CLEAN);
-			}
-            handle_dollar_sign(&temp_str, env);
-            temp_token = create_token(TOKEN_ENV, temp_str);
-			free(temp_str);
-            input += temp + 1;
-        } 
-		else if (*input == '\'') 
-		{
-            temp = get_len_next_single_quote(input + 1);
-			temp_str = ft_substr(input + 1, 0, temp - 1);
-			if (!temp_str)
-			{
-				perror("substr failed in single quote");
-				lst_memory(NULL, NULL, CLEAN);
-			}
-            temp_token = create_token(TOKEN_WORD, temp_str);
-			free(temp_str);
-            input += temp + 1;
-        } 
-		else if (*input == '"') 
-		{
-            temp = get_len_next_double_quote(input + 1, env, &new_input);
-			if (!new_input)
-			{
-				temp_str = ft_substr(input + 1, 0, temp - 1);
-				if (!temp_str)
-				{
-					perror("substr failed in single quote");
-					lst_memory(NULL, NULL, CLEAN);
-				}
-				temp_token = create_token(TOKEN_WORD, temp_str);
-				free(temp_str);
-			}
-			else
-			{
-				temp_token = create_token(TOKEN_WORD, new_input);
-				free(new_input);	
-			}
-            input += temp + 1;
-        } 
+		if (is_double_special(input))
+			temp_token = create_token_double_special_symbol(&input);
+		else if (is_single_special(input))
+			temp_token = create_token_single_special_symbol(&input);
+		else if (is_env_var(input))
+			temp_token = create_token_env_var(&input, env);
+		else if (is_quote(input))
+			temp_token = create_token_quotes(&input, env);
 		else 
 		{
-            temp = get_len_next_special_char(input);
-			temp_str = ft_substr(input, 0, temp);
-			if (!temp_str)
-			{
-				perror("substr failed in single quote");
-				lst_memory(NULL, NULL, CLEAN);
-			}
-            temp_token = create_token(TOKEN_WORD, temp_str);
-			free(temp_str);
-            input += temp;
+            temp_token = create_token_word(&input);
         }
         if (!temp_token) 
 		{
             perror("Token creation failed");
             lst_memory(NULL, NULL, CLEAN);
 		}
-        if (count >= capacity)
+		// i first add the token and then do realloc if needed cause realloc might fail
+		// before i added token to the arr. if i try to add it to lst_mem independently i will
+		// get double free
+		tokens[count] = temp_token;
+        if (count + 1 >= capacity)
 		{
 			tokens = (t_token **)custom_realloc((void **)tokens, capacity, capacity * 2, 1);
 			capacity *= 2;
 		}
-        tokens[count++] = temp_token;
-		temp_token = NULL;
+		count++;
     }
     return (tokens);
 }

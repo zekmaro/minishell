@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 19:52:40 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 12:46:08 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,22 @@ int			is_special_char(char c);
 int			ft_isspace(char c);
 int			ft_is_single_quote(char c, int *second_quote_found);
 int			ft_is_double_quote(char c, int *second_double_found);
+/*create_token_double_special_symbol.c*/
+int			is_double_special(const char *input);
+t_token		*create_token_double_special_symbol(const char **input);
+/*create_token_env_var.c*/
+int			is_env_var(const char *input);
+t_token		*create_token_env_var(const char **input, const char **env);
+/*create_token_quotes.c*/
+int			is_quote(const char *input);
+t_token		*create_token_single_quote(const char **input, const char **env);
+t_token		*create_token_double_quotes(const char **input, const char **env);
+t_token		*create_token_quotes(const char **input, const char **env);
+/*create_token_single_special_symbol.c*/
+int			is_single_special(const char *input);
+t_token		*create_token_single_special_symbol(const char **input);
+/*create_token_word.c*/
+t_token		*create_token_word(const char **input);
 /*create_token.c*/
 t_token		*create_token(t_token_type token_type, const char *value);
 void		copy_token_info(void **dest, t_token *src);
@@ -237,7 +253,8 @@ void		free_tokens_arr(void *addr_tokens);
 void		print_tokens(t_token **tokens);
 void		**custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst);
 /*tokenizer.c*/
-t_token		**lexical_analysis(const char *input, char **env);
+t_token		**initialise_tokens();
+t_token		**lexical_analysis(const char *input, const char **env);
 
 /* PARSING AND AST */
 /*ast_create_node.c*/

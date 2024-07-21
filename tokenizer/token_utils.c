@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:43:16 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 19:52:05 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/21 12:32:58 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,17 @@ void **custom_realloc(void **tokens, int old_capacity, int new_capacity, int add
 		i++;
 	}
     return (new_tokens);
+}
+
+void	copy_token_info(void **dest, t_token *src)
+{
+	char	*temp;
+
+	*dest = create_token(src->token_type, src->token_value);
+	// null returning will never happen? i will exit before it
+	if (!*dest)
+	{
+		perror("Token creation failed");
+        lst_memory(NULL, NULL, CLEAN);
+	}
 }
