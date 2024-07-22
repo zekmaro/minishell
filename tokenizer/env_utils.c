@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:45:29 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 16:46:35 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 14:08:54 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,5 +89,5 @@ int	get_len_next_double_quote(const char *input,
 	{
 		return (0);
 	}
-	return (i + 1);
+	return (i);
 }

@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/21 12:48:15 by anarama          ###   ########.fr        #
+#    Updated: 2024/07/22 12:51:17 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,6 +39,7 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_word.c \
 				tokenizer/create_token.c \
 				tokenizer/env_utils.c tokenizer/string_utils.c \
+				tokenizer/quotes.c \
 				tokenizer/token_utils.c tokenizer/tokenizer.c
 
 TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \

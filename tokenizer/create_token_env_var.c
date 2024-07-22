@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:37:49 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 17:24:45 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 13:47:16 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,23 @@ int	is_env_var(const char *input)
 	return (*input == '$');
 }
 
-t_token	*create_token_env_var(const char **input, const char **env)
+t_token	create_token_env_var(char **input, const char **environement)
 {
-	t_token	*temp_token;
-	int		temp;
+	t_token	temp_token;
+	uint32_t	i;
+	char	*temp_move;
 	char	*temp_str;
 
-	temp_token = NULL;
-	if (**input == '$')
+	i = 0;
+	temp_move = ft_strchr(*input, ' ');
+	temp_str = extract_variable(*input, environement);
+	temp_token = create_token(TOKEN_ENV, temp_str);
+	if (temp_move)
 	{
-		temp = get_len_next_space(*input + 1);
-		temp_str = ft_substr(*input + 1, 0, temp);
-		if (!temp_str)
-		{
-			perror("substr failed while expanding env var");
-			lst_memory(NULL, NULL, CLEAN);
-		}
-		handle_dollar_sign(&temp_str, (char **)env);
-		temp_token = create_token(TOKEN_WORD, temp_str);
-		*input += temp + 1;
+		*temp_move = 0;
+		*input = temp_move + 1;
 	}
+	else
+		*input = ft_strchr(*input, 0);
 	return (temp_token);
 }

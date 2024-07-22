@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:24 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 11:35:48 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	main(int argc, char **argv, const char **env)
 		}
 		if (command_input && *command_input != '\n')
 		{
-			m_tokenizer(command_input, environment, path_variable);
+			m_tokenizer(command_input, (const char **)environment, path_variable);
 			prompt->history_entries[prompt->history_count++] = prompt->command;
 		}
 		prompt->history_position_current = prompt->history_count;

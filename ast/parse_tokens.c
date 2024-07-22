@@ -6,13 +6,13 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 17:24:17 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 14:27:03 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_ast	*parse_tokens(t_token **tokens)
+t_ast	*parse_tokens(t_token *tokens)
 {
 	t_ast	*head;
 	int		i;
@@ -23,22 +23,22 @@ t_ast	*parse_tokens(t_token **tokens)
 	i = 0;
 	in_lst = 0;
 	head = NULL;
-	while (tokens[i])
+	while (tokens[i].token_type != TOKEN_EOL)
 	{
-		if (tokens[i]->token_type == TOKEN_WORD)
+		if (tokens[i].token_type == TOKEN_WORD)
 		{
 			parse_word(&head, &i, tokens);
 		}
-		else if (tokens[i]->token_type == TOKEN_AND
-			|| tokens[i]->token_type == TOKEN_OR)
+		else if (tokens[i].token_type == TOKEN_AND
+			|| tokens[i].token_type == TOKEN_OR)
 		{
 			parse_logical_operator(&head, &i, tokens);
 		}
-		else if (is_redirection(tokens[i]->token_type))
+		else if (is_redirection(tokens[i].token_type))
 		{
 			parse_redirection(&head, &i, tokens);
 		}
-		else if (tokens[i]->token_type == TOKEN_PIPE)
+		else if (tokens[i].token_type == TOKEN_PIPE)
 		{
 			parse_pipe(&head, &i, tokens);
 		}

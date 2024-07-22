@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:43:16 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 16:34:50 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 14:00:31 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,38 +30,39 @@ void	free_token(void *addr_token)
 
 void	free_tokens_arr(void *addr_tokens)
 {
-	t_token	**temp;
+	t_token	*temp;
 	int		i;
 
-	temp = (t_token **)addr_tokens;
+	temp = (t_token *)addr_tokens;
 	i = 0;
-	while (temp[i] != NULL)
+	while (temp[i].token_type != TOKEN_EOL)
 	{
-		free_token(temp[i]);
+		if (temp[i].token_type == TOKEN_ENV)
+			free(temp[i].token_value);
 		i++;
 	}
 	if (temp)
 		free(temp);
 }
 
-void	print_tokens(t_token **tokens)
+void	print_tokens(t_token *tokens)
 {
 	int	i;
 
 	i = 0;
-	while (tokens[i])
+	while (tokens[i].token_type != TOKEN_EOL)
 	{
 		printf("Token: Type=%d, Value=%s\n",
-			tokens[i]->token_type, tokens[i]->token_value);
+			tokens[i].token_type, tokens[i].token_value);
 		i++;
 	}
 }
 
-void	copy_token_info(void **dest, t_token *src)
+void	copy_token_info(t_token **dest, t_token *src)
 {
 	char	*temp;
 
-	*dest = create_token(src->token_type, src->token_value);
+	**dest = create_token(src->token_type, src->token_value);
 	if (!*dest)
 	{
 		perror("Token creation failed");
@@ -69,11 +70,11 @@ void	copy_token_info(void **dest, t_token *src)
 	}
 }
 
-void	**custom_realloc(void **tokens, int old_capacity,
+t_token	**custom_realloc(void **tokens, int old_capacity,
 			int new_capacity, int add_to_lst)
 {
 	int		i;
-	void	**new_tokens;
+	t_token	**new_tokens;
 
 	new_tokens = ft_calloc(new_capacity + 1, sizeof(void *));
 	if (!new_tokens)
