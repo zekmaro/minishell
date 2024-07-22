@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 10:42:51 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 15:15:19 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ typedef struct s_ast
 	int				fd_out;
 	char			*error_message;
 	char			*path;
+	int				is_done;
 } t_ast;
 
 
@@ -144,6 +145,7 @@ void		setup_signal_handlers();
 
 /* Input */
 void		free_split(void *back);
+uint32_t    get_split_length(char **split);
 
 /* List Memory */
 void		lst_memory(void *mem, void (*del)(void *c), int mode);
@@ -271,6 +273,9 @@ char		**copy_args(t_ast *node, char **src);
 void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);
+/*handle_redirs.c*/
+
+void		handle_redir(t_ast *redir_node);
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token **tokens);
 /*parser.c*/

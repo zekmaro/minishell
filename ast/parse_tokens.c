@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 17:24:17 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 12:53:10 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_ast	*parse_tokens(t_token **tokens)
 	head = NULL;
 	while (tokens[i])
 	{
+		//printf("token: %s", tokens[i]->token_value);
 		if (tokens[i]->token_type == TOKEN_WORD)
 		{
 			parse_word(&head, &i, tokens);

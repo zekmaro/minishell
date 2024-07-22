@@ -6,11 +6,19 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/21 17:00:55 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 14:20:33 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	restore_fd(int original_stdin, int original_stdout)
+{
+	dup2(original_stdin, STDIN_FILENO);
+	dup2(original_stdout, STDOUT_FILENO);
+	close(original_stdin);
+	close(original_stdout);
+}
 
 bool	buildin_execute(char const *command, char const **argv)
 {
@@ -59,15 +67,39 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 {
 	t_token	**tokens;
 	t_ast	*ast;
+	t_ast	*head;
+	int	original_stdin = dup(STDIN_FILENO);
+	int	original_stdout = dup(STDOUT_FILENO);
 
+	lst_memory((void *)input, free, ADD);
 	ft_printf("%s\n", input);
 	tokens = lexical_analysis(input, env);
 	printf("---TOKENS---\n");
 	print_tokens(tokens);
 	printf("------------\n");
 	ast = parse_tokens(tokens);
+	head = ast;
 	printf("----AST----\n");
 	print_ast(ast);
+	printf("-----------\n");
+	while (ast)
+	{
+		if (ast->type == NODE_REDIRECTION)
+		{
+			handle_redir(ast);
+		}
+		// else if (ast->type == NODE_PIPE)
+		// {
+			
+		// }
+		// else if (ast->type == NODE_LOGICAL_OPERATOR)
+		// {
+			
+		// }
+		ast = ast->right;
+	}
+	printf("----AST----\n");
+	print_ast(head);
 	printf("-----------\n");
 	return (NULL);
 }
