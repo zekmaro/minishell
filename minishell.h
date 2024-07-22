@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/21 16:59:16 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 10:42:51 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,14 @@ typedef struct s_ast
 {
     t_node_type		type;
 	t_token_type	token_type;
-    char 			**args; // Used if type is NODE_COMMAND
+    char 			**args;
     struct s_ast	*left;
     struct s_ast	*right;
-    char			*file; // Used for redirections and heredocs
+    char			*file;
     int				fd_in;
 	int				fd_out;
+	char			*error_message;
+	char			*path;
 } t_ast;
 
 
