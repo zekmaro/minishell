@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:45:29 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 14:08:54 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/22 20:32:12 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,9 @@ int	get_len_next_double_quote(const char *input,
 {
 	int		i;
 	int		second_double_found;
-	char	*env_string;
 
 	i = 0;
 	second_double_found = 0;
-	env_string = NULL;
 	while (input[i] && !ft_is_double_quote(input[i], &second_double_found))
 	{
 		if (input[i] == '$')

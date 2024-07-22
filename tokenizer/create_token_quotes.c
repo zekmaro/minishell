@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:38:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 14:12:06 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/22 20:58:00 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ t_token	create_token_single_quote(const char **input)
 		*temp_move = 0;
 		*input = temp_move + 1;
 	}
+	else
+		*input = ft_strchr(*input, 0);
 	return (temp_token);
 }
 
@@ -46,7 +48,8 @@ t_token	create_token_double_quotes(const char **input, const char **env)
 		if (temp_str)
 		{
 			*temp_str = 0;
-			*input = temp_str + 1;
+			temp_str = ft_strrchr(*input + 1, '\"');
+			*input += ft_strlen(*input) + 1;
 		}
 		temp_token = create_token(TOKEN_WORD, temp_str);
 	}

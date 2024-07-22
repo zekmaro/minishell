@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 14:26:21 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/22 20:30:06 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <readline/readline.h>
+# include <signal.h>
 # include <readline/history.h>
 # include <errno.h>
 
@@ -174,7 +175,7 @@ void		cursor_position_get(uint32_t cursor_position[2]);
 void		cursor_position_save(void);
 void		cursor_position_restore(void);
 
-uint8_t		handle_escape_sequence(t_prompt *prompt, char	**input, uint32_t *cursor_position_current);
+uint8_t		handle_escape_sequence(t_prompt *prompt, char **input, uint32_t *cursor_position_current);
 char		*prompt_get_input(t_prompt *prompt);
 
 /* Prompt Buffer Management */
@@ -218,6 +219,7 @@ void		environment_variable_print(const char *variable, const char **environment)
 void		environment_print(char **environment);
 char		**environment_create(const char **env);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
+char		*environment_variable_get(const char *variable, const char **environment);
 
 /* TOKENIZER MOTHERFUCKER!!! */
 /*check_special_symbol.c*/

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 12:24:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/22 20:49:47 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,10 @@ t_token	create_token_double_special_symbol(char **input)
 	t_token_type token_type;
 	uint32_t	i;
 
-	temp_token = (t_token){0};
 	i = 0;
 	while (*input[i] && *input[i] == ' ')
 		i++;
 	manipulation_pointer = ft_strchr(&(*input)[i], ' ');
-	if (manipulation_pointer)
-		*manipulation_pointer = 0;
 	if (ft_strncmp(*input, ">>", 2) == 0)
 	{
 		token_type = TOKEN_REDIRECT_APPEND;
@@ -51,6 +48,12 @@ t_token	create_token_double_special_symbol(char **input)
 		token_type = TOKEN_OR;
 	}
 	temp_token = create_token(token_type, manipulation_pointer);
-	*input = manipulation_pointer + 1;
+	if (manipulation_pointer)
+	{
+		*manipulation_pointer = 0;
+		*input = manipulation_pointer + 1;
+	}
+	else
+		*input = ft_strchr(*input, 0);
 	return (temp_token);
 }

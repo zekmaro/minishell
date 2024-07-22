@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 13:59:23 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/22 20:33:06 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,8 @@ static uint32_t get_word_count(const char *input)
 
 t_token	*lexical_analysis(const char *input, const char **env)
 {
-	int		capacity;
-	int		count;
 	t_token	*tokens;
 	uint32_t	i;
-	t_token	temp_token;
 
 	tokens = initialise_tokens(get_word_count(input));
 	i = 0;
@@ -85,7 +82,6 @@ t_token	*lexical_analysis(const char *input, const char **env)
 		if (*input == '\0')
 			break ;
 		tokens[i++] = check_symbol_and_create_token(&input, env);
-		/*add_token_to_arr(&tokens, &count, temp_token, &capacity);*/
 	}
 	return (tokens);
 }

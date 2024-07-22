@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:37:49 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 13:47:16 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/22 20:31:08 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,9 @@ int	is_env_var(const char *input)
 t_token	create_token_env_var(char **input, const char **environement)
 {
 	t_token	temp_token;
-	uint32_t	i;
 	char	*temp_move;
 	char	*temp_str;
 
-	i = 0;
 	temp_move = ft_strchr(*input, ' ');
 	temp_str = extract_variable(*input, environement);
 	temp_token = create_token(TOKEN_ENV, temp_str);
