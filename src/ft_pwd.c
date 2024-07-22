@@ -1,29 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_pwd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:03 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/19 11:22:23 by anarama          ###   ########.fr       */
+/*   Created: 2024/07/11 11:52:48 by andrejarama       #+#    #+#             */
+/*   Updated: 2024/07/20 18:49:13 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(char const *str)
+void	ft_pwd(int fd, char **env)
 {
-	size_t	i;
+	char	*pwd;
 
-	i = 0;
-	if (!str)
-		return (0);
-	while (*str++)
-	{
-		i++;
-		if (i == SIZE_MAX)
-			break ;
-	}
-	return (i);
+	pwd = getenv("PWD");
+	write(fd, pwd, ft_strlen(pwd));
+	write(fd, "\n", 1);
 }

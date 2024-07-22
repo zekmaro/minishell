@@ -1,29 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_env.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:03 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/19 11:22:23 by anarama          ###   ########.fr       */
+/*   Created: 2024/07/15 13:46:30 by anarama           #+#    #+#             */
+/*   Updated: 2024/07/20 18:49:11 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(char const *str)
+void	ft_env(char **env, int fd)
 {
-	size_t	i;
-
-	i = 0;
-	if (!str)
-		return (0);
-	while (*str++)
+	while (*env)
 	{
-		i++;
-		if (i == SIZE_MAX)
-			break ;
+		write(fd, *env, ft_strlen(*env));
+		write(fd, "\n", 1);
+		env++;
 	}
-	return (i);
 }

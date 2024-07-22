@@ -6,10 +6,10 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/16 13:56:13 by vvobis           ###   ########.fr       */
-/*   Updated: 2024/07/07 20:14:06 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 10:42:51 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -56,6 +56,7 @@
 # define SCREEN_CLEAR "\033[2J"
 # define SCREEN_CLEAR_TO_EOF "\033[J"
 
+# define INITIAL_TOKEN_CAPACITY 10
 typedef struct s_prompt
 {
 	char		*command;
@@ -65,6 +66,52 @@ typedef struct s_prompt
 	char		**history_entries;
 	char		**env_ptr;
 }				t_prompt;
+
+typedef enum
+{
+	TOKEN_WORD,
+    TOKEN_REDIRECT_IN,
+    TOKEN_REDIRECT_OUT,
+    TOKEN_REDIRECT_APPEND,
+    TOKEN_HEREDOC,
+	TOKEN_SINGLE_QUOTE,
+	TOKEN_DOUBLE_QUOTE,
+    TOKEN_PIPE,
+    TOKEN_AND,
+    TOKEN_OR,
+    TOKEN_SEMICOLON,
+    TOKEN_ENV,
+    TOKEN_EXIT_STATUS
+} t_token_type;
+
+typedef struct s_token
+{
+	t_token_type	token_type;
+	char			*token_value;
+}	t_token;
+
+typedef enum 
+{
+    NODE_COMMAND,
+    NODE_REDIRECTION,
+    NODE_PIPE,
+    NODE_LOGICAL_OPERATOR,
+} t_node_type;
+
+typedef struct s_ast 
+{
+    t_node_type		type;
+	t_token_type	token_type;
+    char 			**args;
+    struct s_ast	*left;
+    struct s_ast	*right;
+    char			*file;
+    int				fd_in;
+	int				fd_out;
+	char			*error_message;
+	char			*path;
+} t_ast;
+
 
 enum e_alloc
 {
@@ -91,7 +138,6 @@ void		ft_exit();
 bool		buildin_execute(char const *command, char const **argv);
 void 		command_execute(char const *command_path, char const *argv[], char const **env);
 void		*m_tokenizer(const char *input, const char **env, const char *path_variable);
-
 /* Handle signal */
 void		handle_sigint(int sig);
 void		setup_signal_handlers();
@@ -133,8 +179,7 @@ void		prompt_buffer_size_manage(char **input, uint32_t input_new_size);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 
 /* Redirections */
-void		check_redirections(char **tokens, char **env);
-
+void		execute(char **tokens, char **env);
 /* Tab Completion */
 uint32_t		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
 
@@ -156,7 +201,6 @@ void		error_log(char *specifier, void *info);
 
 /* Utils2 */
 void		custom_memmove_strings(char **dest, char **src);
-void		print_tokens(char **tokens);
 int			get_tokens_count(char **tokens);
 void		custom_free_split(char **arr);
 void		handle_dollar_sign(char **single_token, char **env);
@@ -171,4 +215,68 @@ void		environment_print(char **environment);
 char		**environment_create(const char **env);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
 
+/* TOKENIZER MOTHERFUCKER!!! */
+/*check_special_symbol.c*/
+int			is_special_char(char c);
+int			ft_isspace(char c);
+int			ft_is_single_quote(char c, int *second_quote_found);
+int			ft_is_double_quote(char c, int *second_double_found);
+/*create_token_double_special_symbol.c*/
+int			is_double_special(const char *input);
+t_token		*create_token_double_special_symbol(const char **input);
+/*create_token_env_var.c*/
+int			is_env_var(const char *input);
+t_token		*create_token_env_var(const char **input, const char **env);
+/*create_token_quotes.c*/
+int			is_quote(const char *input);
+t_token		*create_token_single_quote(const char **input, const char **env);
+t_token		*create_token_double_quotes(const char **input, const char **env);
+t_token		*create_token_quotes(const char **input, const char **env);
+/*create_token_single_special_symbol.c*/
+int			is_single_special(const char *input);
+t_token		*create_token_single_special_symbol(const char **input);
+/*create_token_word.c*/
+t_token		*create_token_word(const char **input);
+/*create_token.c*/
+t_token		*create_token(t_token_type token_type, const char *value);
+void		copy_token_info(void **dest, t_token *src);
+/*env_utils.c*/
+void		copy_input_with_new_env_var(char *new_input, const char *original_input, char *env_string, int initial_var_len);
+int 		get_len_next_double_quote(const char *input, const char **env, char **new_input);
+/*string_utils.c*/
+int 		get_len_next_special_char(const char *input);
+int 		get_len_next_space_or_quote(const char *input);
+int 		get_len_next_space(const char *input);
+int			get_len_next_single_quote(const char *input);
+/*token_utils.c*/
+void		free_token(void *addr_token);
+void		free_tokens_arr(void *addr_tokens);
+void		print_tokens(t_token **tokens);
+void		**custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst);
+/*tokenizer.c*/
+t_token		**initialise_tokens();
+t_token		**lexical_analysis(const char *input, const char **env);
+
+/* PARSING AND AST */
+/*ast_create_node.c*/
+t_ast		*create_command_node(t_token_type token_type, char **args);
+t_ast		*create_redireciton_node(t_token_type token_type, char *file_name);
+t_ast		*create_pipe_node(t_token_type token_type);
+t_ast		*create_logical_node(t_token_type token_type);
+/*ats_print.c*/
+void		print_ast(t_ast *head);
+/*ats_utils.c*/
+int			get_tokens_len(t_token **tokens);
+char		**copy_args(t_ast *node, char **src);
+void		append_node(t_ast **head, t_ast *new_node);
+void		clear_ast(void *head);
+int			is_redirection(t_token_type	token_type);
+/*parse_tokens.c*/
+t_ast		*parse_tokens(t_token **tokens);
+/*parser.c*/
+void		fill_args(char **args, int count, char *token_value, int *capacity);
+void		parse_word(t_ast **head, int *i, t_token **tokens);
+void		parse_logical_operator(t_ast **head, int *i, t_token **tokens);
+void		parse_redirection(t_ast **head, int *i, t_token **tokens);
+void		parse_pipe(t_ast **head, int *i, t_token **tokens);
 #endif

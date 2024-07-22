@@ -1,29 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:03 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/19 11:22:23 by anarama          ###   ########.fr       */
+/*   Created: 2024/07/07 19:18:13 by anarama           #+#    #+#             */
+/*   Updated: 2024/07/20 18:48:47 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(char const *str)
+void	ft_chdir(const char *path)
 {
-	size_t	i;
-
-	i = 0;
-	if (!str)
-		return (0);
-	while (*str++)
+	if (path == NULL)
 	{
-		i++;
-		if (i == SIZE_MAX)
-			break ;
+		path = getenv("HOME");
 	}
-	return (i);
+	if (chdir(path) == -1)
+	{
+		perror("cd");
+	}
+}
+
+void	ft_exit(void)
+{
+	lst_memory(NULL, NULL, CLEAN);
+	terminal_raw_mode_disable();
+	exit(0);
 }

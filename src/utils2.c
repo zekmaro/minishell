@@ -1,29 +1,52 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:03 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/19 11:22:23 by anarama          ###   ########.fr       */
+/*   Created: 2024/07/15 13:50:41 by anarama           #+#    #+#             */
+/*   Updated: 2024/07/20 18:49:55 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(char const *str)
+void	custom_memmove_strings(char **dest, char **src)
 {
-	size_t	i;
+	char	*temp;
+
+	temp = NULL;
+	while (*src)
+	{
+		temp = ft_strdup(*src); // protect it
+		if (!temp)
+		{
+			lst_memory(NULL, NULL, CLEAN);
+		}
+		free(*dest);
+		*dest = temp;
+		temp = NULL;
+		dest++;
+		src++;
+	}
+	while (*dest)
+	{
+		free(*dest);
+		*dest = NULL;
+		dest++;
+	}
+}
+
+int		get_tokens_count(char **tokens)
+{
+	int i;
 
 	i = 0;
-	if (!str)
-		return (0);
-	while (*str++)
+	while (*tokens)
 	{
+		tokens++;
 		i++;
-		if (i == SIZE_MAX)
-			break ;
 	}
 	return (i);
 }

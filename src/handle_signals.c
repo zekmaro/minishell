@@ -1,29 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   handle_signals.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:03 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/19 11:22:23 by anarama          ###   ########.fr       */
+/*   Created: 2024/07/07 14:28:41 by anarama           #+#    #+#             */
+/*   Updated: 2024/07/20 18:49:15 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(char const *str)
+void	handle_sigint(int sig)
 {
-	size_t	i;
-
-	i = 0;
-	if (!str)
-		return (0);
-	while (*str++)
+	if (sig == SIGINT)
 	{
-		i++;
-		if (i == SIZE_MAX)
-			break ;
+		g_signal_flag = 1;
 	}
-	return (i);
+}
+
+void	setup_signal_handlers(void)
+{
+	struct sigaction	sa;
+
+	bzero(&sa, sizeof(sa));
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = 0;
+	sa.sa_handler = handle_sigint;
+	sigaction(SIGINT, &sa, NULL);
+	sa.sa_handler = SIG_IGN;
+	sigaction(SIGQUIT, &sa, NULL);
+	sigaction(SIGTSTP, &sa, NULL);
 }

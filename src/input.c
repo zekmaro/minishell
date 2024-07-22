@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/02 16:01:03 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/19 11:22:23 by anarama          ###   ########.fr       */
+/*   Created: 2024/05/14 16:18:42 by vvobis            #+#    #+#             */
+/*   Updated: 2024/07/20 18:49:17 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../minishell.h"
 
-size_t	ft_strlen(char const *str)
+void	free_split(void *back)
 {
-	size_t	i;
+	char	**free_back;
 
-	i = 0;
-	if (!str)
-		return (0);
-	while (*str++)
+	if (!back)
+		return ;
+	free_back = (char **)back;
+	while (*free_back)
 	{
-		i++;
-		if (i == SIZE_MAX)
-			break ;
+		ft_free((void **)free_back);
+		free_back++;
 	}
-	return (i);
+	ft_free(&back);
+	return ;
 }
