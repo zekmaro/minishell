@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/23 13:56:41 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:57:20 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,11 +65,16 @@ void	command_execute(char const *command_path,
 
 int execute_command(t_ast *command)
 {
-    pid_t pid = fork();
+	int		status;
+    pid_t	pid;
+	int		fd;
+	
+	pid = fork();
+	fd = 0;
     if (pid == -1)
     {
         perror("fork");
-        exit(EXIT_FAILURE);
+        lst_memory(NULL, NULL, CLEAN);
     }
     else if (pid == 0)
     {
@@ -85,12 +90,7 @@ int execute_command(t_ast *command)
         }
 		if (command->file)
         {
-            int fd = open(command->file, command->flags, 0644);
-            if (fd == -1)
-            {
-                perror("open");
-                exit(EXIT_FAILURE);
-            }
+			ft_open(&fd, command->file, command->flags, 0644);
             if (command->std_fd == STDIN_FILENO)
             {
                 dup2(fd, STDIN_FILENO);
@@ -108,7 +108,6 @@ int execute_command(t_ast *command)
     }
     else
     {
-		int status;
         if (command->fd_in != 0)
         {
             close(command->fd_in);
@@ -131,8 +130,8 @@ int execute_command(t_ast *command)
 
 void execute_commands(t_ast *ast)
 {
-    t_ast	*current = ast;
-	int		exit_status;
+    t_ast		*current = ast;
+	static int	exit_status;
 
 	exit_status = 0;
     while (current)
@@ -167,13 +166,13 @@ void execute_commands(t_ast *ast)
     }
 }
 
-void	traverse_tree(t_ast	*ast)
+void	traverse_tree(t_ast	*ast, t_ast **head)
 {
 	while (ast)
 	{
 		if (ast->type == NODE_REDIRECTION)
 		{
-			handle_redir(ast);
+			handle_redir(ast, head);
 		}
 		else if (ast->type == NODE_PIPE)
 		{
@@ -187,30 +186,18 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 {
 	t_token	**tokens;
 	t_ast	*ast;
-	t_ast	*head;
 	int	original_stdin = dup(STDIN_FILENO);
 	int	original_stdout = dup(STDOUT_FILENO);
 
 	lst_memory((void *)input, free, ADD);
-	// ft_printf("%s\n", input);
 	tokens = lexical_analysis(input, env);
-	// printf("---TOKENS---\n");
-	// print_tokens(tokens);
-	// printf("------------\n");
+	//print_tokens(tokens);
 	ast = parse_tokens(tokens);
-	// head = ast;
-	// printf("----AST----\n");
 	// print_ast(ast);
-	// printf("-----------\n");
-	
-	traverse_tree(ast);
+	traverse_tree(ast, &ast);
+	// print_ast(ast);
 	execute_commands(ast);
 	restore_fd(original_stdin, original_stdout);
-	
-	// printf("----AST----\n");
-	// print_ast(head);
-	// printf("-----------\n");
+	// print_ast(ast);
 	return (NULL);
 }
-
-

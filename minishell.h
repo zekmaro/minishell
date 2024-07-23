@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/23 13:11:29 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:36:10 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,7 +280,7 @@ int			is_redirection(t_token_type	token_type);
 /* handle_pipes.c */
 void 	handle_pipe(t_ast *pipe_node);
 /*handle_redirs.c*/
-void		handle_redir(t_ast *redir_node);
+void		handle_redir(t_ast *redir_node, t_ast **head);
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token **tokens);
 /*parser.c*/

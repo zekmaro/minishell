@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:43:16 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 16:34:50 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 15:01:29 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,14 @@ void	print_tokens(t_token **tokens)
 	int	i;
 
 	i = 0;
+	printf("---TOKENS---\n");
 	while (tokens[i])
 	{
 		printf("Token: Type=%d, Value=%s\n",
 			tokens[i]->token_type, tokens[i]->token_value);
 		i++;
 	}
+	printf("------------\n");
 }
 
 void	copy_token_info(void **dest, t_token *src)

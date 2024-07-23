@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:48 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 15:16:26 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 15:00:37 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	print_ast(t_ast *head)
 
 	i = 0;
 	j = 0;
+	printf("----AST----\n");
 	while (head)
 	{
 		if (!head->is_done)
@@ -71,4 +72,5 @@ void	print_ast(t_ast *head)
 		}
 		head = head->right;
 	}
+	printf("-----------\n");
 }

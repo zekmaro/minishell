@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 12:06:16 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 17:03:37 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ char	**cat_args(char **left, char **right)
 	while (i < len_left)
 	{
 		new_arr[i] = ft_strdup(left[i]);
-		// not sure
 		i++;
 	}
 	i = 0;
@@ -36,7 +35,6 @@ char	**cat_args(char **left, char **right)
 		new_arr[i + len_left] = ft_strdup(right[i]);
 		i++;
 	}
-	//free_split(left);
 	return (new_arr);
 }
 
@@ -45,12 +43,10 @@ void	check_valid_redir(t_ast *redir_node)
 	if (!redir_node->file)
 	{
 		printf("minishell: syntax error near unexpected token 'newline'\n");
-		lst_memory(NULL, NULL, CLEAN);
 	}
 	else if (is_double_special(redir_node->file) || is_single_special(redir_node->file))
 	{
 		printf("minishell: syntax error near unexpected token '%s'\n", redir_node->file);
-		lst_memory(NULL, NULL, CLEAN);
 	}
 }
 
@@ -72,15 +68,17 @@ void	setup_flags_and_fds(t_ast *redir_node)
 		redir_node->left->std_fd = STDOUT_FILENO;
 	}
 }
-//repoint head to te beginnin?
 
-void	handle_redir(t_ast *redir_node)
+void	handle_redir(t_ast *redir_node, t_ast **head)
 {
-
 	check_valid_redir(redir_node);
 	if (redir_node->left == NULL)
 	{
-		redir_node->left = create_command_node(TOKEN_WORD, NULL);
+		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
+		lst_memory(temp, free, ADD);
+		temp->right = redir_node;
+		redir_node->left = temp;
+		*head = temp;
 	}
 	setup_flags_and_fds(redir_node);
 	redir_node->left->file = redir_node->file;
@@ -90,7 +88,4 @@ void	handle_redir(t_ast *redir_node)
 		redir_node->right->is_done = 1;
 	}
 	redir_node->is_done = 1;
-	// ft_open(&redir_node->left->fd_in, redir_node->file, flags, 0644);
-	// ft_dup2(redir_node->left->fd_in, std_fd, "dup2 redirections");
-	// ft_close(redir_node->left->fd_in, "close redirections");
 }

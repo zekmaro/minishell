@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 14:03:56 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 15:51:15 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ int	get_tokens_len(t_token **tokens)
 	int	i;
 
 	i = 0;
+	if (!tokens)
+		return (0);
 	while (*tokens)
 	{
 		i++;
