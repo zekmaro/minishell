@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 14:20:33 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 20:53:53 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,10 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 		{
 			handle_redir(ast);
 		}
-		// else if (ast->type == NODE_PIPE)
-		// {
-			
-		// }
+		else if (ast->type == NODE_PIPE)
+		{
+			handle_pipe(ast);
+		}
 		// else if (ast->type == NODE_LOGICAL_OPERATOR)
 		// {
 			

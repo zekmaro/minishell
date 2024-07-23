@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirs.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 15:15:27 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 20:39:34 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,6 @@ void	setup_flags_and_fds(t_ast *redir_node, int *flags, int *std_fd)
 		*std_fd = STDOUT_FILENO;
 	}
 }
-
 //repoint head to te beginnin?
 
 void	handle_redir(t_ast *redir_node)
@@ -90,9 +89,9 @@ void	handle_redir(t_ast *redir_node)
 	if (redir_node->right && redir_node->right->args)
 	{
 		redir_node->left->args = cat_args(redir_node->left->args, redir_node->right->args);
-		redir_node->is_done = 1;
 		redir_node->right->is_done = 1;
 	}
+	redir_node->is_done = 1;
 	// ft_open(&redir_node->left->fd_in, redir_node->file, flags, 0644);
 	// ft_dup2(redir_node->left->fd_in, std_fd, "dup2 redirections");
 	// ft_close(redir_node->left->fd_in, "close redirections");

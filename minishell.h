@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 15:15:19 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/22 20:53:02 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <errno.h>
+# include <signal.h>
 
 # define PROMPT_COMMAND_STACK_SIZE 6
 # define PROMPT_INPUT_BUFFER_SIZE 1024
@@ -49,6 +50,7 @@
 # define SCREEN_MAX "\033[9999;9999H"
 # define DEL 127
 # define EOT 4
+# define ESC 27
 
 # define SCREEN_DISBLE_WRAPPING "\033[?7l"
 # define SCREEN_ENABLE_WRAPPING "\033[?7h"
@@ -273,8 +275,9 @@ char		**copy_args(t_ast *node, char **src);
 void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);
+/* handle_pipes.c */
+void 	handle_pipe(t_ast *pipe_node);
 /*handle_redirs.c*/
-
 void		handle_redir(t_ast *redir_node);
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token **tokens);
