@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:38:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 20:58:00 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/22 21:38:21 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,25 +38,19 @@ t_token	create_token_double_quotes(const char **input, const char **env)
 {
 	t_token	temp_token;
 	char	*temp_str;
-	char	*new_input;
+	uint32_t	input_length;
 
-	new_input = NULL;
-	get_len_next_double_quote(*input + 1, env, &new_input);
-	if (!new_input)
+	temp_str = NULL;
+	input_length = get_len_next_double_quote(*input + 1, env, &temp_str);
+	if (!temp_str)
 	{
 		temp_str = ft_strchr(*input + 1, '\"');
 		if (temp_str)
-		{
 			*temp_str = 0;
-			temp_str = ft_strrchr(*input + 1, '\"');
-			*input += ft_strlen(*input) + 1;
-		}
-		temp_token = create_token(TOKEN_WORD, temp_str);
+		temp_str = (char *)*input;
 	}
-	else
-	{
-		temp_token = create_token(TOKEN_ENV, new_input);
-	}
+	temp_token = create_token(TOKEN_ENV, temp_str);
+	input += ft_strlen(*input) + 1;
 	return (temp_token);
 }
 
