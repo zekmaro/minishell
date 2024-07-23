@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/22 13:40:46 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/23 16:26:35 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ char	*environment_variable_get( const char *variable, \
 		if (ft_strncmp(variable_findable_name, environment[i], \
 						variable_length) == 0)
 		{
-			return (free(variable_findable_name), ft_strdup(environment[i] + variable_length));
+			return (free(variable_findable_name), (char *)environment[i] + variable_length);
 		}
 		i++;
 	}

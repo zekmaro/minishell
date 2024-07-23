@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 20:33:06 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/23 15:41:10 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ t_token	*initialise_tokens(uint32_t word_count)
 {
 	t_token	*tokens;
 
-	tokens = ft_calloc((word_count + 1), sizeof(t_token));
+	tokens = ft_calloc(word_count + 1, sizeof(t_token));
 	tokens[word_count].token_type = TOKEN_EOL;
 	lst_memory(tokens, free_tokens_arr, ADD);
 	return (tokens);
@@ -50,7 +50,7 @@ void	add_token_to_arr(t_token ***tokens, int *count,
 	(*count)++;
 }
 
-static uint32_t get_word_count(const char *input)
+static uint32_t	get_word_count(const char *input)
 {
 	uint32_t	i;
 	uint32_t	word_count;
@@ -61,16 +61,18 @@ static uint32_t get_word_count(const char *input)
 	word_count = 1;
 	while (input[i])
 	{
-		if (input[i] == ' ')
-			word_count++;
-		i++;
+		while (input[i] && ft_isspace(input[i]))
+			i++;
+		word_count++;
+		while (input[i] && !ft_isspace(input[i]))
+			i++;
 	}
 	return (word_count);
 }
 
 t_token	*lexical_analysis(const char *input, const char **env)
 {
-	t_token	*tokens;
+	t_token		*tokens;
 	uint32_t	i;
 
 	tokens = initialise_tokens(get_word_count(input));
@@ -83,5 +85,6 @@ t_token	*lexical_analysis(const char *input, const char **env)
 			break ;
 		tokens[i++] = check_symbol_and_create_token(&input, env);
 	}
+	tokens[i].token_type = TOKEN_EOL;
 	return (tokens);
 }

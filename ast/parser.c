@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 14:27:53 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/23 13:39:55 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	parse_word(t_ast **head, int *i, t_token *tokens)
 		lst_memory(NULL, NULL, CLEAN);
 	}
 	lst_memory(args, free_split, ADD);
-	while (tokens[*i].token_type != TOKEN_EOL && tokens[*i].token_type == TOKEN_WORD)
+	while (tokens[*i].token_type != TOKEN_EOL && (tokens[*i].token_type == TOKEN_WORD || tokens[*i].token_type == TOKEN_ENV))
 	{
 		fill_args(args, count, tokens[*i].token_value, &capacity);
 		count++;

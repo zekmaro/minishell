@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 11:35:48 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/23 16:45:19 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ void	setup(char **path_variable)
 		return (p_stderr(2, \
 				"No Valid Path Variable was Found in Environment.\nExiting\n", \
 				NULL), exit (1));
-	terminal_raw_mode_enable();
 	setup_signal_handlers();
 	ft_printf(SCREEN_CLEAR);
 	ft_printf(CURSOR_MOVE_HOME);
@@ -42,15 +41,12 @@ int	main(int argc, char **argv, const char **env)
 	prompt = prompt_create((const char **)environment);
 	while (1)
 	{
+		terminal_raw_mode_enable();
 		command_input = prompt_get(prompt);
 		if (g_signal_flag == 1 || !command_input)
 		{
 			if (g_signal_flag == 1)
-			{
-				ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
-				ft_putchar_fd('\n', 1);
-			}
-			g_signal_flag = 0;
+				g_signal_flag = 0;
 			continue ;
 		}
 		if (command_input && *command_input != '\n')
@@ -61,5 +57,4 @@ int	main(int argc, char **argv, const char **env)
 		prompt->history_position_current = prompt->history_count;
 		ft_free((void **)&command_input);
 	}
-	terminal_raw_mode_disable();
 }

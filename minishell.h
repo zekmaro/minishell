@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 20:30:06 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/23 16:59:26 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,10 +232,20 @@ int			ft_is_double_quote(char c, int *second_double_found);
 int			is_double_special(const char *input);
 t_token		create_token_double_special_symbol(char **input);
 
+/*quotes */
+char	*interpret_double_quotes(const char **command_input, const char **environement, t_token_type *type);
+uint32_t	determine_variables(const char *command_input);
+void	extract_variable(char **variable_pointers, \
+						const char *command_input, \
+						const char **environement, \
+						uint32_t variable_count);
+char	*extract_word(char *command_input, char **variable_pointers);
+char	*interpret_single_quote(const char *command_input);
+
 /*create_token_env_var.c*/
 int			is_env_var(const char *input);
 t_token		create_token_env_var(char **input, const char **env);
-char		*extract_variable(char *command_input, const char **environement);
+void		extract_variable(char **variable_counter, const char *command_input, const char **environement, uint32_t variable_count);
 
 /*create_token_quotes.c*/
 int			is_quote(const char *input);
