@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirs.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 20:39:34 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/23 12:06:16 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,37 +54,35 @@ void	check_valid_redir(t_ast *redir_node)
 	}
 }
 
-void	setup_flags_and_fds(t_ast *redir_node, int *flags, int *std_fd)
+void	setup_flags_and_fds(t_ast *redir_node)
 {
 	if (redir_node->token_type == TOKEN_REDIRECT_IN)
 	{
-		*flags = O_WRONLY | O_CREAT | O_TRUNC;
-		*std_fd = STDOUT_FILENO;
+		redir_node->left->flags = O_WRONLY | O_CREAT | O_TRUNC;
+		redir_node->left->std_fd = STDOUT_FILENO;
 	}
-	else if (redir_node->right->token_type == TOKEN_REDIRECT_OUT)
+	else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
 	{
-		*flags = O_RDONLY;
-		*std_fd = STDIN_FILENO;
+		redir_node->left->flags = O_RDONLY;
+		redir_node->left->std_fd = STDIN_FILENO;
 	}
-	else if (redir_node->right->token_type == TOKEN_REDIRECT_APPEND)
+	else if (redir_node->token_type == TOKEN_REDIRECT_APPEND)
 	{
-		*flags = O_WRONLY | O_CREAT | O_APPEND;
-		*std_fd = STDOUT_FILENO;
+		redir_node->left->flags = O_WRONLY | O_CREAT | O_APPEND;
+		redir_node->left->std_fd = STDOUT_FILENO;
 	}
 }
 //repoint head to te beginnin?
 
 void	handle_redir(t_ast *redir_node)
 {
-	int	flags;
-	int	std_fd;
 
 	check_valid_redir(redir_node);
 	if (redir_node->left == NULL)
 	{
 		redir_node->left = create_command_node(TOKEN_WORD, NULL);
 	}
-	setup_flags_and_fds(redir_node, &flags, &std_fd);
+	setup_flags_and_fds(redir_node);
 	redir_node->left->file = redir_node->file;
 	if (redir_node->right && redir_node->right->args)
 	{

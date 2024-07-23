@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 20:53:53 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/23 13:56:41 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,25 +63,112 @@ void	command_execute(char const *command_path,
 	}
 }
 
-void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
+int execute_command(t_ast *command)
 {
-	t_token	**tokens;
-	t_ast	*ast;
-	t_ast	*head;
-	int	original_stdin = dup(STDIN_FILENO);
-	int	original_stdout = dup(STDOUT_FILENO);
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    else if (pid == 0)
+    {
+        if (command->fd_in != 0)
+        {
+            dup2(command->fd_in, 0);
+            close(command->fd_in);
+        }
+        if (command->fd_out != 1)
+        {
+            dup2(command->fd_out, 1);
+            close(command->fd_out);
+        }
+		if (command->file)
+        {
+            int fd = open(command->file, command->flags, 0644);
+            if (fd == -1)
+            {
+                perror("open");
+                exit(EXIT_FAILURE);
+            }
+            if (command->std_fd == STDIN_FILENO)
+            {
+                dup2(fd, STDIN_FILENO);
+                close(fd);
+            }
+            else if (command->std_fd == STDOUT_FILENO)
+            {
+                dup2(fd, STDOUT_FILENO);
+                close(fd);
+            }
+        }
+        execvp(command->args[0], command->args);
+        perror("execvp");
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+		int status;
+        if (command->fd_in != 0)
+        {
+            close(command->fd_in);
+        }
+        if (command->fd_out != 1)
+        {
+            close(command->fd_out);
+        }
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status))
+        {
+            return WEXITSTATUS(status);
+        }
+        else
+        {
+            return (-1);
+        }
+    }
+}
 
-	lst_memory((void *)input, free, ADD);
-	ft_printf("%s\n", input);
-	tokens = lexical_analysis(input, env);
-	printf("---TOKENS---\n");
-	print_tokens(tokens);
-	printf("------------\n");
-	ast = parse_tokens(tokens);
-	head = ast;
-	printf("----AST----\n");
-	print_ast(ast);
-	printf("-----------\n");
+void execute_commands(t_ast *ast)
+{
+    t_ast	*current = ast;
+	int		exit_status;
+
+	exit_status = 0;
+    while (current)
+    {
+		if (current->type == NODE_COMMAND && !current->is_done)
+        {
+			if (!buildin_execute(current->args[0], current->args))
+            	exit_status = execute_command(current);
+        }
+		else if (current->type == NODE_LOGICAL_OPERATOR)
+		{
+			if (current->token_type == TOKEN_AND)
+			{
+				if (exit_status == 1)
+				{
+					if (current->right)
+						current = current->right->right;
+					continue ;
+				}
+			}
+			else if (current->token_type == TOKEN_OR)
+			{
+				if (exit_status == 0)
+				{
+					if (current->right)
+						current = current->right->right;
+					continue ;
+				}
+			}
+		}
+        current = current->right;
+    }
+}
+
+void	traverse_tree(t_ast	*ast)
+{
 	while (ast)
 	{
 		if (ast->type == NODE_REDIRECTION)
@@ -92,15 +179,37 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 		{
 			handle_pipe(ast);
 		}
-		// else if (ast->type == NODE_LOGICAL_OPERATOR)
-		// {
-			
-		// }
 		ast = ast->right;
 	}
-	printf("----AST----\n");
-	print_ast(head);
-	printf("-----------\n");
+}
+
+void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
+{
+	t_token	**tokens;
+	t_ast	*ast;
+	t_ast	*head;
+	int	original_stdin = dup(STDIN_FILENO);
+	int	original_stdout = dup(STDOUT_FILENO);
+
+	lst_memory((void *)input, free, ADD);
+	// ft_printf("%s\n", input);
+	tokens = lexical_analysis(input, env);
+	// printf("---TOKENS---\n");
+	// print_tokens(tokens);
+	// printf("------------\n");
+	ast = parse_tokens(tokens);
+	// head = ast;
+	// printf("----AST----\n");
+	// print_ast(ast);
+	// printf("-----------\n");
+	
+	traverse_tree(ast);
+	execute_commands(ast);
+	restore_fd(original_stdin, original_stdout);
+	
+	// printf("----AST----\n");
+	// print_ast(head);
+	// printf("-----------\n");
 	return (NULL);
 }
 

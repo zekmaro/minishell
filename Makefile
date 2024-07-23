@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+         #
+#    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/22 20:53:25 by andrejarama      ###   ########.fr        #
+#    Updated: 2024/07/23 13:40:37 by anarama          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 

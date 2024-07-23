@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 20:53:02 by andrejarama      ###   ########.fr       */
+/*   Updated: 2024/07/23 13:11:29 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@
 # define SCREEN_MAX "\033[9999;9999H"
 # define DEL 127
 # define EOT 4
-# define ESC 27
 
 # define SCREEN_DISBLE_WRAPPING "\033[?7l"
 # define SCREEN_ENABLE_WRAPPING "\033[?7h"
@@ -104,15 +103,18 @@ typedef struct s_ast
 {
     t_node_type		type;
 	t_token_type	token_type;
-    char 			**args;
-    struct s_ast	*left;
+	struct s_ast	*left;
     struct s_ast	*right;
+    char 			**args;
     char			*file;
-    int				fd_in;
-	int				fd_out;
 	char			*error_message;
 	char			*path;
+    int				fd_in;
+	int				fd_out;
+	int				std_fd;
+	int				flags;
 	int				is_done;
+	int				exit_status;
 } t_ast;
 
 
