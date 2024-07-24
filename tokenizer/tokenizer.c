@@ -6,13 +6,13 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 15:41:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:36:12 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_token	*initialise_tokens(uint32_t word_count)
+static t_token	*initialise_tokens(uint32_t word_count)
 {
 	t_token	*tokens;
 
@@ -35,19 +35,6 @@ static t_token	check_symbol_and_create_token(const char **input,
 		return (create_token_quotes(input, env));
 	else
 		return (create_token_word(input));
-}
-
-void	add_token_to_arr(t_token ***tokens, int *count,
-			t_token *temp_token, int *capacity)
-{
-	(*tokens)[*count] = temp_token;
-	if (*count + 1 >= *capacity)
-	{
-		*tokens = (t_token **)custom_realloc((void **)*tokens,
-				*capacity, *capacity * 2, 1);
-		*capacity *= 2;
-	}
-	(*count)++;
 }
 
 static uint32_t	get_word_count(const char *input)

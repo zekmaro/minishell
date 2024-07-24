@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/23 16:45:19 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/23 17:16:12 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ int	main(int argc, char **argv, const char **env)
 	prompt = prompt_create((const char **)environment);
 	while (1)
 	{
-		terminal_raw_mode_enable();
 		command_input = prompt_get(prompt);
 		if (g_signal_flag == 1 || !command_input)
 		{

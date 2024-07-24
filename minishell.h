@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/23 16:59:26 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:35:58 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,7 +281,6 @@ void		print_tokens(t_token *tokens);
 t_token		**custom_realloc(void **tokens, int old_capacity, int new_capacity, int add_to_lst);
 
 /*tokenizer.c*/
-t_token		*initialise_tokens(uint32_t word_count);
 t_token		*lexical_analysis(const char *input, const char **env);
 
 /* PARSING AND AST */
