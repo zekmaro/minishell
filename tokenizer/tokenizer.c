@@ -6,11 +6,24 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 10:40:32 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:59:57 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	free_tokens(void *token_ptr)
+{
+	t_token	*token;
+	uint32_t	i;
+
+	while (token[i].token_type != TOKEN_EOL)
+	{
+		if (token[i].token_type == TOKEN_ENV)
+			ft_free((void **)&token[i].token_value);
+	}
+	ft_free((void **)&token);
+}
 
 static t_token	*initialise_tokens(uint32_t word_count)
 {
@@ -18,7 +31,7 @@ static t_token	*initialise_tokens(uint32_t word_count)
 
 	tokens = ft_calloc(word_count + 1, sizeof(t_token));
 	tokens[word_count].token_type = TOKEN_EOL;
-	lst_memory(tokens, free_tokens_arr, ADD);
+	lst_memory(tokens, free_tokens, ADD);
 	return (tokens);
 }
 

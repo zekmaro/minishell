@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 10:40:15 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:50:01 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # include <signal.h>
 # include <readline/history.h>
 # include <errno.h>
+# include <signal.h>
 
 # define PROMPT_COMMAND_STACK_SIZE 6
 # define PROMPT_INPUT_BUFFER_SIZE 1024
@@ -105,14 +106,18 @@ typedef struct s_ast
 {
     t_node_type		type;
 	t_token_type	token_type;
-    char 			**args;
-    struct s_ast	*left;
+	struct s_ast	*left;
     struct s_ast	*right;
+    char 			**args;
     char			*file;
-    int				fd_in;
-	int				fd_out;
 	char			*error_message;
 	char			*path;
+    int				fd_in;
+	int				fd_out;
+	int				std_fd;
+	int				flags;
+	int				is_done;
+	int				exit_status;
 } t_ast;
 
 
@@ -299,6 +304,10 @@ char		**copy_args(t_ast *node, char **src);
 void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);
+/* handle_pipes.c */
+void 	handle_pipe(t_ast *pipe_node);
+/*handle_redirs.c*/
+void		handle_redir(t_ast *redir_node, t_ast **head);
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token *tokens);

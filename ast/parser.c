@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 13:39:55 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:53:08 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,11 @@ void	parse_redirection(t_ast **head, int *i, t_token *tokens)
 		(*i)++;
 		current_node = create_redireciton_node(tokens[*i].token_type,
 				tokens[*i].token_value);
+	}
+	else 
+	{
+		current_node = create_redireciton_node(tokens[*i - 1].token_type,
+				NULL);
 	}
 	append_node(head, current_node);
 }

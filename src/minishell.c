@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/23 17:16:12 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:51:30 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,6 @@ int	main(int argc, char **argv, const char **env)
 			prompt->history_entries[prompt->history_count++] = prompt->command;
 		}
 		prompt->history_position_current = prompt->history_count;
-		ft_free((void **)&command_input);
+		lst_memory(command_input, NULL, FREE);
 	}
 }
