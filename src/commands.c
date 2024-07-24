@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 10:50:32 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 12:25:59 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <fcntl.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
@@ -182,6 +183,8 @@ void	traverse_tree(t_ast	*ast, t_ast **head)
 	}
 }
 
+
+
 void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
 {
 	t_token	*tokens;
@@ -194,11 +197,11 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 	tokens = lexical_analysis(input, env);
 	//print_tokens(tokens);
 	ast = parse_tokens(tokens);
-	// print_ast(ast);
+	//print_ast(ast);
 	traverse_tree(ast, &ast);
-	// print_ast(ast);
+	//print_ast(ast);
 	execute_commands(ast);
 	restore_fd(original_stdin, original_stdout);
-	// print_ast(ast);
+	//print_ast(ast);
 	return (NULL);
 }
