@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:32 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:46:01 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,21 @@ static void	handle_new_character_to_input(	char **input,
 	(*cursor_position_current)++;
 }
 
-static uint8_t handle_single_char_input(char **input, char character, \
+static uint8_t	handle_single_char_input(char **input, char character, \
 										uint32_t cursor_position_current[2])
 {
 	uint32_t	input_length_current;
 
 	input_length_current = ft_strlen(*input);
-	if (ft_isprint(character))
-		handle_new_character_to_input(	input, character, \
+	if (g_signal_flag == 1)
+		return (ft_putstr_fd("\n", 1), ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1), 1);
+	else if (ft_isprint(character))
+		handle_new_character_to_input(input, character, \
 										&cursor_position_current[1], \
 										input_length_current);
 	else if (character == DEL)
-		handle_backspace(*input, &cursor_position_current[1], input_length_current);
+		handle_backspace(*input, &cursor_position_current[1], \
+						input_length_current);
 	else if (character == '\n')
 		return (ft_putstr_fd("\n", 1), ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1), 1);
 	else if (character == 4 && input_length_current == 0)
@@ -60,33 +63,29 @@ static void	handle_input(	t_prompt *prompt, \
 							char *input, \
 							uint32_t cursor_position_base)
 {
-	uint32_t	cursor_position_current[2];
-	char		character; 
+	uint32_t	cursor_position[2];
+	char		character;
 
-	cursor_position_get(cursor_position_current);
-	cursor_position_current[1] = 0;
+	cursor_position_get(cursor_position);
+	cursor_position[1] = 0;
 	while (1)
 	{
 		ft_read(0, &character, &input, 1);
-		if (g_signal_flag == 1)
-			return (lst_memory(input, NULL, FREE));
-		if (	(ft_isprint(character) || character == DEL \
-				|| character == '\n' || character == EOT) \
-				&& handle_single_char_input(&input, character, \
-											cursor_position_current))
-				break ;
+		if ((g_signal_flag == 1 || ft_isprint(character) || character == DEL \
+			|| character == '\n' || character == EOT) \
+			&& handle_single_char_input(&input, character, cursor_position))
+			break ;
 		else
 		{
 			if (character == ESC)
-				handle_escape_sequence(prompt, &input, &cursor_position_current[1]);
+				handle_escape_sequence(prompt, &input, &cursor_position[1]);
 			else if (character == '\t')
-				handle_tab(	&input, (const char **)prompt->env_ptr, \
-							&cursor_position_current[1]);
+				handle_tab(&input, (const char **)prompt->env_ptr, \
+							&cursor_position[1]);
 			cursor_position_restore();
 		}
-		prompt_refresh_line(input, (uint32_t [2]){	cursor_position_current[0], \
-													cursor_position_current[1] \
-													+ cursor_position_base});
+		prompt_refresh_line(input, (uint32_t [2]){cursor_position[0], \
+				cursor_position[1] + cursor_position_base});
 	}
 	prompt->command = input;
 }

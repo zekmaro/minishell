@@ -6,28 +6,25 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 16:44:02 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 09:22:22 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_token	*create_token_word(const char **input)
+t_token	create_token_word(const char **input)
 {
-	t_token	*temp_token;
-	int		temp;
-	char	*temp_str;
+	t_token	temp_token;
+	char	*temp_move;
 
-	temp_token = NULL;
-	temp = get_len_next_special_char(*input);
-	temp_str = ft_substr(*input, 0, temp);
-	if (!temp_str)
+	temp_move = ft_strchr(*input, ' ');
+	temp_token = create_token(TOKEN_WORD, *input);
+	if (temp_move)
 	{
-		perror("substr failed in single quote");
-		lst_memory(NULL, NULL, CLEAN);
+		*temp_move = 0;
+		*input = temp_move + 1;
 	}
-	lst_memory(temp_str, free, ADD);
-	temp_token = create_token(TOKEN_WORD, temp_str);
-	*input += temp;
+	else
+		*input = ft_strchr(*input, 0);
 	return (temp_token);
 }

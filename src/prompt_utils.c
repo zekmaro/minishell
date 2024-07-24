@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:38 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/23 16:08:08 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,12 @@ uint32_t	prompt_display(void)
 
 char	*prompt_get(t_prompt *prompt)
 {
+	terminal_raw_mode_enable();
 	prompt->prompt_length = prompt_display();
 	prompt_get_input(prompt);
 	if (!prompt->command || !*prompt->command)
 		return (NULL);
+	terminal_raw_mode_disable();
 	return (ft_strdup(prompt->command));
 }
 

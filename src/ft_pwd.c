@@ -6,17 +6,17 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 11:52:48 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:13 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 09:20:21 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_pwd(int fd, char **env)
+void	ft_pwd(int fd, const char **env)
 {
 	char	*pwd;
 
-	pwd = getenv("PWD");
+	pwd = environment_variable_get("PWD", env);
 	write(fd, pwd, ft_strlen(pwd));
 	write(fd, "\n", 1);
 }
