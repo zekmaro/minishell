@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 12:31:19 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 17:00:04 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,16 @@ typedef struct s_clean
 extern int32_t g_signal_flag;
 
 /* Builtins */
-void		ft_chdir(const char *path);
+int32_t		ft_echo(t_ast *node);
+void		ft_cd(const char **environment, const char **args);
+void		ft_pwd(int fd, const char **env);
+void		ft_env(const char **env);
+void		ft_unset(char **environment, const char **args);
+void		ft_export(char ***environment, const char **args);
 void		ft_exit();
 
 /* Commands */
-bool		buildin_execute(char const *command, char const **argv);
+bool		buildin_execute(t_ast *node, const char **environment);
 void 		command_execute(char const *command_path, char const *argv[], char const **env);
 void		*m_tokenizer(const char *input, const char **env, const char *path_variable);
 /* Handle signal */
@@ -214,15 +219,13 @@ void		custom_memmove_strings(char **dest, char **src);
 int			get_tokens_count(char **tokens);
 void		custom_free_split(char **arr);
 void		handle_dollar_sign(char **single_token, char **env);
-void		ft_echo(char **tokens, int fd);
-void		ft_pwd(int fd, const char **env);
-void		ft_env(char **env, int fd);
 
 /* Environment_variable */
 
 void		environment_variable_print(const char *variable, const char **environment);
-void		environment_print(char **environment);
+void		environment_print(const char **environment);
 char		**environment_create(const char **env);
+void		environment_variable_remove(char **environment, const char *variable);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
 char		*environment_variable_get(const char *variable, const char **environment);
 

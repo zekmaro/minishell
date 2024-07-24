@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 12:25:59 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 17:04:37 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,28 +21,21 @@ void	restore_fd(int original_stdin, int original_stdout)
 	close(original_stdout);
 }
 
-bool	buildin_execute(char const *command, char const **argv)
+bool	buildin_execute(t_ast *node, const char **environment)
 {
-	if (ft_strncmp(command, "exit\0", 5) == 0)
-		ft_exit();
-	else if (ft_strncmp(command, "cd\0", 3) == 0)
-	{
-		ft_chdir(argv[1]);
-		return (true);
-	}
-	// if (ft_strncmp(command, "echo", ft_strlen(command)) == 0)
-	// {
-	// 	ft_echo(argv, STDOUT_FILENO);
-	// }
-	// else if (ft_strncmp(tokens[0], "pwd", ft_strlen(tokens[0])) == 0)
-	// {
-	// 	ft_pwd(STDOUT_FILENO, env);
-	// }
-	// else if (ft_strncmp(tokens[0], "env", ft_strlen(tokens[0])) == 0)
-	// {
-	// 	ft_env(env, STDOUT_FILENO);
-	// }
-	return (false);
+	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
+		return (ft_echo(node), 1);
+	else if (ft_strncmp(node->args[0], "env", ft_strlen(node->args[0])) == 0)
+		return (ft_env(environment), 1);
+	else if (ft_strncmp(node->args[0], "cd", ft_strlen(node->args[0])) == 0)
+		return (ft_cd(environment, (const char **)node->args), 1);
+	else if (ft_strncmp(node->args[0], "unset", ft_strlen(node->args[0])) == 0)
+		return (ft_unset((char **)environment, (const char **)node->args), 1);
+	else if (ft_strncmp(node->args[0], "export", ft_strlen(node->args[0])) == 0)
+		return (ft_export((char ***)&environment, (const char **)node->args), 1);
+	else if (ft_strncmp(node->args[0], "exit", ft_strlen(node->args[0])) == 0)
+		return (lst_memory(NULL, NULL, END), 1);
+	return (0);
 }
 
 void	command_execute(char const *command_path,
@@ -129,7 +122,7 @@ int execute_command(t_ast *command)
     }
 }
 
-void execute_commands(t_ast *ast)
+void execute_commands(t_ast *ast, const char **environment)
 {
     t_ast		*current = ast;
 	static int	exit_status;
@@ -139,7 +132,7 @@ void execute_commands(t_ast *ast)
     {
 		if (current->type == NODE_COMMAND && !current->is_done)
         {
-			if (!buildin_execute(current->args[0], current->args))
+			if (!buildin_execute(current, environment))
             	exit_status = execute_command(current);
         }
 		else if (current->type == NODE_LOGICAL_OPERATOR)
@@ -183,8 +176,6 @@ void	traverse_tree(t_ast	*ast, t_ast **head)
 	}
 }
 
-
-
 void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
 {
 	t_token	*tokens;
@@ -200,7 +191,7 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 	//print_ast(ast);
 	traverse_tree(ast, &ast);
 	//print_ast(ast);
-	execute_commands(ast);
+	execute_commands(ast, env);
 	restore_fd(original_stdin, original_stdout);
 	//print_ast(ast);
 	return (NULL);

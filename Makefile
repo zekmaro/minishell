@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/24 11:36:52 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/24 17:03:02 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,8 +21,8 @@ BULDINDIR	:= builtin
 OBJDIR		:= obj
 TOKENDIR	:= tokenizer
 
-SRC			:=	src/arrowkeys.c src/builtins.c src/commands.c \
-				src/environment_variables.c src/escape_sequences.c \
+SRC			:=	src/arrowkeys.c src/commands.c src/environment_variables.c \
+				src/escape_sequences.c \
 				src/handle_signals.c src/input.c src/list_memory.c \
 				src/list.c src/minishell.c \
 				src/path_utils.c src/prompt_input.c src/prompt_string_management.c \
@@ -44,7 +44,9 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/quotes.c \
 				tokenizer/tokenizer.c
 
-BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c builtin/ft_pwd.c
+BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
+				builtin/ft_pwd.c builtin/ft_unset.c \
+				builtin/ft_export.c builtin/ft_exit.c
 
 TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 				src/environment_variables.c src/escape_sequences.c \
@@ -57,6 +59,7 @@ TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 # OBJECT FILES
 OBJ			:= $(SRC:%.c=$(OBJDIR)/%.o)
 AST_OBJ		:= $(AST_SRC:ast/%.c=$(OBJDIR)/ast/%.o)
+BUILDIN_OBJ	:= $(BUILDIN_SRC:builtin/%.c=$(OBJDIR)/builtin/%.o)
 TEST_OBJ	:= $(TEST_SRC:%.c=$(OBJDIR)/%.o)
 TOKEN_OBJ	:= $(TOKEN_SRC:tokenizer/%.c=$(OBJDIR)/tokenizer/%.o)
 
@@ -65,12 +68,12 @@ LIBS		:= libft/libft.a
 TEST_NAME	:= test
 
 # Create object directory if none exists
-$(shell mkdir -p $(OBJDIR) $(OBJDIR)/ast $(OBJDIR)/src $(OBJDIR)/tokenizer)
+$(shell mkdir -p $(OBJDIR) $(OBJDIR)/ast $(OBJDIR)/src $(OBJDIR)/tokenizer $(OBJDIR)/builtin)
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h
-	$(CC) $(CFLAGS) $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) -o $(NAME)
+$(NAME): $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ) $(LIBS) minishell.h
+	$(CC) $(CFLAGS) $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ) $(LIBS) -o $(NAME)
 
 test: $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h
 	$(CC) $(CFLAGS) $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) -o $(TEST_NAME)
@@ -86,6 +89,9 @@ fclean: clean
 re: fclean all
 
 $(OBJDIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/builtin/%.o: builtin/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)/ast/%.o: ast/%.c

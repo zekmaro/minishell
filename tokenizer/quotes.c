@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/23 16:55:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 18:03:49 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ char	*extract_word(char *command_input, char **variable_pointers)
 		i = 0;
 		while (*command_input && *command_input != '$')
 			*buffer++ = *command_input++;
-		command_input++;
+		if (*command_input)
+			command_input++;
 		while (variable_pointers[j] && variable_pointers[j][i])
 			*buffer++ = variable_pointers[j][i++];
 		while (*command_input && *command_input != ' ' && *command_input != '$')
@@ -121,8 +122,6 @@ char	*interpret_double_quotes(	const char **command_input, \
 		*type = TOKEN_WORD;
 		buffer = (char *)*command_input + 1;
 	}
-	*ft_strchr(*command_input + 1, 0) = '\"';
-	*command_input = ft_strchr(*command_input + 1, '\"');
-	**(char **)command_input = 0;
+	*command_input = ft_strchr(*command_input + 1, 0);
 	return ((*command_input)++, free(variable_pointers), buffer);
 }
