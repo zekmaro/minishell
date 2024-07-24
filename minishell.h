@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 10:35:58 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 10:40:15 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,7 @@ int			get_tokens_count(char **tokens);
 void		custom_free_split(char **arr);
 void		handle_dollar_sign(char **single_token, char **env);
 void		ft_echo(char **tokens, int fd);
-void		ft_pwd(int fd, char **env);
+void		ft_pwd(int fd, const char **env);
 void		ft_env(char **env, int fd);
 
 /* Environment_variable */
