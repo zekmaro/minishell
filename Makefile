@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/24 10:56:03 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/24 11:36:52 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,13 +17,14 @@ CFLAGS		:= -Wall -Wextra -g
 # DIRECTORIES
 SRCDIR		:= src
 ASTDIR		:= ast
+BULDINDIR	:= builtin
 OBJDIR		:= obj
 TOKENDIR	:= tokenizer
 
 SRC			:=	src/arrowkeys.c src/builtins.c src/commands.c \
 				src/environment_variables.c src/escape_sequences.c \
-				src/ft_echo.c src/ft_env.c src/ft_pwd.c src/handle_signals.c \
-				src/input.c src/list_memory.c src/list.c src/minishell.c \
+				src/handle_signals.c src/input.c src/list_memory.c \
+				src/list.c src/minishell.c \
 				src/path_utils.c src/prompt_input.c src/prompt_string_management.c \
 				src/prompt_utils.c src/tab_completion.c src/termios.c \
 				src/utils.c src/utils2.c
@@ -42,6 +43,8 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/string_utils.c \
 				tokenizer/quotes.c \
 				tokenizer/tokenizer.c
+
+BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c builtin/ft_pwd.c
 
 TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 				src/environment_variables.c src/escape_sequences.c \

@@ -6,11 +6,36 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 10:53:08 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 11:51:23 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void    **custom_realloc(void **args, int old_capacity, int new_capacity)
+{
+    int        i;
+    void    **new_args;
+
+    new_args = ft_calloc(new_capacity + 1, sizeof(void));
+    if (!new_args)
+    {
+        perror("Malloc failed while reallocing memory");
+        lst_memory(NULL, NULL, CLEAN);
+    }
+    i = 0;
+    while (i < old_capacity)
+    {
+        new_args[i] = ft_strdup(args[i]);
+        if (!new_args[i])
+        {
+            perror("Strdup failed while reallocing memory");
+            lst_memory(NULL, NULL, CLEAN);
+        }
+        i++;
+    }
+    return (new_args);
+}
 
 void	fill_args(char **args, int count, char *token_value, int *capacity)
 {
@@ -23,7 +48,7 @@ void	fill_args(char **args, int count, char *token_value, int *capacity)
 	if (count >= *capacity)
 	{
 		args = (char **)custom_realloc((void **)args,
-				*capacity, *capacity * 2, 0);
+				*capacity, *capacity * 2);
 		if (!args)
 		{
 			perror("calloc in parse tokens");
