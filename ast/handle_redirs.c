@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 11:58:28 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 13:39:46 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ void	handle_redir(t_ast *redir_node, t_ast **head)
 	}
 	setup_flags_and_fds(redir_node);
 	redir_node->left->file = redir_node->file;
-	print_ast(*head);
 	if (redir_node->right && redir_node->right->args)
 	{
 		redir_node->left->args = cat_args(redir_node->left->args, redir_node->right->args);
