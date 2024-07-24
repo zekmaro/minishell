@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 10:59:57 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 11:41:29 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,13 @@ void	free_tokens(void *token_ptr)
 	t_token	*token;
 	uint32_t	i;
 
+	token = token_ptr;
+	i = 0;
 	while (token[i].token_type != TOKEN_EOL)
 	{
 		if (token[i].token_type == TOKEN_ENV)
 			ft_free((void **)&token[i].token_value);
+		i++;
 	}
 	ft_free((void **)&token);
 }

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 17:03:37 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 11:58:28 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ char	**cat_args(char **left, char **right)
 	int		len_right;
 	int		i;
 
-	len_left = get_tokens_len((t_token **)left);
-	len_right = get_tokens_len((t_token **)right);
+	len_left = get_split_size((const char **)left);
+	len_right = get_split_size((const char **)right);
 	new_arr = ft_calloc(len_left + len_right + 1, sizeof(t_token *));
 	lst_memory(new_arr, free_split, ADD);
 	i = 0;
@@ -82,6 +82,7 @@ void	handle_redir(t_ast *redir_node, t_ast **head)
 	}
 	setup_flags_and_fds(redir_node);
 	redir_node->left->file = redir_node->file;
+	print_ast(*head);
 	if (redir_node->right && redir_node->right->args)
 	{
 		redir_node->left->args = cat_args(redir_node->left->args, redir_node->right->args);
