@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/23 16:28:56 by anarama          ###   ########.fr        #
+#    Updated: 2024/07/24 10:56:03 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,12 +20,12 @@ ASTDIR		:= ast
 OBJDIR		:= obj
 TOKENDIR	:= tokenizer
 
-SRC			:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
+SRC			:=	src/arrowkeys.c src/builtins.c src/commands.c \
 				src/environment_variables.c src/escape_sequences.c \
 				src/ft_echo.c src/ft_env.c src/ft_pwd.c src/handle_signals.c \
 				src/input.c src/list_memory.c src/list.c src/minishell.c \
 				src/path_utils.c src/prompt_input.c src/prompt_string_management.c \
-				src/prompt_utils.c src/redirections.c src/tab_completion.c src/termios.c \
+				src/prompt_utils.c src/tab_completion.c src/termios.c \
 				src/utils.c src/utils2.c
 
 AST_SRC		:=	ast/ast_create_node.c ast/ast_print.c ast/ast_utils.c \
@@ -39,8 +39,9 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_single_special_symbol.c \
 				tokenizer/create_token_word.c \
 				tokenizer/create_token.c \
-				tokenizer/env_utils.c tokenizer/string_utils.c \
-				tokenizer/token_utils.c tokenizer/tokenizer.c
+				tokenizer/string_utils.c \
+				tokenizer/quotes.c \
+				tokenizer/tokenizer.c
 
 TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 				src/environment_variables.c src/escape_sequences.c \
@@ -57,7 +58,7 @@ TEST_OBJ	:= $(TEST_SRC:%.c=$(OBJDIR)/%.o)
 TOKEN_OBJ	:= $(TOKEN_SRC:tokenizer/%.c=$(OBJDIR)/tokenizer/%.o)
 
 NAME		:= minishell
-LIBS		:= -Llibft -lft
+LIBS		:= libft/libft.a
 TEST_NAME	:= test
 
 # Create object directory if none exists
@@ -66,7 +67,6 @@ $(shell mkdir -p $(OBJDIR) $(OBJDIR)/ast $(OBJDIR)/src $(OBJDIR)/tokenizer)
 all: $(NAME)
 
 $(NAME): $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h
-	make -C libft all
 	$(CC) $(CFLAGS) $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) -o $(NAME)
 
 test: $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h

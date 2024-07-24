@@ -6,23 +6,20 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 15:51:15 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 10:52:08 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	get_tokens_len(t_token **tokens)
+int	get_tokens_len(t_token *tokens)
 {
 	int	i;
 
 	i = 0;
-	if (!tokens)
-		return (0);
-	while (*tokens)
+	while (tokens[i].token_type != TOKEN_EOL)
 	{
 		i++;
-		tokens++;
 	}
 	return (i);
 }
@@ -32,7 +29,7 @@ char	**copy_args(t_ast *node, char **src)
 	int		i;
 	char	**temp;
 
-	i = get_tokens_len((t_token **)src);
+	i = get_split_size((const char **)src);
 	node->args = ft_calloc(i + 1, sizeof(char *));
 	if (!node->args)
 	{

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/23 16:57:20 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 10:50:32 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,12 +184,13 @@ void	traverse_tree(t_ast	*ast, t_ast **head)
 
 void	*m_tokenizer(const char *input, const char **env, const char *path_variable)
 {
-	t_token	**tokens;
+	t_token	*tokens;
 	t_ast	*ast;
 	int	original_stdin = dup(STDIN_FILENO);
 	int	original_stdout = dup(STDOUT_FILENO);
 
 	lst_memory((void *)input, free, ADD);
+	(void)path_variable;
 	tokens = lexical_analysis(input, env);
 	//print_tokens(tokens);
 	ast = parse_tokens(tokens);

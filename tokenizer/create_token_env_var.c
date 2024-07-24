@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:37:49 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/21 17:24:45 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 09:22:04 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,25 +17,23 @@ int	is_env_var(const char *input)
 	return (*input == '$');
 }
 
-t_token	*create_token_env_var(const char **input, const char **env)
+t_token	create_token_env_var(char **input, const char **environement)
 {
-	t_token	*temp_token;
-	int		temp;
-	char	*temp_str;
+	char		**variable_pointers;
+	char		*buffer;
+	uint32_t	variable_count;
+	char		*temp_move;
 
-	temp_token = NULL;
-	if (**input == '$')
-	{
-		temp = get_len_next_space(*input + 1);
-		temp_str = ft_substr(*input + 1, 0, temp);
-		if (!temp_str)
-		{
-			perror("substr failed while expanding env var");
-			lst_memory(NULL, NULL, CLEAN);
-		}
-		handle_dollar_sign(&temp_str, (char **)env);
-		temp_token = create_token(TOKEN_WORD, temp_str);
-		*input += temp + 1;
-	}
-	return (temp_token);
+	variable_count = determine_variables(*input);
+	variable_pointers = ft_calloc(variable_count + 1, sizeof(char *));
+	temp_move = ft_strchr(*input, ' ');
+	if (temp_move)
+		*temp_move = 0;
+	extract_variable(variable_pointers, *input, environement, variable_count);
+	buffer = extract_word((char *)*input, variable_pointers);
+	if (temp_move)
+		*input = temp_move + 1;
+	else
+		*input = ft_strchr(*input, 0);
+	return (create_token(TOKEN_ENV, buffer));
 }
