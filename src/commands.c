@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/22 14:32:07 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 09:19:39 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 	t_token	*tokens;
 	t_ast	*ast;
 
+	(void)path_variable;
 	ft_printf("%s\n", input);
 	tokens = lexical_analysis(input, env);
 	printf("---TOKENS---\n");

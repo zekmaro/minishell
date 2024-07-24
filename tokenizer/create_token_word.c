@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 13:45:48 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 09:22:22 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ t_token	create_token_word(const char **input)
 {
 	t_token	temp_token;
 	char	*temp_move;
-	char	*temp_str;
 
 	temp_move = ft_strchr(*input, ' ');
 	temp_token = create_token(TOKEN_WORD, *input);

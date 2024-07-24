@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:43:16 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/22 14:00:31 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 09:22:41 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,6 @@ void	print_tokens(t_token *tokens)
 
 void	copy_token_info(t_token **dest, t_token *src)
 {
-	char	*temp;
-
 	**dest = create_token(src->token_type, src->token_value);
 	if (!*dest)
 	{
