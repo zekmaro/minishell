@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 16:18:42 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/24 10:51:18 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 12:07:46 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ uint32_t	get_split_size(const char **split)
 	uint32_t	i;
 
 	i = 0;
+	if (!split)
+		return (0);
 	while (split[i])
 		i++;
 	return (i);
