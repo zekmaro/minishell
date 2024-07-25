@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/25 14:46:11 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 20:00:37 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,27 +52,29 @@ void	check_valid_redir(t_ast *redir_node, int *error_catched)
 	}
 }
 
-void	setup_flags_and_fds(t_ast *redir_node)
+void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
 {
 	if (redir_node->token_type == TOKEN_REDIRECT_IN)
 	{
-		redir_node->left->flags = O_WRONLY | O_CREAT | O_TRUNC;
-		redir_node->left->std_fd = STDOUT_FILENO;
+		command_node->flags = O_WRONLY | O_CREAT | O_TRUNC;
+		command_node->std_fd = STDOUT_FILENO;
 	}
 	else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
 	{
-		redir_node->left->flags = O_RDONLY;
-		redir_node->left->std_fd = STDIN_FILENO;
+		command_node->flags = O_RDONLY;
+		command_node->std_fd = STDIN_FILENO;
 	}
 	else if (redir_node->token_type == TOKEN_REDIRECT_APPEND)
 	{
-		redir_node->left->flags = O_WRONLY | O_CREAT | O_APPEND;
-		redir_node->left->std_fd = STDOUT_FILENO;
+		command_node->flags = O_WRONLY | O_CREAT | O_APPEND;
+		command_node->std_fd = STDOUT_FILENO;
 	}
 }
 
 void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 {
+	t_ast	*save_ptr_left;
+
 	check_valid_redir(redir_node, error_catched);
 	if (*error_catched)
 		return ;
@@ -84,12 +86,36 @@ void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 		redir_node->left = temp;
 		*head = temp;
 	}
-	setup_flags_and_fds(redir_node);
-	redir_node->left->file = redir_node->file;
-	if (redir_node->right && redir_node->right->args)
+	while (redir_node->left)
 	{
-		redir_node->left->args = cat_args(redir_node->left->args, redir_node->right->args);
-		redir_node->right->is_done = 1;
+		if (redir_node->left->type == NODE_COMMAND && !redir_node->left->is_done)
+			break ;
+		redir_node->left = redir_node->left->left;
 	}
+	save_ptr_left = redir_node->left;
+	printf("CHECK HEAD\n");
+	print_ast(save_ptr_left);
+	printf("----------\n");
+	printf("CURRENT NODE FILE %s\n", redir_node->file);
 	redir_node->is_done = 1;
+	while (redir_node && redir_node->type == NODE_REDIRECTION)
+	{
+		printf("token type %d\n", redir_node->token_type);
+		setup_flags_and_fds(redir_node, save_ptr_left);
+		if (save_ptr_left->fd_file)
+		{
+			ft_close(save_ptr_left->fd_file, "redir");
+			save_ptr_left->fd_file = 0;
+		}
+		save_ptr_left->file = redir_node->file;
+		ft_open(&save_ptr_left->fd_file, redir_node->file,
+			save_ptr_left->flags, 0644);
+		if (redir_node->right && redir_node->right->args && !redir_node->right->is_done)
+		{
+			save_ptr_left->args = cat_args(save_ptr_left->args, redir_node->right->args);
+			redir_node->right->is_done = 1;
+		}
+		redir_node->is_done = 1;
+		redir_node = redir_node->right;
+	}
 }

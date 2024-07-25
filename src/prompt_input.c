@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/23 16:46:01 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 15:05:46 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static uint8_t	handle_single_char_input(char **input, char character, \
 	else if (character == '\n')
 		return (ft_putstr_fd("\n", 1), ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1), 1);
 	else if (character == 4 && input_length_current == 0)
-		return (ft_putstr_fd("\n", 1), lst_memory(NULL, NULL, CLEAN), 0);
+		return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(), lst_memory(NULL, NULL, CLEAN), 0);
 	return (0);
 }
 

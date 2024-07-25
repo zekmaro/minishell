@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 15:01:15 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 18:23:57 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,93 +51,11 @@ void	command_execute(const char *command_path,
 	}
 }
 
-void	redirect_fd_into_file(t_ast *command)
-{
-	int	fd;
-
-	fd = 0;
-	ft_open(&fd, command->file, command->flags, 0644);
-	if (command->std_fd == STDIN_FILENO)
-	{
-		dup2(fd, STDIN_FILENO);
-		close(fd);
-	}
-	else if (command->std_fd == STDOUT_FILENO)
-	{
-		dup2(fd, STDOUT_FILENO);
-		close(fd);
-	}
-}
-
-void	handle_fds_child_proccess(t_ast *command)
-{
-	if (command->fd_in != 0)
-	{
-		dup2(command->fd_in, 0);
-		close(command->fd_in);
-	}
-	if (command->fd_out != 1)
-	{
-		dup2(command->fd_out, 1);
-		close(command->fd_out);
-	}
-	if (command->file)
-	{
-		redirect_fd_into_file(command);
-	}
-}
-
-void	handle_fds_parent_proccess(t_ast *command)
-{
-	if (command->fd_in != 0)
-	{
-		close(command->fd_in);
-	}
-	if (command->fd_out != 1)
-	{
-		close(command->fd_out);
-	}
- 	if (command->file)
-	{
-		redirect_fd_into_file(command);
-	}
-}
-
-int	execute_command(t_ast *command, const char **env)
-{
-	int		status;
-	pid_t	pid;
-
-	ft_fork(&pid, "execute command");
-	if (pid == 0)
-	{
-		handle_fds_child_proccess(command);
-		execve(command->path, command->args, (char **)env);
-		perror("execve");
-		exit(EXIT_FAILURE);
-	}
-	else
-	{
-		handle_fds_parent_proccess(command);
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-		{
-			return (WEXITSTATUS(status));
-		}
-	}
-	return (-1);
-}
-
 void	execute_commands(t_ast *ast, const char *path_variable,
 					const char **env)
 {
 	static int	exit_status;
 	t_ast		*current;
-	int		original_stdin;
-	int		original_stdout;
-
-	original_stdin = dup(STDIN_FILENO);
-	original_stdout = dup(STDOUT_FILENO);
 
 	exit_status = 0;
 	current = ast;
@@ -145,15 +63,7 @@ void	execute_commands(t_ast *ast, const char *path_variable,
 	{
 		if (current->type == NODE_COMMAND && !current->is_done)
 		{
-			if (!buildin_execute(current->args[0],
-					(const char **)current->args))
-			{
-				current->path = find_absolute_path(path_variable,
-						current->args[0]);
-				exit_status = execute_command(current, env);
-				if (current->file)
-					restore_fd(original_stdin, original_stdout);
-			}
+			handle_command(current, path_variable, env, &exit_status);
 		}
 		else if (current->type == NODE_LOGICAL_OPERATOR)
 		{
