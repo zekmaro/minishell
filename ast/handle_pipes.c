@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 20:49:34 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/24 20:58:35 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 12:47:23 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,17 @@ void handle_pipe(t_ast *pipe_node)
         perror("pipe");
         lst_memory(NULL, NULL, CLEAN);
     }
-	if (pipe_node->left && pipe_node->left->type == NODE_COMMAND
-		&& pipe_node->right && pipe_node->right->type == NODE_COMMAND)
+	if (pipe_node->left && pipe_node->right)
     {
+		while (pipe_node->left && pipe_node->left->token_type != NODE_COMMAND)
+		{
+			pipe_node->left = pipe_node->left->left;
+		}
         pipe_node->left->fd_out = pipe_fd[1];
+		while (pipe_node->right && pipe_node->right->token_type != NODE_COMMAND)
+		{
+			pipe_node->right = pipe_node->right->right;
+		}
 		pipe_node->right->fd_in = pipe_fd[0];
     }
 	else

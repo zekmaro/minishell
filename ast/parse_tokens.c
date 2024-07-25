@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 10:52:37 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:58:52 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,11 @@ t_ast	*parse_tokens(t_token *tokens)
 	{
 		if (tokens[i].token_type == TOKEN_WORD || tokens[i].token_type == TOKEN_ENV)
 		{
+			if (*tokens[i].token_value == 0)
+			{
+				i++;
+				continue ;
+			}
 			parse_word(&head, &i, tokens);
 		}
 		else if (tokens[i].token_type == TOKEN_AND

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 18:05:15 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 12:37:39 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,12 @@ void	handle_fds_child_proccess(t_ast *command)
 		dup2(command->fd_in, 0);
 		close(command->fd_in);
 	}
-	else if (command->fd_out != 1)
+	if (command->fd_out != 1)
 	{
 		dup2(command->fd_out, 1);
 		close(command->fd_out);
 	}
-	else if (command->file)
+	if (command->file)
 	{
 		redirect_fd_into_file(command);
 	}
@@ -93,9 +93,13 @@ void	handle_fds_parent_proccess(t_ast *command)
 	{
 		close(command->fd_in);
 	}
-	else if (command->fd_out != 1)
+	if (command->fd_out != 1)
 	{
 		close(command->fd_out);
+	}
+ 	if (command->file)
+	{
+		redirect_fd_into_file(command);
 	}
 }
 
@@ -194,6 +198,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	original_stdout = dup(STDOUT_FILENO);
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
+	print_tokens(tokens);
 	ast = parse_tokens(tokens);
 	print_ast(ast);
 	traverse_tree(ast, &ast);
