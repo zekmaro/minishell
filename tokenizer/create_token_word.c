@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 18:09:54 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 23:15:05 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,9 @@ t_token	expand_wildcard(const char **input)
 	if (input_path)
 	{
 		*input = input_path + 1;
-		*input_path = 0;
 		input_path = tmp;
-		*ft_strrchr(*input, '*') = 0;
-		copy_matches(input_path, *input, &directory_entries);
+		ft_putendl_fd(input_path, 1);
+		copy_matches("./builtin", *input, &directory_entries);
 	}
 	else
 	{
@@ -107,16 +106,17 @@ t_token	create_token_word(const char **input)
 	t_token	temp_token;
 	char	*temp_move;
 
-	if (ft_strchr(*input, '*'))
-		return (expand_wildcard(input));
 	temp_move = ft_strchr(*input, ' ');
 	temp_token = create_token(TOKEN_WORD, *input);
 	if (temp_move)
 	{
 		*temp_move = 0;
-		*input = temp_move + 1;
+		temp_move = (char *)*input;
+		*input = ft_strchr(*input, 0) + 1;
 	}
 	else
 		*input = ft_strchr(*input, 0);
+	if (temp_move && ft_strchr(temp_move, '*'))
+		return (expand_wildcard((const char **)&temp_move));
 	return (temp_token);
 }

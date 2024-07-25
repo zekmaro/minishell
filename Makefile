@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/24 17:03:02 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/24 22:48:07 by victor           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,8 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 
 BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_pwd.c builtin/ft_unset.c \
-				builtin/ft_export.c builtin/ft_exit.c
+				builtin/ft_export.c builtin/ft_exit.c \
+				builtin/ft_cd.c
 
 TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 				src/environment_variables.c src/escape_sequences.c \
@@ -80,10 +81,9 @@ test: $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h
 
 clean:
 	make clean -C libft
-	rm -f $(OBJ) $(AST_OBJ) $(TEST_OBJ) $(TOKEN_OBJ)
+	rm -f $(OBJ) $(AST_OBJ) $(TEST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ)
 
 fclean: clean
-	make fclean -C libft
 	rm -f $(NAME) $(TEST_NAME)
 
 re: fclean all

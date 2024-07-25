@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 17:00:04 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/24 22:49:51 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ extern int32_t g_signal_flag;
 /* Builtins */
 int32_t		ft_echo(t_ast *node);
 void		ft_cd(const char **environment, const char **args);
-void		ft_pwd(int fd, const char **env);
+void		ft_pwd(const char **env);
 void		ft_env(const char **env);
 void		ft_unset(char **environment, const char **args);
 void		ft_export(char ***environment, const char **args);
