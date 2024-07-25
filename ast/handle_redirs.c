@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/25 20:00:37 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 20:34:08 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,6 @@ void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 		redir_node->left = redir_node->left->left;
 	}
 	save_ptr_left = redir_node->left;
-	printf("CHECK HEAD\n");
-	print_ast(save_ptr_left);
-	printf("----------\n");
-	printf("CURRENT NODE FILE %s\n", redir_node->file);
 	redir_node->is_done = 1;
 	while (redir_node && redir_node->type == NODE_REDIRECTION)
 	{
