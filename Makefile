@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/25 12:47:26 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/25 14:00:56 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,15 +21,15 @@ BULDINDIR	:= builtin
 OBJDIR		:= obj
 TOKENDIR	:= tokenizer
 
-SRC			:=	src/arrowkeys.c src/commands.c src/environment_variables.c \
-				src/escape_sequences.c \
+SRC			:=	src/commands.c src/environment_variables.c \
 				src/handle_signals.c src/input.c src/list_memory.c \
 				src/list.c src/minishell.c \
 				src/path_utils.c src/termios.c \
 				src/utils.c src/utils2.c
 
 PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
-				prompt/prompt_utils.c prompt/tab_completion.c
+				prompt/prompt_utils.c prompt/tab_completion.c \
+				prompt/escape_sequences.c prompt/arrowkeys.c \
 
 AST_SRC		:=	ast/ast_create_node.c ast/ast_print.c ast/ast_utils.c \
 				ast/parse_tokens.c ast/parser.c ast/handle_redirs.c \

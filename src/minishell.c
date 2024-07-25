@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 10:47:18 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 19:19:33 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <sys/ioctl.h>
 
 int32_t	g_signal_flag;
 
@@ -51,7 +52,8 @@ int	main(int argc, char **argv, const char **env)
 		if (command_input && *command_input != '\n')
 		{
 			m_tokenizer(command_input, (const char **)environment, path_variable);
-			prompt->history_entries[prompt->history_count++] = prompt->command;
+			if (*command_input)
+				prompt->history_entries[prompt->history_count++] = prompt->command;
 		}
 		prompt->history_position_current = prompt->history_count;
 		lst_memory(command_input, NULL, FREE);

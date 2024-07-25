@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/25 12:57:45 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 19:26:47 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static void	handle_new_character_to_input(	char **input,
 											uint32_t *cursor_position_current,
 											uint32_t prompt_length_current)
 {
-	prompt_buffer_size_manage(input, ft_strlen(*input) * 2);
+	prompt_buffer_size_manage(input, ft_strlen(*input), ft_strlen(*input) * 2);
 	if (*cursor_position_current < prompt_length_current)
 		ft_memmove(&(*input)[*cursor_position_current + 1], \
 					&(*input)[*cursor_position_current], \
@@ -52,11 +52,11 @@ static uint8_t	handle_single_char_input(char **input, char character, \
 										input_length_current);
 	else if (character == DEL)
 		handle_backspace(*input, &cursor_position_current[1], \
-						input_length_current);
+							input_length_current);
 	else if (character == '\n')
 		return (ft_putstr_fd("\n", 1), ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1), 1);
-	else if (character == 4 && input_length_current == 0)
-		return (ft_putstr_fd("\n", 1), lst_memory(NULL, NULL, CLEAN), 0);
+	else if (character == EOT && input_length_current == 0)
+		return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(), lst_memory(NULL, NULL, CLEAN), 1);
 	return (0);
 }
 
@@ -72,9 +72,7 @@ static void	handle_input(	t_prompt *prompt, \
 	while (1)
 	{
 		ft_read(0, &character, &input, 1);
-		if ((g_signal_flag == 1 || ft_isprint(character) || character == DEL \
-			|| character == '\n' || character == EOT) \
-			&& handle_single_char_input(&input, character, cursor_position))
+		if (handle_single_char_input(&input, character, cursor_position))
 			break ;
 		else
 		{
@@ -84,8 +82,8 @@ static void	handle_input(	t_prompt *prompt, \
 				handle_tab(&input, (const char **)prompt->env_ptr, \
 							&cursor_position[1]);
 		}
-		prompt_refresh_line(input, (uint32_t [2]){cursor_position[0], \
-				cursor_position[1] + cursor_position_base});
+		prompt_refresh_line(input, cursor_position_base, (uint32_t [2]){cursor_position[0], \
+							cursor_position[1]});
 	}
 	prompt->command = input;
 }
@@ -98,7 +96,6 @@ char	*prompt_get_input(t_prompt *prompt)
 	cursor_position_base = prompt->prompt_length + 1;
 	input = ft_calloc(PROMPT_INPUT_BUFFER_SIZE, sizeof(*input));
 	lst_memory(input, free, ADD);
-	cursor_position_save();
 	handle_input(prompt, input, cursor_position_base);
 	return (input);
 }

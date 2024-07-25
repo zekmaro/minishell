@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 11:51:49 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 16:12:11 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ bool	buildin_execute(t_ast *node, const char **environment)
 	if (node->args[0] && !*node->args[0])
 		return (false);
 	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
-		return (ft_echo(node), 1);
+		return (ft_echo(node->args), 1);
 	else if (ft_strncmp(node->args[0], "env", ft_strlen(node->args[0])) == 0)
 		return (ft_env(environment), 1);
 	else if (ft_strncmp(node->args[0], "cd", ft_strlen(node->args[0])) == 0)

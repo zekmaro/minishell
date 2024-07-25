@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:02:39 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 18:48:41 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 19:12:47 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	handle_arrow_key_up(	t_prompt *prompt,
 			prompt->history_entries[prompt_history_count] == 0)
 		prompt->history_entries[prompt_history_count] = *input;
 	*input = prompt->history_entries[--prompt->history_position_current];
-	*cursor_position_current = ft_strlen(*input);
+	*cursor_position_current = 0;
 }
 
 static void	handle_arrow_key_down(	t_prompt *prompt,
@@ -34,7 +34,7 @@ static void	handle_arrow_key_down(	t_prompt *prompt,
 									uint32_t *cursor_position_current)
 {
 	*input = prompt->history_entries[++prompt->history_position_current];
-	*cursor_position_current = ft_strlen(*input);
+	*cursor_position_current = 0;
 }
 
 static void	handle_arrow_key_right(	uint32_t *cursor_position_current,
@@ -43,7 +43,6 @@ static void	handle_arrow_key_right(	uint32_t *cursor_position_current,
 	if (*cursor_position_current >= prompt_length_current)
 		return ;
 	(*cursor_position_current)++;
-	ft_printf(CURSOR_MOVE_RIGHT);
 }
 
 static void	handle_arrow_key_left(	uint32_t *cursor_position_current)
@@ -51,12 +50,11 @@ static void	handle_arrow_key_left(	uint32_t *cursor_position_current)
 	if (*cursor_position_current <= 0)
 		return ;
 	(*cursor_position_current)--;
-	ft_printf(CURSOR_MOVE_LEFT);
 }
 
 uint8_t	handle_escape_sequence(	t_prompt *prompt,
-											char	**input,
-											uint32_t *cursor_position_current)
+								char	**input,
+								uint32_t *cursor_position_current)
 {
 	char		escape_sequence[2];
 	uint32_t	prompt_length_current;

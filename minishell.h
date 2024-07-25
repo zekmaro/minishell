@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 12:22:08 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 16:41:37 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # include <signal.h>
 
 # define PROMPT_COMMAND_STACK_SIZE 6
-# define PROMPT_INPUT_BUFFER_SIZE 1024
+# define PROMPT_INPUT_BUFFER_SIZE 4096
 # define CURSOR_MOVE_HOME "\033[H"
 # define GREEN "\033[0;32m"
 # define RESET "\033[0m"
@@ -138,8 +138,9 @@ typedef struct s_clean
 
 extern int32_t g_signal_flag;
 
+void set_non_blocking();
 /* Builtins */
-int32_t		ft_echo(t_ast *node);
+int32_t		ft_echo(char **args);
 void		ft_cd(const char **environment, const char **args);
 void		ft_pwd(const char **env);
 void		ft_env(const char **env);
@@ -184,12 +185,12 @@ void		cursor_position_get(uint32_t cursor_position[2]);
 void		cursor_position_save(void);
 void		cursor_position_restore(void);
 
-uint8_t		handle_escape_sequence(t_prompt *prompt, char **input, uint32_t *cursor_position_current);
+uint8_t		handle_escape_sequence(t_prompt *prompt, char **input, uint32_t cursor_position_current[2]);
 char		*prompt_get_input(t_prompt *prompt);
 
 /* Prompt Buffer Management */
-void		prompt_refresh_line(char *input, uint32_t cursor_position_current[2]);
-void		prompt_buffer_size_manage(char **input, uint32_t input_new_size);
+void		prompt_refresh_line(char *input, uint32_t cursor_position_base, uint32_t cursor_position_current[2]);
+void		prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t input_new_size);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 
 /* Redirections */
