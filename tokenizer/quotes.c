@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/24 18:03:49 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:44:05 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ void	extract_variable(char **variable_pointers, \
 	{
 		i = 0;
 		tmp = ft_strchr(tmp, '$');
+		if (!tmp)
+			return ;
 		tmp++;
 		while (tmp[i] && tmp[i] != '$' && tmp[i] != ' ')
 			i++;

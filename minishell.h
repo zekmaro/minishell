@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 22:49:51 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/25 12:22:08 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,6 @@ char		*find_absolute_path(const char *path_variable, char *input);
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
-uint32_t	prompt_display();
 t_prompt	*prompt_create(const char **env);
 char		*prompt_get(t_prompt *prompt);
 

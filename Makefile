@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/24 22:48:07 by victor           ###   ########.fr        #
+#    Updated: 2024/07/25 12:47:26 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,9 +25,11 @@ SRC			:=	src/arrowkeys.c src/commands.c src/environment_variables.c \
 				src/escape_sequences.c \
 				src/handle_signals.c src/input.c src/list_memory.c \
 				src/list.c src/minishell.c \
-				src/path_utils.c src/prompt_input.c src/prompt_string_management.c \
-				src/prompt_utils.c src/tab_completion.c src/termios.c \
+				src/path_utils.c src/termios.c \
 				src/utils.c src/utils2.c
+
+PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
+				prompt/prompt_utils.c prompt/tab_completion.c
 
 AST_SRC		:=	ast/ast_create_node.c ast/ast_print.c ast/ast_utils.c \
 				ast/parse_tokens.c ast/parser.c ast/handle_redirs.c \
@@ -61,20 +63,21 @@ TEST_SRC	:=	src/arrowkeys.c src/builtins.c src/commands.c src/dollar_sign.c \
 OBJ			:= $(SRC:%.c=$(OBJDIR)/%.o)
 AST_OBJ		:= $(AST_SRC:ast/%.c=$(OBJDIR)/ast/%.o)
 BUILDIN_OBJ	:= $(BUILDIN_SRC:builtin/%.c=$(OBJDIR)/builtin/%.o)
+PROMPT_OBJ	:= $(PROMPT_SRC:prompt/%.c=$(OBJDIR)/prompt/%.o)
 TEST_OBJ	:= $(TEST_SRC:%.c=$(OBJDIR)/%.o)
 TOKEN_OBJ	:= $(TOKEN_SRC:tokenizer/%.c=$(OBJDIR)/tokenizer/%.o)
 
 NAME		:= minishell
-LIBS		:= libft/libft.a
+LIBS		:= libft/libft.a -lreadline
 TEST_NAME	:= test
 
 # Create object directory if none exists
-$(shell mkdir -p $(OBJDIR) $(OBJDIR)/ast $(OBJDIR)/src $(OBJDIR)/tokenizer $(OBJDIR)/builtin)
+$(shell mkdir -p $(OBJDIR) $(OBJDIR)/ast $(OBJDIR)/src $(OBJDIR)/tokenizer $(OBJDIR)/builtin $(OBJDIR)/prompt)
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ) $(LIBS) minishell.h
-	$(CC) $(CFLAGS) $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ) $(LIBS) -o $(NAME)
+$(NAME): $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ) $(PROMPT_OBJ) $(LIBS) minishell.h
+	$(CC) $(CFLAGS) $(OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ) $(PROMPT_OBJ) $(LIBS) -o $(NAME)
 
 test: $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h
 	$(CC) $(CFLAGS) $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) -o $(TEST_NAME)
@@ -92,6 +95,9 @@ $(OBJDIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)/builtin/%.o: builtin/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/prompt/%.o: prompt/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)/ast/%.o: ast/%.c

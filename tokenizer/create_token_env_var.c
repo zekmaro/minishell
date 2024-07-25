@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:37:49 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 09:22:04 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/25 11:55:54 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,6 @@ t_token	create_token_env_var(char **input, const char **environement)
 		*input = temp_move + 1;
 	else
 		*input = ft_strchr(*input, 0);
+	free_split(variable_pointers);
 	return (create_token(TOKEN_ENV, buffer));
 }

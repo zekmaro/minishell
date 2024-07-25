@@ -2,13 +2,13 @@
 
 int main()
 {
-	DIR *dir = opendir("builtin");
+	char c;
 
+	terminal_raw_mode_enable();
 	while (1)
 	{
-		struct dirent *entry = readdir(dir);
-		if (!entry)
-			break ;
-		ft_putendl_fd(entry->d_name, 1);
+		read(1, &c, 1);
+		printf("%d\n", c);
 	}
+	terminal_raw_mode_disable();
 }
