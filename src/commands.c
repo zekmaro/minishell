@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 12:37:39 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 15:01:15 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,11 @@ void	execute_commands(t_ast *ast, const char *path_variable,
 {
 	static int	exit_status;
 	t_ast		*current;
+	int		original_stdin;
+	int		original_stdout;
+
+	original_stdin = dup(STDIN_FILENO);
+	original_stdout = dup(STDOUT_FILENO);
 
 	exit_status = 0;
 	current = ast;
@@ -146,6 +151,8 @@ void	execute_commands(t_ast *ast, const char *path_variable,
 				current->path = find_absolute_path(path_variable,
 						current->args[0]);
 				exit_status = execute_command(current, env);
+				if (current->file)
+					restore_fd(original_stdin, original_stdout);
 			}
 		}
 		else if (current->type == NODE_LOGICAL_OPERATOR)
@@ -156,18 +163,33 @@ void	execute_commands(t_ast *ast, const char *path_variable,
 	}
 }
 
-void	traverse_tree(t_ast	*ast, t_ast **head)
+void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)
+{
+	if (!logical_node->left || !logical_node->right)
+	{
+		printf("minishell: syntax error near unexpected token `&&'\n");
+		*error_catched = 1;
+	}
+}
+
+void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 {
 	while (ast)
 	{
 		if (ast->type == NODE_REDIRECTION)
 		{
-			handle_redir(ast, head);
+			handle_redir(ast, head, error_catched);
 		}
 		else if (ast->type == NODE_PIPE)
 		{
-			handle_pipe(ast);
+			handle_pipe(ast, error_catched);
 		}
+		else if (ast->type == NODE_LOGICAL_OPERATOR)
+		{
+			check_valid_logical_operator(ast, error_catched);
+		}
+		if (*error_catched)
+			return ;
 		ast = ast->right;
 	}
 }
@@ -193,6 +215,9 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_ast	*ast;
 	int		original_stdin;
 	int		original_stdout;
+	int	error_catched;
+
+	error_catched = 0;
 
 	original_stdin = dup(STDIN_FILENO);
 	original_stdout = dup(STDOUT_FILENO);
@@ -201,7 +226,9 @@ void	*m_tokenizer(const char *input, const char **env,
 	print_tokens(tokens);
 	ast = parse_tokens(tokens);
 	print_ast(ast);
-	traverse_tree(ast, &ast);
+	traverse_tree(ast, &ast, &error_catched);
+	if (error_catched)
+		return (NULL);
 	print_ast(ast);
 	execute_commands(ast, path_variable, env);
 	restore_fd(original_stdin, original_stdout);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 13:39:46 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 14:46:11 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,17 @@ char	**cat_args(char **left, char **right)
 	return (new_arr);
 }
 
-void	check_valid_redir(t_ast *redir_node)
+void	check_valid_redir(t_ast *redir_node, int *error_catched)
 {
 	if (!redir_node->file)
 	{
 		printf("minishell: syntax error near unexpected token 'newline'\n");
+		*error_catched = 1;
 	}
 	else if (is_double_special(redir_node->file) || is_single_special(redir_node->file))
 	{
 		printf("minishell: syntax error near unexpected token '%s'\n", redir_node->file);
+		*error_catched = 1;
 	}
 }
 
@@ -69,9 +71,11 @@ void	setup_flags_and_fds(t_ast *redir_node)
 	}
 }
 
-void	handle_redir(t_ast *redir_node, t_ast **head)
+void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 {
-	check_valid_redir(redir_node);
+	check_valid_redir(redir_node, error_catched);
+	if (*error_catched)
+		return ;
 	if (redir_node->left == NULL)
 	{
 		t_ast *temp = create_command_node(TOKEN_WORD, NULL);

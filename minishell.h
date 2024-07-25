@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 13:35:44 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/25 14:49:20 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -305,9 +305,9 @@ int			is_redirection(t_token_type	token_type);
 /*handle_logical_operator.c*/
 void	handle_logical_operator(t_ast **logical_node, int exit_status);
 /* handle_pipes.c */
-void 	handle_pipe(t_ast *pipe_node);
+void	handle_pipe(t_ast *pipe_node, int *error_catched);
 /*handle_redirs.c*/
-void		handle_redir(t_ast *redir_node, t_ast **head);
+void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched);
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token *tokens);
