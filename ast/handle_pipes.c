@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 20:49:34 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/25 18:09:46 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/26 11:22:04 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	handle_pipe(t_ast *pipe_node, int *error_catched)
 	right_command_found = 0;
 	save_ptr_left = pipe_node->left;
 	save_ptr_right = pipe_node->right;
-	ft_pipe(pipe_fd, "pipi in handle pipe");
+	ft_pipe(pipe_fd, "pipe in handle pipe");
 	if (pipe_node->left && pipe_node->right)
     {
 		setup_pipe(pipe_node, pipe_fd, &left_command_found, &right_command_found);

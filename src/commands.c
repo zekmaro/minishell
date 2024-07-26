@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 18:23:57 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/26 14:51:31 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,11 +135,11 @@ void	*m_tokenizer(const char *input, const char **env,
 	tokens = lexical_analysis(input, env);
 	print_tokens(tokens);
 	ast = parse_tokens(tokens);
-	print_ast(ast);
+	//print_ast(ast);
 	traverse_tree(ast, &ast, &error_catched);
 	if (error_catched)
 		return (NULL);
-	print_ast(ast);
+	//print_ast(ast);
 	execute_commands(ast, path_variable, env);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);

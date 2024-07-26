@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 18:38:14 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/26 15:17:56 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,8 @@ typedef struct s_ast
     char			*file;
 	char			*error_message;
 	char			*path;
-	int				fd_file;
+	int				fd_file_in;
+	int				fd_file_out;
     int				fd_in;
 	int				fd_out;
 	int				std_fd;

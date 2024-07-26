@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/25 19:05:02 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/26 15:28:02 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,15 @@
 void	redirect_fd_into_file(t_ast *command)
 {
 	//ft_open(&command->fd_file, command->file, command->flags, 0644);
-	if (command->std_fd == STDIN_FILENO)
+	if (command->fd_file_in)
 	{
-		dup2(command->fd_file, STDIN_FILENO);
-		close(command->fd_file);
+		dup2(command->fd_file_in, STDOUT_FILENO);
+		close(command->fd_file_in);
 	}
-	else if (command->std_fd == STDOUT_FILENO)
+	if (command->fd_file_out)
 	{
-		dup2(command->fd_file, STDOUT_FILENO);
-		close(command->fd_file);
+		dup2(command->fd_file_out, STDIN_FILENO);
+		close(command->fd_file_out);
 	}
 }
 
