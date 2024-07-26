@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 16:41:37 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 16:06:02 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,9 @@ void		environment_print(const char **environment);
 char		**environment_create(const char **env);
 void		environment_variable_remove(char **environment, const char *variable);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
-char		*environment_variable_get(const char *variable, const char **environment);
+char		**environment_variable_get(const char *variable, const char **environment);
+char		*environment_variable_value_get(const char *variable, const char **environment);
+void		environment_variable_value_change(const char **environment, const char *variable_name, const char *variable_new_value);
 
 /* TOKENIZER MOTHERFUCKER!!! */
 /*check_special_symbol.c*/
@@ -247,22 +249,22 @@ void	extract_variable(char **variable_pointers, \
 						const char *command_input, \
 						const char **environement, \
 						uint32_t variable_count);
-char	*extract_word(char *command_input, char **variable_pointers);
+void	extract_word(char **buffer, char *command_input, char **variable_pointers);
 char	*interpret_single_quote(const char *command_input);
 
 /*create_token_env_var.c*/
-int			is_env_var(const char *input);
+int			is_env_var(const char input);
 t_token		create_token_env_var(char **input, const char **env);
 void		extract_variable(char **variable_counter, const char *command_input, const char **environement, uint32_t variable_count);
 
 /*create_token_quotes.c*/
-int			is_quote(const char *input);
+int			is_quote(const char input);
 t_token		create_token_single_quote(const char **input);
 t_token		create_token_double_quotes(const char **input, const char **env);
 t_token		create_token_quotes(const char **input, const char **env);
 
 /*create_token_single_special_symbol.c*/
-int			is_single_special(const char *input);
+int			is_single_special(const char input);
 t_token		create_token_single_special_symbol(const char **input);
 
 /*create_token_word.c*/

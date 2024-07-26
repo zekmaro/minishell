@@ -6,15 +6,15 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:38:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 15:41:25 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 13:39:21 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	is_quote(const char *input)
+int	is_quote(const char input)
 {
-	return (*input == '\'' || *input == '\"');
+	return (input == '\'' || input == '\"');
 }
 
 t_token	create_token_single_quote(const char **input)

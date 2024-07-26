@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/25 13:45:03 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 14:59:56 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static uint32_t	prompt_display(const char **environment)
 	char		*pwd;
 	uint32_t	prompt_length;
 
-	pwd = environment_variable_get("PWD", environment);
+	pwd = environment_variable_value_get("PWD", environment);
 	prompt_length = ft_strlen(pwd) + 4;
 	ft_putstr_fd(GREEN, 1);
 	ft_printf("[%s$] ", pwd);

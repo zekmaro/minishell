@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/25 16:12:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 14:16:35 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	command_execute(char const *command_path,
 	}
 }
 
-int execute_command(t_ast *command)
+int execute_command(t_ast *command, const char **environment)
 {
 	int		status;
     pid_t	pid;
@@ -98,6 +98,8 @@ int execute_command(t_ast *command)
                 close(fd);
             }
         }
+		if (buildin_execute(command, environment))
+			lst_memory(NULL, NULL, END);
         execvp(command->args[0], command->args);
         perror("execvp");
         exit(EXIT_FAILURE);
@@ -134,8 +136,7 @@ void execute_commands(t_ast *ast, const char **environment)
     {
 		if (current->type == NODE_COMMAND && !current->is_done)
         {
-			if (!buildin_execute(current, environment))
-            	exit_status = execute_command(current);
+            exit_status = execute_command(current, environment);
         }
 		else if (current->type == NODE_LOGICAL_OPERATOR)
 		{

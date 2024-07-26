@@ -6,15 +6,15 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:37:49 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/25 11:55:54 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 16:06:59 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	is_env_var(const char *input)
+int	is_env_var(const char input)
 {
-	return (*input == '$');
+	return (input == '$');
 }
 
 t_token	create_token_env_var(char **input, const char **environement)
@@ -23,18 +23,24 @@ t_token	create_token_env_var(char **input, const char **environement)
 	char		*buffer;
 	uint32_t	variable_count;
 	char		*temp_move;
+	char		store_current_char;
 
+	buffer = NULL;
+	store_current_char = 0;
 	variable_count = determine_variables(*input);
 	variable_pointers = ft_calloc(variable_count + 1, sizeof(char *));
-	temp_move = ft_strchr(*input, ' ');
-	if (temp_move)
-		*temp_move = 0;
+	temp_move = *input + 1;
+	while (*temp_move && !is_special_char(*temp_move) && *temp_move != '$')
+		temp_move++;
+	if (*temp_move != ' ')
+		store_current_char = *temp_move;
+	*temp_move = 0;
 	extract_variable(variable_pointers, *input, environement, variable_count);
-	buffer = extract_word((char *)*input, variable_pointers);
+	extract_word(&buffer, (char *)*input, variable_pointers);
 	if (temp_move)
-		*input = temp_move + 1;
+		*input = temp_move;
 	else
 		*input = ft_strchr(*input, 0);
-	free_split(variable_pointers);
-	return (create_token(TOKEN_ENV, buffer));
+	*temp_move = store_current_char;
+	return (free(variable_pointers), create_token(TOKEN_ENV, buffer));
 }
