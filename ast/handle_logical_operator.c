@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 13:31:08 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/25 14:54:47 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 21:42:41 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	handle_logical_operator(t_ast **logical_node, int exit_status)
 {
-	
 	if ((*logical_node)->token_type == TOKEN_AND)
 	{
 		if (exit_status == 1)

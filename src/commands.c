@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/27 19:31:40 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 23:15:33 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,12 @@ void	command_execute(const char *command_path,
 }
 
 void	execute_commands(t_ast *ast, const char *path_variable,
-					const char **env)
+					const char **env, int *error_catched)
 {
 	static int	exit_status;
 	t_ast		*current;
 
-	exit_status = 0;
+	exit_status = *error_catched;
 	current = ast;
 	while (current)
 	{
@@ -88,15 +88,11 @@ void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 	{
 		if (ast->type == NODE_REDIRECTION)
 		{
-			//print_ast(*head);
 			handle_redir(ast, head, error_catched);
-			//print_ast(*head);
 		}
 		else if (ast->type == NODE_PIPE)
 		{
-			//print_ast(*head);
 			handle_pipe(ast, error_catched);
-			//print_ast(*head);
 		}
 		else if (ast->type == NODE_LOGICAL_OPERATOR)
 		{
@@ -122,6 +118,17 @@ void	print_tokens(t_token *tokens)
 	printf("------------\n");
 }
 
+void	skip_up_to_logical_operator(t_ast *ast)
+{
+	while (ast)
+	{
+		if (ast->type == NODE_LOGICAL_OPERATOR)
+			break ;
+		ast->is_done = 1;
+		ast = ast->right;
+	}
+}
+
 void	*m_tokenizer(const char *input, const char **env,
 			const char *path_variable)
 {
@@ -132,19 +139,15 @@ void	*m_tokenizer(const char *input, const char **env,
 	int	error_catched;
 
 	error_catched = 0;
-
 	original_stdin = dup(STDIN_FILENO);
 	original_stdout = dup(STDOUT_FILENO);
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
-	// print_tokens(tokens);
 	ast = parse_tokens(tokens);
-	//print_ast(ast);
 	traverse_tree(ast, &ast, &error_catched);
 	if (error_catched)
-		return (NULL);
-	//print_ast(ast);
-	execute_commands(ast, path_variable, env);
+		skip_up_to_logical_operator(ast);
+	execute_commands(ast, path_variable, env, &error_catched);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);
 }
