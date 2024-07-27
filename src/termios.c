@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 09:46:56 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:46 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/26 20:56:38 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	terminal_raw_mode_enable(void)
 	struct termios	raw;
 
 	tcgetattr(STDIN_FILENO, &raw);
-	raw.c_lflag &= ~(ICANON | ECHO | ECHOCTL);
+	raw.c_lflag &= ~(ICANON);
 	tcsetattr(STDIN_FILENO, TCSANOW, &raw);
 	ft_printf(SCREEN_ENABLE_WRAPPING);
 }
