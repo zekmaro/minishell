@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/27 23:15:33 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 01:31:07 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
@@ -144,7 +145,9 @@ void	*m_tokenizer(const char *input, const char **env,
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
 	ast = parse_tokens(tokens);
+	print_ast(ast);
 	traverse_tree(ast, &ast, &error_catched);
+	print_ast(ast);
 	if (error_catched)
 		skip_up_to_logical_operator(ast);
 	execute_commands(ast, path_variable, env, &error_catched);

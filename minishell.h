@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/26 15:17:56 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 00:34:40 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@
 # define SCREEN_MAX "\033[9999;9999H"
 # define DEL 127
 # define EOT 4
+# define ESC 27
 
 # define SCREEN_DISBLE_WRAPPING "\033[?7l"
 # define SCREEN_ENABLE_WRAPPING "\033[?7h"

@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirs.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 21:52:40 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 01:31:55 by andrejarama      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 char	**cat_args(char **left, char **right)
 {
@@ -73,14 +74,14 @@ void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
 
 void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
 {
-	if (save_ptr_left->fd_in)
+	if (save_ptr_left->fd_file_in)
 	{
-		ft_close(save_ptr_left->fd_in, "redir");
-		save_ptr_left->fd_in = 0;
+		ft_close(save_ptr_left->fd_file_in, "redir");
+		save_ptr_left->fd_file_in = 0;
 	}
-	ft_open(&save_ptr_left->fd_in, redir_node->file,
+	ft_open(&save_ptr_left->fd_file_in, redir_node->file,
 		save_ptr_left->flags, 0644);
-	if (save_ptr_left->fd_in == -1)
+	if (save_ptr_left->fd_file_in == -1)
 	{
 		*error_catched = 1;
 		return ;
@@ -95,14 +96,16 @@ void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catche
 
 void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
 {
-	if (save_ptr_left->fd_out)
+	if (save_ptr_left->fd_file_out > 1)
 	{
-		ft_close(save_ptr_left->fd_out, "redir");
+		ft_close(save_ptr_left->fd_file_out, "redir");
 		save_ptr_left->fd_out = 0;
 	}
-	ft_open(&save_ptr_left->fd_out, redir_node->file,
+	ft_open(&save_ptr_left->fd_file_out, redir_node->file,
 		save_ptr_left->flags, 0644);
-	if (save_ptr_left->fd_out == -1)
+	if (save_ptr_left->fd_file_out == 1)
+		printf("fuck this shit");
+	if (save_ptr_left->fd_file_out == -1)
 	{
 		*error_catched = 1;
 		return ;
