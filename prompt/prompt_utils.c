@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 16:08:08 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/27 22:03:13 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,29 +21,29 @@ void	prompt_destroy(void *prompt)
 	ft_free((void **)&prompt_ptr);
 }
 
-uint32_t	prompt_display(void)
+static uint32_t	prompt_display(const char **environment)
 {
 	char		*pwd;
 	uint32_t	prompt_length;
 
-	pwd = getcwd(NULL, 0);
-	prompt_length = ft_strlen(pwd) + 2;
-	ft_printf(GREEN);
-	ft_printf("%s$ ", pwd);
-	ft_printf(RESET);
-	ft_free((void **)&pwd);
+	pwd = environment_variable_value_get("PWD", environment);
+	prompt_length = ft_strlen(pwd) + 4;
+	ft_putstr_fd(GREEN, 1);
+	ft_printf("[%s$] ", pwd);
+	ft_putstr_fd(RESET, 1);
 	return (prompt_length);
 }
 
 char	*prompt_get(t_prompt *prompt)
 {
-	terminal_raw_mode_enable();
-	prompt->prompt_length = prompt_display();
-	prompt_get_input(prompt);
+	char	*input;
+
+	prompt->prompt_length = prompt_display((const char **)prompt->env_ptr);
+	input = prompt_get_input(prompt);
 	if (!prompt->command || !*prompt->command)
 		return (NULL);
-	terminal_raw_mode_disable();
-	return (ft_strdup(prompt->command));
+	terminal_raw_mode_disable(ECHOCTL);
+	return (ft_strdup(input));
 }
 
 t_prompt	*prompt_create(const char **env)

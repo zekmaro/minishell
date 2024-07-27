@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/24 12:32:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/27 20:14:06 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	check_valid_redir(t_ast *redir_node)
 	{
 		printf("minishell: syntax error near unexpected token 'newline'\n");
 	}
-	else if (is_double_special(redir_node->file) || is_single_special(redir_node->file))
+	else if (is_double_special(redir_node->file) || is_single_special(*redir_node->file))
 	{
 		printf("minishell: syntax error near unexpected token '%s'\n", redir_node->file);
 	}
@@ -82,7 +82,7 @@ void	handle_redir(t_ast *redir_node, t_ast **head)
 	}
 	setup_flags_and_fds(redir_node);
 	redir_node->left->file = redir_node->file;
-	print_ast(*head);
+	/*print_ast(*head);*/
 	if (redir_node->right && redir_node->right->args)
 	{
 		redir_node->left->args = cat_args(redir_node->left->args, redir_node->right->args);

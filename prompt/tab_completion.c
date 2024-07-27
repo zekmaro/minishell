@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:44 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 01:47:44 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,40 +16,43 @@ static void	handle_tab_no_match(const char *input_path, const char **env)
 {
 	uint32_t		cursor_position_stored[2];
 
-	cursor_position_get(cursor_position_stored);
-	ft_printf(SCREEN_CLEAR_TO_EOF);
-	ft_printf(CURSOR_POSITION_SET, cursor_position_stored[0] + 1, 0);
+	cursor_position_save();
+	ft_putstr_fd("\n\r", 1);
+	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
 	command_execute("/usr/bin/ls", (const char *[]){"ls", input_path, NULL}, env);
-	ft_printf(CURSOR_POSITION_SET, cursor_position_stored[0], cursor_position_stored[1]);
+	cursor_position_restore();
 }
 
-static char	*determine_word(const char *input, char **input_path)
+static char	*determine_word(char *input, char **input_path, uint32_t cursor_position_current)
 {
 	char			*current_word;
 	char			*current_word_path_end;
+	char			*tmp;
+	uint32_t		i;
 
 	if (!input || !*input)
 		return (NULL);
-	current_word = ft_strrchr(input, ' ');
-	current_word_path_end = ft_strrchr(input, '/');
-	if (current_word && !current_word_path_end)
-		return (current_word + 1);
-	else if (!current_word && current_word_path_end)
+	i = cursor_position_current - (cursor_position_current > 0);
+	current_word_path_end = NULL;
+	while (i > 0 && input[i] != ' ')
+		i--;
+	if (i)
+		current_word = &input[i + 1];
+	else
+		current_word = &input[i];
+	tmp = ft_strchr(current_word, '/');
+	while (tmp)
 	{
-		*input_path = ft_substr(input, 0, current_word_path_end - input);
-		return (current_word_path_end + 1);
+		current_word_path_end = tmp;
+		tmp = ft_strchr(tmp + 1, '/');
 	}
-	else if (current_word && current_word_path_end)
+	if (current_word_path_end)
 	{
-		if (current_word_path_end > current_word)
-		{
-			*input_path = ft_substr(current_word + 1, 0, current_word_path_end - current_word);
-			return (current_word_path_end + 1);
-		}
-		else
-			return (current_word + 1);
+		*input_path = ft_substr(current_word, 0, current_word_path_end - current_word + 1);
+		current_word = current_word_path_end + 1;
+		return (current_word);
 	}
-	return ((char *)input);
+	return (current_word);
 }
 
 uint32_t	find_last_matching_char(const char *current_word, const char *next_word_match)
@@ -95,13 +98,15 @@ uint32_t	get_current_word_length(char *word)
 
 	if (!word)
 		return (0);
+	else if (*word == ' ')
+		return (1);
 	word_end = ft_strchr(word, ' ');
 	if (word_end)
 		return (word_end - word);
 	return (ft_strlen(word));
 }
 
-uint32_t	handle_tab(char **input, const char **env, uint32_t *cursor_position_current)
+void	handle_tab(char **input, const char **env, uint32_t *cursor_position_current)
 {
 	DIR				*directory_current;
 	char			*current_word;
@@ -110,7 +115,7 @@ uint32_t	handle_tab(char **input, const char **env, uint32_t *cursor_position_cu
 	uint32_t		current_word_length;
 
 	input_path = NULL;
-	current_word = determine_word(*input, &input_path);
+	current_word = determine_word(*input, &input_path, *cursor_position_current);
 	current_word_length = get_current_word_length(current_word);
 	if (input_path)
 		ft_opendir(&directory_current, input_path);
@@ -118,20 +123,14 @@ uint32_t	handle_tab(char **input, const char **env, uint32_t *cursor_position_cu
 		ft_opendir(&directory_current, "./");
 	next_word_match = find_next_match(current_word, current_word_length, directory_current);
 	if (!next_word_match)
-		return (closedir(directory_current), handle_tab_no_match(input_path, env), ft_free((void **)&input_path), ft_strlen(*input));
-	prompt_string_insert(next_word_match + current_word_length, input, current_word + current_word_length, ft_strlen(next_word_match));
-	(*cursor_position_current) += ft_strlen(next_word_match) - current_word_length;
+		handle_tab_no_match(input_path, env);
+	else
+	{
+		handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
+		cursor_position_save();
+		ft_putstr_fd("\n\r", 1);
+		ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
+		cursor_position_restore();
+	}
 	closedir(directory_current);
-	ft_free((void **)&input_path);
-	return (ft_strlen(*input));
-}
-
-void	prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t size_of_to_insert)
-{
-	uint32_t	current_input_length;
-
-	current_input_length = ft_strlen(*current_input);
-	prompt_buffer_size_manage(current_input, size_of_to_insert + current_input_length + 1);
-	ft_memmove(position_to_insert + size_of_to_insert, position_to_insert + 1, size_of_to_insert);
-	ft_strlcpy(position_to_insert, string_to_insert, size_of_to_insert);
 }

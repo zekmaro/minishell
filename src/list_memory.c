@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:21:13 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 17:05:28 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/27 21:59:03 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,18 @@ void	lst_memory(void *mem, void (*del)(void *c), int mode)
 
 	if (mode == CLEAN)
 	
-		return (terminal_raw_mode_disable(), \
+		return (terminal_raw_mode_disable(ECHOCTL | ICANON), \
 				lst_list_clean(&list), exit(EXIT_FAILURE));
 	if (mode == END)
-		return (terminal_raw_mode_disable(), lst_list_clean(&list), exit(EXIT_SUCCESS));
+		return (terminal_raw_mode_disable(ECHOCTL | ICANON), lst_list_clean(&list), exit(EXIT_SUCCESS));
 	if (mode == FREE)
 		return (lst_node_del_clean(&list, mem));
 	if (!mem)
 		return (lst_list_clean(&list), perror("malloc"), exit(EXIT_FAILURE));
 	new = lst_node_new(mem, del);
 	if (!new)
-		return (del(mem), lst_list_clean(&list), terminal_raw_mode_disable(),
-				p_stderr(STDERR_FILENO, "pipex: %s", "lst_node_malloc"), \
+		return (del(mem), lst_list_clean(&list), terminal_raw_mode_disable(ECHOCTL | ICANON), \
+				p_stderr(STDERR_FILENO, "minishell: %s", "lst_node_malloc"), \
 				perror(""), exit(EXIT_FAILURE));
 	lst_add_back(&list, new);
 }

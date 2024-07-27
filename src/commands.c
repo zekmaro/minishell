@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 17:04:37 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/28 00:24:27 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ void	restore_fd(int original_stdin, int original_stdout)
 
 bool	buildin_execute(t_ast *node, const char **environment)
 {
+	if (node->args[0] && !*node->args[0])
+		return (false);
 	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
-		return (ft_echo(node), 1);
+		return (ft_echo(node->args), 1);
 	else if (ft_strncmp(node->args[0], "env", ft_strlen(node->args[0])) == 0)
 		return (ft_env(environment), 1);
 	else if (ft_strncmp(node->args[0], "cd", ft_strlen(node->args[0])) == 0)
@@ -57,7 +59,7 @@ void	command_execute(char const *command_path,
 	}
 }
 
-int execute_command(t_ast *command)
+int execute_command(t_ast *command, const char **environment)
 {
 	int		status;
     pid_t	pid;
@@ -96,6 +98,8 @@ int execute_command(t_ast *command)
                 close(fd);
             }
         }
+		if (buildin_execute(command, environment))
+			lst_memory(NULL, NULL, END);
         execvp(command->args[0], command->args);
         perror("execvp");
         exit(EXIT_FAILURE);
@@ -132,8 +136,7 @@ void execute_commands(t_ast *ast, const char **environment)
     {
 		if (current->type == NODE_COMMAND && !current->is_done)
         {
-			if (!buildin_execute(current, environment))
-            	exit_status = execute_command(current);
+            exit_status = execute_command(current, environment);
         }
 		else if (current->type == NODE_LOGICAL_OPERATOR)
 		{
@@ -183,10 +186,9 @@ void	*m_tokenizer(const char *input, const char **env, const char *path_variable
 	int	original_stdin = dup(STDIN_FILENO);
 	int	original_stdout = dup(STDOUT_FILENO);
 
-	lst_memory((void *)input, free, ADD);
 	(void)path_variable;
+    lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
-	//print_tokens(tokens);
 	ast = parse_tokens(tokens);
 	//print_ast(ast);
 	traverse_tree(ast, &ast);

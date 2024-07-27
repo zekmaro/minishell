@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 22:49:51 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 00:56:08 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,14 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <readline/readline.h>
-# include <signal.h>
 # include <readline/history.h>
 # include <errno.h>
 # include <signal.h>
+# include <sys/ioctl.h>
+# include <stddef.h>
 
 # define PROMPT_COMMAND_STACK_SIZE 6
-# define PROMPT_INPUT_BUFFER_SIZE 1024
+# define PROMPT_INPUT_BUFFER_SIZE 4096
 # define CURSOR_MOVE_HOME "\033[H"
 # define GREEN "\033[0;32m"
 # define RESET "\033[0m"
@@ -138,8 +139,9 @@ typedef struct s_clean
 
 extern int32_t g_signal_flag;
 
+void set_non_blocking();
 /* Builtins */
-int32_t		ft_echo(t_ast *node);
+int32_t		ft_echo(char **args);
 void		ft_cd(const char **environment, const char **args);
 void		ft_pwd(const char **env);
 void		ft_env(const char **env);
@@ -176,7 +178,6 @@ char		*find_absolute_path(const char *path_variable, char *input);
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
-uint32_t	prompt_display();
 t_prompt	*prompt_create(const char **env);
 char		*prompt_get(t_prompt *prompt);
 
@@ -185,22 +186,23 @@ void		cursor_position_get(uint32_t cursor_position[2]);
 void		cursor_position_save(void);
 void		cursor_position_restore(void);
 
-uint8_t		handle_escape_sequence(t_prompt *prompt, char **input, uint32_t *cursor_position_current);
+bool		handle_escape_sequence(t_prompt *prompt, char buffer[], char **input, uint32_t cursor_position_current[2]);
 char		*prompt_get_input(t_prompt *prompt);
+bool	handle_multiple_character_to_input(	char **input, char buffer[], uint32_t *cursor_position_current, uint32_t prompt_length_current);
 
 /* Prompt Buffer Management */
-void		prompt_refresh_line(char *input, uint32_t cursor_position_current[2]);
-void		prompt_buffer_size_manage(char **input, uint32_t input_new_size);
+void		prompt_refresh_line(char *input, uint32_t cursor_position_base, uint32_t cursor_position_current[2]);
+char		*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t input_new_size);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 
 /* Redirections */
 void		execute(char **tokens, char **env);
 /* Tab Completion */
-uint32_t		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
+void		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
 
 /* Termios */
-void		terminal_raw_mode_enable();
-void 		terminal_raw_mode_disable();
+void		terminal_raw_mode_enable(int);
+void 		terminal_raw_mode_disable(int);
 
 /* Utils */
 int			ft_close(int fd, const char *specifier);
@@ -227,7 +229,9 @@ void		environment_print(const char **environment);
 char		**environment_create(const char **env);
 void		environment_variable_remove(char **environment, const char *variable);
 char		**environment_variable_add(char **environment, const char *variable_new_name, const char *variable_new_value);
-char		*environment_variable_get(const char *variable, const char **environment);
+char		**environment_variable_get(const char *variable, const char **environment);
+char		*environment_variable_value_get(const char *variable, const char **environment);
+void		environment_variable_value_change(const char **environment, const char *variable_name, const char *variable_new_value);
 
 /* TOKENIZER MOTHERFUCKER!!! */
 /*check_special_symbol.c*/
@@ -247,22 +251,22 @@ void	extract_variable(char **variable_pointers, \
 						const char *command_input, \
 						const char **environement, \
 						uint32_t variable_count);
-char	*extract_word(char *command_input, char **variable_pointers);
+void	extract_word(char **buffer, char *command_input, char **variable_pointers);
 char	*interpret_single_quote(const char *command_input);
 
 /*create_token_env_var.c*/
-int			is_env_var(const char *input);
+int			is_env_var(const char input);
 t_token		create_token_env_var(char **input, const char **env);
 void		extract_variable(char **variable_counter, const char *command_input, const char **environement, uint32_t variable_count);
 
 /*create_token_quotes.c*/
-int			is_quote(const char *input);
+int			is_quote(const char input);
 t_token		create_token_single_quote(const char **input);
 t_token		create_token_double_quotes(const char **input, const char **env);
 t_token		create_token_quotes(const char **input, const char **env);
 
 /*create_token_single_special_symbol.c*/
-int			is_single_special(const char *input);
+int			is_single_special(const char input);
 t_token		create_token_single_special_symbol(const char **input);
 
 /*create_token_word.c*/
