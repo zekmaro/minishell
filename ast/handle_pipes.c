@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 20:49:34 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/26 11:22:04 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:30:21 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@ void	close_pipe(int pipe_fd[2])
 void	setup_pipe(t_ast *pipe_node, int pipe_fd[2],
 		int *left_command_found, int *right_command_found)
 {
-	while (pipe_node->left && pipe_node->left->token_type != NODE_COMMAND)
+	while (pipe_node->left)
 	{
+		if (pipe_node->left->token_type == NODE_COMMAND
+			&& !pipe_node->left->is_done)
+			break ;
 		pipe_node->left = pipe_node->left->left;
 	}
 	if (pipe_node->left && pipe_node->left->token_type == NODE_COMMAND)
@@ -30,8 +33,11 @@ void	setup_pipe(t_ast *pipe_node, int pipe_fd[2],
 		pipe_node->left->fd_out = pipe_fd[1];
 		*left_command_found = 1;
 	}
-	while (pipe_node->right && pipe_node->right->token_type != NODE_COMMAND)
+	while (pipe_node->right)
 	{
+		if (pipe_node->right->token_type == NODE_COMMAND
+			&& !pipe_node->right->is_done)
+			break ;
 		pipe_node->right = pipe_node->right->right;
 	}
 	if (pipe_node->right && pipe_node->right->token_type == NODE_COMMAND)

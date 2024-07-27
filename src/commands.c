@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/26 14:51:31 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:31:40 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,15 @@ void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 	{
 		if (ast->type == NODE_REDIRECTION)
 		{
+			//print_ast(*head);
 			handle_redir(ast, head, error_catched);
+			//print_ast(*head);
 		}
 		else if (ast->type == NODE_PIPE)
 		{
+			//print_ast(*head);
 			handle_pipe(ast, error_catched);
+			//print_ast(*head);
 		}
 		else if (ast->type == NODE_LOGICAL_OPERATOR)
 		{
@@ -133,7 +137,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	original_stdout = dup(STDOUT_FILENO);
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
-	print_tokens(tokens);
+	// print_tokens(tokens);
 	ast = parse_tokens(tokens);
 	//print_ast(ast);
 	traverse_tree(ast, &ast, &error_catched);

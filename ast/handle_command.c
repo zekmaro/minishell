@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 14:15:07 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:24:47 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int	execute_command(t_ast *command, const char **env)
 		handle_fds_child_proccess(command);
 		if (command->path)
 		{
-			execve(command->path, command->args, (char **)env);
+			if (command->fd_in != -1 && command->fd_out != -1)
+				execve(command->path, command->args, (char **)env);
 			perror("execve");
 		}
 		lst_memory(NULL, NULL, CLEAN);

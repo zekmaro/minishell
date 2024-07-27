@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 15:28:02 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:06:44 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	redirect_fd_into_file(t_ast *command)
 {
-	//ft_open(&command->fd_file, command->file, command->flags, 0644);
 	if (command->fd_file_in)
 	{
 		dup2(command->fd_file_in, STDOUT_FILENO);
@@ -31,18 +30,18 @@ void	handle_fds_child_proccess(t_ast *command)
 {
 	if (command->fd_in != 0)
 	{
-		dup2(command->fd_in, 0);
+		dup2(command->fd_in, STDIN_FILENO);
 		close(command->fd_in);
 	}
 	if (command->fd_out != 1)
 	{
-		dup2(command->fd_out, 1);
+		dup2(command->fd_out, STDOUT_FILENO);
 		close(command->fd_out);
 	}
-	if (command->file)
-	{
-		redirect_fd_into_file(command);
-	}
+	// if (command->file)
+	// {
+	// 	redirect_fd_into_file(command);
+	// }
 }
 
 void	handle_fds_parent_proccess(t_ast *command)
@@ -55,8 +54,8 @@ void	handle_fds_parent_proccess(t_ast *command)
 	{
 		close(command->fd_out);
 	}
- 	if (command->file)
-	{
-		redirect_fd_into_file(command);
-	}
+ 	// if (command->file)
+	// {
+	// 	redirect_fd_into_file(command);
+	// }
 }
