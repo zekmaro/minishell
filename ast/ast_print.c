@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:48 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 15:00:37 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 19:29:47 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,12 @@ void	print_ast(t_ast *head)
 			printf("LEFT: %p\n", head->left);
 			printf("RIGHT: %p\n", head->right);
 			printf("FILE: %s\n", head->file);
+			printf("FD_FILE_IN: %d\n", head->fd_file_in);
+			printf("FD_FILE_OUT: %d\n", head->fd_file_out);
 			printf("FD_IN: %d\n", head->fd_in);
 			printf("FD_OUT: %d\n", head->fd_out);
+			printf("STD_FD: %d\n", head->std_fd);
+			printf("FLAGS: %d\n", head->flags);
 			printf("IS_DONE: %d\n", head->is_done);
 			i++;
 			printf("\n");

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 21:48:42 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 11:15:34 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,15 +92,6 @@ static uint32_t	get_word_count(char *input)
 		word_count++;
 	}
 	return (word_count);
-}
-
-void	print_tokens(t_token *token)
-{
-	uint32_t	i;
-
-	i = 0;
-	while (token[i].token_type != TOKEN_EOL)
-		ft_putstr_fd(token[i++].token_value, 1);
 }
 
 t_token	*lexical_analysis(const char *input, const char **env)

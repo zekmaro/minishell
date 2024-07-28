@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirs.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 20:14:06 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 11:13:25 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 char	**cat_args(char **left, char **right)
 {
@@ -38,40 +39,87 @@ char	**cat_args(char **left, char **right)
 	return (new_arr);
 }
 
-void	check_valid_redir(t_ast *redir_node)
+void	check_valid_redir(t_ast *redir_node, int *error_catched)
 {
 	if (!redir_node->file)
 	{
 		printf("minishell: syntax error near unexpected token 'newline'\n");
+		*error_catched = 1;
 	}
 	else if (is_double_special(redir_node->file) || is_single_special(*redir_node->file))
 	{
 		printf("minishell: syntax error near unexpected token '%s'\n", redir_node->file);
+		*error_catched = 1;
 	}
 }
 
-void	setup_flags_and_fds(t_ast *redir_node)
+void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
 {
 	if (redir_node->token_type == TOKEN_REDIRECT_IN)
 	{
-		redir_node->left->flags = O_WRONLY | O_CREAT | O_TRUNC;
-		redir_node->left->std_fd = STDOUT_FILENO;
+		command_node->flags = O_WRONLY | O_CREAT | O_TRUNC;
+		command_node->std_fd = STDOUT_FILENO;
 	}
 	else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
 	{
-		redir_node->left->flags = O_RDONLY;
-		redir_node->left->std_fd = STDIN_FILENO;
+		command_node->flags = O_RDONLY;
+		command_node->std_fd = STDIN_FILENO;
 	}
 	else if (redir_node->token_type == TOKEN_REDIRECT_APPEND)
 	{
-		redir_node->left->flags = O_WRONLY | O_CREAT | O_APPEND;
-		redir_node->left->std_fd = STDOUT_FILENO;
+		command_node->flags = O_WRONLY | O_CREAT | O_APPEND;
+		command_node->std_fd = STDOUT_FILENO;
 	}
 }
 
-void	handle_redir(t_ast *redir_node, t_ast **head)
+void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
 {
-	check_valid_redir(redir_node);
+	if (save_ptr_left->fd_file_in)
+	{
+		ft_close(save_ptr_left->fd_file_in, "redir");
+		save_ptr_left->fd_file_in = 0;
+	}
+	ft_open(&save_ptr_left->fd_file_in, redir_node->file,
+		save_ptr_left->flags, 0644);
+	if (save_ptr_left->fd_file_in == -1)
+	{
+		*error_catched = 1;
+		return ;
+	}
+	save_ptr_left->file = redir_node->file;
+	if (redir_node->right && redir_node->right->args && !redir_node->right->is_done)
+	{
+		save_ptr_left->args = cat_args(save_ptr_left->args, redir_node->right->args);
+		redir_node->right->is_done = 1;
+	}
+}
+
+void	handle_redir_in(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
+{
+	if (save_ptr_left->fd_file_out > 1)
+	{
+		ft_close(save_ptr_left->fd_file_out, "redir");
+		save_ptr_left->fd_out = 0;
+	}
+	ft_open(&save_ptr_left->fd_file_out, redir_node->file,
+		save_ptr_left->flags, 0644);
+	if (save_ptr_left->fd_file_out == 1)
+		printf("fuck this shit");
+	if (save_ptr_left->fd_file_out == -1)
+	{
+		*error_catched = 1;
+		return ;
+	}
+	save_ptr_left->file = redir_node->file;
+	if (redir_node->right && redir_node->right->args && !redir_node->right->is_done)
+	{
+		save_ptr_left->args = cat_args(save_ptr_left->args, redir_node->right->args);
+		redir_node->right->is_done = 1;
+	}
+}
+
+void	setup_left_command_node(t_ast *redir_node, t_ast **head)
+{
 	if (redir_node->left == NULL)
 	{
 		t_ast *temp = create_command_node(TOKEN_WORD, NULL);
@@ -80,13 +128,39 @@ void	handle_redir(t_ast *redir_node, t_ast **head)
 		redir_node->left = temp;
 		*head = temp;
 	}
-	setup_flags_and_fds(redir_node);
-	redir_node->left->file = redir_node->file;
-	/*print_ast(*head);*/
-	if (redir_node->right && redir_node->right->args)
+	while (redir_node->left)
 	{
-		redir_node->left->args = cat_args(redir_node->left->args, redir_node->right->args);
-		redir_node->right->is_done = 1;
+		if (redir_node->left->type == NODE_COMMAND && !redir_node->left->is_done)
+			break ;
+		redir_node->left = redir_node->left->left;
 	}
-	redir_node->is_done = 1;
+}
+
+void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
+{
+	t_ast	*save_ptr_left;
+
+	check_valid_redir(redir_node, error_catched);
+	if (*error_catched)
+		return ;
+	setup_left_command_node(redir_node, head);
+	save_ptr_left = redir_node->left;
+	save_ptr_left->right = redir_node;
+	while (redir_node && redir_node->type == NODE_REDIRECTION)
+	{
+		setup_flags_and_fds(redir_node, save_ptr_left);
+		if (redir_node->token_type == TOKEN_REDIRECT_IN 
+			|| redir_node->token_type == TOKEN_REDIRECT_APPEND)
+		{
+			handle_redir_in(save_ptr_left, redir_node, error_catched);
+		}
+		else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
+		{
+			handle_redir_out(save_ptr_left, redir_node, error_catched);
+		}
+		redir_node->is_done = 1;
+		redir_node = redir_node->right;
+		if (*error_catched)
+			return ;
+	}
 }

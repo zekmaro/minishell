@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
+/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 00:56:08 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 11:07:05 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,8 @@ typedef struct s_ast
     char			*file;
 	char			*error_message;
 	char			*path;
+	int				fd_file_in;
+	int				fd_file_out;
     int				fd_in;
 	int				fd_out;
 	int				std_fd;
@@ -311,14 +313,24 @@ char		**copy_args(t_ast *node, char **src);
 void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);
+/*handle_command.c*/
+void	handle_command(t_ast *current, const char *path_variable,
+					const char **env, int *exit_status);
+/*handle_fds.c*/
+void	redirect_fd_into_file(t_ast *command);
+void	handle_fds_child_proccess(t_ast *command);
+void	handle_fds_parent_proccess(t_ast *command);
+/*handle_logical_operator.c*/
+void		handle_logical_operator(t_ast **logical_node, int exit_status);
 /* handle_pipes.c */
-void 	handle_pipe(t_ast *pipe_node);
+void		handle_pipe(t_ast *pipe_node, int *error_catched);
 /*handle_redirs.c*/
-void		handle_redir(t_ast *redir_node, t_ast **head);
+void		handle_redir(t_ast *redir_node, t_ast **head, int *error_catched);
 
 /*parse_tokens.c*/
 t_ast		*parse_tokens(t_token *tokens);
 
+void	restore_fd(int original_stdin, int original_stdout);
 /*parser.c*/
 void		fill_args(char **args, int count, char *token_value, int *capacity);
 void		parse_word(t_ast **head, int *i, t_token *tokens);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quotes.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/26 16:14:24 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/28 11:15:10 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ void	extract_word(	char **buffer, \
 	{
 		i = 0;
 		while (*command_input && *command_input != '$')
-			*(*buffer)++ = *command_input++;
-		if (*command_input)
+			**buffer++ = *command_input++;
+		if (*command_input != 0)
 			command_input++;
 		while (variable_pointers[j] && variable_pointers[j][i])
 			*(*buffer)++ = variable_pointers[j][i++];

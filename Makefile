@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/27 11:27:50 by victor           ###   ########.fr        #
+#    Updated: 2024/07/28 11:05:43 by victor           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,8 +32,9 @@ PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
 				prompt/escape_sequences.c prompt/arrowkeys.c \
 
 AST_SRC		:=	ast/ast_create_node.c ast/ast_print.c ast/ast_utils.c \
+				ast/handle_command.c ast/handle_fds.c \
 				ast/parse_tokens.c ast/parser.c ast/handle_redirs.c \
-				ast/handle_pipes.c
+				ast/handle_pipes.c ast/handle_logical_operator.c 
 
 TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_double_special_symbol.c \
