@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/07/27 18:24:23 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 16:00:56 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ void	ft_dup2(int fd_old, int fd_new, const char *specifier)
 	{
 		p_stderr(2, "pipex: %s: ", specifier);
 		perror("dup2");
-		lst_memory(NULL, NULL, CLEAN);
 	}
 }
 
@@ -64,7 +63,7 @@ void	ft_open(int *fd, const char *path, int flag, int mode)
 		*fd = open(path, flag);
 	if (*fd == -1)
 	{
-		p_stderr(2, "file: %s: ", path);
+		p_stderr(2, "%s: ", path);
 		perror("open");
 	}
 }
@@ -88,7 +87,7 @@ int64_t	ft_read(int fd, char *character, char **input, uint32_t size_to_read)
 	{
 		if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK || g_signal_flag == 1)
 			return (0);
-		ft_free((void **)input);
+		ft_free(input);
 		perror("read");
 		lst_memory(NULL, NULL, CLEAN);
 	}

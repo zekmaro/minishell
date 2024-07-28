@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 11:10:30 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 17:16:52 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ int	main(int argc, char **argv, const char **env)
 		{
 			if (g_signal_flag == 1)
 				g_signal_flag = 0;
+			ft_free(&command_input);
 			continue ;
 		}
 		if (command_input && *command_input != '\n')
@@ -69,6 +70,5 @@ int	main(int argc, char **argv, const char **env)
 		}
 		prompt->history_position_current = prompt->history_count;
 		/*pwd_update((const char **)environment);*/
-		lst_memory(command_input, NULL, FREE);
 	}
 }

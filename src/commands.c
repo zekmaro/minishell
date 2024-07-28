@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 11:16:28 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 19:27:37 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void	restore_fd(int original_stdin, int original_stdout)
 {
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
-	close(original_stdin);
-	close(original_stdout);
+	ft_close(original_stdin, "restore_fd");
+	ft_close(original_stdout, "restore_fd");
 }
 
 bool	buildin_execute(t_ast *node, const char **environment)
@@ -98,10 +98,6 @@ void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
 		{
 			handle_redir(ast, head, error_catched);
 		}
-		else if (ast->type == NODE_PIPE)
-		{
-			handle_pipe(ast, error_catched);
-		}
 		else if (ast->type == NODE_LOGICAL_OPERATOR)
 		{
 			check_valid_logical_operator(ast, error_catched);
@@ -158,6 +154,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	if (error_catched)
 		skip_up_to_logical_operator(ast);
 	execute_commands(ast, path_variable, env, &error_catched);
+	lst_memory(ast, NULL, FREE);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);
 }
