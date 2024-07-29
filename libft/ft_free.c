@@ -6,14 +6,14 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/13 15:23:16 by vvobis            #+#    #+#             */
-/*   Updated: 2024/06/13 15:24:08 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:52:06 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	ft_free(void **ptr)
+void	ft_free(void *ptr)
 {
-	free(*ptr);
-	*ptr = NULL;
+	ptr = (void **)ptr;
+	*(void **)ptr = NULL;
 }

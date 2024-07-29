@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 01:47:44 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 17:22:34 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,11 +122,12 @@ void	handle_tab(char **input, const char **env, uint32_t *cursor_position_curren
 	else
 		ft_opendir(&directory_current, "./");
 	next_word_match = find_next_match(current_word, current_word_length, directory_current);
-	if (!next_word_match)
+	if (!next_word_match && !current_word_length)
 		handle_tab_no_match(input_path, env);
 	else
 	{
-		handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
+		if (next_word_match)
+			handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
 		cursor_position_save();
 		ft_putstr_fd("\n\r", 1);
 		ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);

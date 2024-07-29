@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 11:56:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 11:13:25 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:40:32 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,23 +53,22 @@ void	check_valid_redir(t_ast *redir_node, int *error_catched)
 	}
 }
 
-void	setup_flags_and_fds(t_ast *redir_node, t_ast *command_node)
+int32_t	setup_flags_and_fds(t_ast *redir_node)
 {
 	if (redir_node->token_type == TOKEN_REDIRECT_IN)
 	{
-		command_node->flags = O_WRONLY | O_CREAT | O_TRUNC;
-		command_node->std_fd = STDOUT_FILENO;
+		return (O_WRONLY | O_CREAT | O_TRUNC);
 	}
 	else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
 	{
-		command_node->flags = O_RDONLY;
-		command_node->std_fd = STDIN_FILENO;
+		return  (O_RDONLY);
 	}
 	else if (redir_node->token_type == TOKEN_REDIRECT_APPEND)
 	{
-		command_node->flags = O_WRONLY | O_CREAT | O_APPEND;
-		command_node->std_fd = STDOUT_FILENO;
+		return (O_WRONLY | O_CREAT | O_APPEND);
 	}
+	else
+		return (0);
 }
 
 void	handle_redir_out(t_ast *save_ptr_left, t_ast *redir_node, int *error_catched)
@@ -138,29 +137,26 @@ void	setup_left_command_node(t_ast *redir_node, t_ast **head)
 
 void	handle_redir(t_ast *redir_node, t_ast **head, int *error_catched)
 {
-	t_ast	*save_ptr_left;
+	int32_t	flags;
+	int32_t	fd;
 
 	check_valid_redir(redir_node, error_catched);
 	if (*error_catched)
 		return ;
-	setup_left_command_node(redir_node, head);
-	save_ptr_left = redir_node->left;
-	save_ptr_left->right = redir_node;
-	while (redir_node && redir_node->type == NODE_REDIRECTION)
+	flags = setup_flags_and_fds(redir_node);
+	if (redir_node->token_type == TOKEN_REDIRECT_IN || redir_node->token_type == TOKEN_REDIRECT_APPEND)
 	{
-		setup_flags_and_fds(redir_node, save_ptr_left);
-		if (redir_node->token_type == TOKEN_REDIRECT_IN 
-			|| redir_node->token_type == TOKEN_REDIRECT_APPEND)
-		{
-			handle_redir_in(save_ptr_left, redir_node, error_catched);
-		}
-		else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
-		{
-			handle_redir_out(save_ptr_left, redir_node, error_catched);
-		}
-		redir_node->is_done = 1;
-		redir_node = redir_node->right;
-		if (*error_catched)
-			return ;
+		ft_open(&fd, redir_node->file, flags, 0644);
+		ft_dup2(fd, STDOUT_FILENO, "redir");
+		ft_close(fd, "redir");
 	}
+	else if (redir_node->token_type == TOKEN_REDIRECT_OUT)
+	{
+		ft_open(&fd, redir_node->file, flags, 0644);
+		ft_dup2(fd, STDIN_FILENO, "redir");
+		ft_close(fd, "redir");
+	}
+	redir_node->is_done = 1;
+	if (*error_catched)
+		return ;
 }

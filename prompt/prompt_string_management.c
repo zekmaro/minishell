@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 00:08:17 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:55:22 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,10 @@ char	*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t size_t
 		size_multiplier = (old_size / PROMPT_INPUT_BUFFER_SIZE) + 2;
 		input_free_ptr = *input;
 		*input = ft_calloc(1, size_multiplier * PROMPT_INPUT_BUFFER_SIZE + 1);
+		ft_free(input_free_ptr);
 		if (!*input)
 			lst_memory(NULL, NULL, CLEAN);
 		ft_memcpy(*input, input_free_ptr, old_size);
-		lst_memory(*input, free, ADD);
-		lst_memory(input_free_ptr, NULL, FREE);
 	}
 	return (*input);
 }

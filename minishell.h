@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 11:07:05 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/29 22:22:25 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@
 # include <stdlib.h>
 # include <sys/wait.h>
 # include <termios.h>
-# include <readline/readline.h>
-# include <readline/history.h>
 # include <errno.h>
 # include <signal.h>
 # include <sys/ioctl.h>
@@ -52,6 +50,7 @@
 # define SCREEN_MAX "\033[9999;9999H"
 # define DEL 127
 # define EOT 4
+# define ESC 27
 
 # define SCREEN_DISBLE_WRAPPING "\033[?7l"
 # define SCREEN_ENABLE_WRAPPING "\033[?7h"
@@ -74,8 +73,8 @@ typedef struct s_prompt
 typedef enum
 {
 	TOKEN_WORD,
-    TOKEN_REDIRECT_IN,
     TOKEN_REDIRECT_OUT,
+    TOKEN_REDIRECT_IN,
     TOKEN_REDIRECT_APPEND,
     TOKEN_HEREDOC,
 	TOKEN_SINGLE_QUOTE,
@@ -86,8 +85,17 @@ typedef enum
     TOKEN_SEMICOLON,
 	TOKEN_EOL,
     TOKEN_ENV,
-    TOKEN_EXIT_STATUS
+    TOKEN_EXIT_STATUS,
+	TOKEN_DONE,
 } t_token_type;
+
+typedef enum
+{
+	TREE_NONE = 0,
+	TREE_PIPE = 7,
+	TREE_LOGICAL_AND,
+	TREE_LOGICAL_OR,
+} t_tree_connection_type;
 
 typedef struct s_token
 {
@@ -97,27 +105,38 @@ typedef struct s_token
 
 typedef enum 
 {
+	NODE_INVALID = 1,
+	NODE_END,
     NODE_COMMAND,
     NODE_REDIRECTION,
     NODE_PIPE,
     NODE_LOGICAL_OPERATOR,
 } t_node_type;
 
+typedef enum e_file_type
+{
+	REDIRECT_IN,
+	REDIRECT_OUT,
+	REDIRECT_APPEND
+}	t_file_type;
+
 typedef struct s_ast 
 {
     t_node_type		type;
 	t_token_type	token_type;
+	t_tree_connection_type connection_type;
 	struct s_ast	*left;
     struct s_ast	*right;
     char 			**args;
-    char			*file;
+    char			*file_in;
+	char			*file_out;
 	char			*error_message;
 	char			*path;
-	int				fd_file_in;
-	int				fd_file_out;
+	bool			has_redir_in;
+	bool			has_redir_out;
+	int32_t			pipefd[2];
     int				fd_in;
 	int				fd_out;
-	int				std_fd;
 	int				flags;
 	int				is_done;
 	int				exit_status;
@@ -292,7 +311,7 @@ int			get_len_next_single_quote(const char *input);
 void		free_token(void *addr_token);
 void		free_tokens_arr(void *addr_tokens);
 void		print_tokens(t_token *tokens);
-void		**custom_realloc(void **tokens, int old_capacity, int new_capacity);
+void		**custom_realloc(void ***tokens, int old_capacity, int new_capacity);
 
 /*tokenizer.c*/
 t_token		*lexical_analysis(const char *input, const char **env);
@@ -332,8 +351,8 @@ t_ast		*parse_tokens(t_token *tokens);
 
 void	restore_fd(int original_stdin, int original_stdout);
 /*parser.c*/
-void		fill_args(char **args, int count, char *token_value, int *capacity);
-void		parse_word(t_ast **head, int *i, t_token *tokens);
+void		fill_args(char ***args, int count, char *token_value, int *capacity);
+t_ast		parse_word(int *i, t_token *tokens);
 void		parse_logical_operator(t_ast **head, int *i, t_token *tokens);
 void		parse_redirection(t_ast **head, int *i, t_token *tokens);
 void		parse_pipe(t_ast **head, int *i, t_token *tokens);

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:20 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 21:40:45 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 17:06:07 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ void	clear_ast(void *head)
 	copy_head = (t_ast *)head;
 	while (copy_head)
 	{
+		if (copy_head->args)
+			free(copy_head->args);
 		temp = copy_head;
 		copy_head = copy_head->right;
 		free(temp);

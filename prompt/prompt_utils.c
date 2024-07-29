@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 22:03:13 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 16:00:44 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@ void	prompt_destroy(void *prompt)
 	t_prompt	*prompt_ptr;
 
 	prompt_ptr = (t_prompt *)prompt;
-	ft_free((void **)&prompt_ptr->history_entries);
-	ft_free((void **)&prompt_ptr);
+	free_split(prompt_ptr->history_entries);
+	ft_free(&prompt_ptr);
 }
 
 static uint32_t	prompt_display(const char **environment)
@@ -29,7 +29,7 @@ static uint32_t	prompt_display(const char **environment)
 	pwd = environment_variable_value_get("PWD", environment);
 	prompt_length = ft_strlen(pwd) + 4;
 	ft_putstr_fd(GREEN, 1);
-	ft_printf("[%s$] ", pwd);
+	ft_printf("[%s]$ ", pwd);
 	ft_putstr_fd(RESET, 1);
 	return (prompt_length);
 }

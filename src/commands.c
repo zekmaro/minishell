@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 19:27:37 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/29 23:56:45 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@ void	restore_fd(int original_stdin, int original_stdout)
 {
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
-	ft_close(original_stdin, "restore_fd");
-	ft_close(original_stdout, "restore_fd");
 }
 
 bool	buildin_execute(t_ast *node, const char **environment)
@@ -59,25 +57,18 @@ void	command_execute(const char *command_path,
 	}
 }
 
-void	execute_commands(t_ast *ast, const char *path_variable,
+void	execute_commands(t_ast *tree, const char *path_variable,
 					const char **env, int *error_catched)
 {
 	static int	exit_status;
-	t_ast		*current;
+	uint32_t	i;
 
 	exit_status = *error_catched;
-	current = ast;
-	while (current)
+	i = 0;
+	while (tree[i].type != NODE_END)
 	{
-		if (current->type == NODE_COMMAND && !current->is_done)
-		{
-			handle_command(current, path_variable, env, &exit_status);
-		}
-		else if (current->type == NODE_LOGICAL_OPERATOR)
-		{
-			handle_logical_operator(&current, exit_status);
-		}
-		current = current->right;
+		handle_command(&tree[i], path_variable, env, &exit_status);
+		i++;
 	}
 }
 
@@ -89,24 +80,24 @@ void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)
 		*error_catched = 1;
 	}
 }
-
-void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)
-{
-	while (ast)
-	{
-		if (ast->type == NODE_REDIRECTION)
-		{
-			handle_redir(ast, head, error_catched);
-		}
-		else if (ast->type == NODE_LOGICAL_OPERATOR)
-		{
-			check_valid_logical_operator(ast, error_catched);
-		}
-		if (*error_catched)
-			return ;
-		ast = ast->right;
-	}
-}
+/**/
+/*void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)*/
+/*{*/
+/*	while (ast)*/
+/*	{*/
+/*		if (ast->type == NODE_REDIRECTION)*/
+/*		{*/
+/*			handle_redir(ast, head, error_catched);*/
+/*		}*/
+/*		else if (ast->type == NODE_LOGICAL_OPERATOR)*/
+/*		{*/
+/*			check_valid_logical_operator(ast, error_catched);*/
+/*		}*/
+/*		if (*error_catched)*/
+/*			return ;*/
+/*		ast = ast->right;*/
+/*	}*/
+/*}*/
 
 void	print_tokens(t_token *tokens)
 {
@@ -137,7 +128,7 @@ void	*m_tokenizer(const char *input, const char **env,
 			const char *path_variable)
 {
 	t_token	*tokens;
-	t_ast	*ast;
+	t_ast	*tree;
 	int		original_stdin;
 	int		original_stdout;
 	int	error_catched;
@@ -147,14 +138,11 @@ void	*m_tokenizer(const char *input, const char **env,
 	original_stdout = dup(STDOUT_FILENO);
 	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
-	ast = parse_tokens(tokens);
-	print_ast(ast);
-	traverse_tree(ast, &ast, &error_catched);
-	print_ast(ast);
+	print_tokens(tokens);
+	tree = parse_tokens(tokens);
 	if (error_catched)
-		skip_up_to_logical_operator(ast);
-	execute_commands(ast, path_variable, env, &error_catched);
-	lst_memory(ast, NULL, FREE);
+		skip_up_to_logical_operator(tree);
+	execute_commands(tree, path_variable, env, &error_catched);
 	restore_fd(original_stdin, original_stdout);
 	return (NULL);
 }

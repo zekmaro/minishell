@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:43:48 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/27 19:29:47 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/29 21:08:55 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,15 @@ void	print_ast(t_ast *head)
 	i = 0;
 	j = 0;
 	printf("----AST----\n");
-	while (head)
+	while (head[j].type != NODE_END)
 	{
 		if (!head->is_done)
 		{
 			printf("NODE %d\n", i);
 			if (head->type == NODE_COMMAND)
 				printf("TYPE: COMMAND\n");
+			else if (head->type == NODE_INVALID)
+				printf("TYPE: INVALID\n");
 			else if (head->type == NODE_REDIRECTION)
 				printf("TYPE: REDIRECTION\n");
 			else if (head->type == NODE_PIPE)
@@ -63,7 +65,6 @@ void	print_ast(t_ast *head)
 			printf("\n");
 			printf("LEFT: %p\n", head->left);
 			printf("RIGHT: %p\n", head->right);
-			printf("FILE: %s\n", head->file);
 			printf("FD_FILE_IN: %d\n", head->fd_file_in);
 			printf("FD_FILE_OUT: %d\n", head->fd_file_out);
 			printf("FD_IN: %d\n", head->fd_in);
@@ -74,7 +75,7 @@ void	print_ast(t_ast *head)
 			i++;
 			printf("\n");
 		}
-		head = head->right;
+		j++;
 	}
 	printf("-----------\n");
 }

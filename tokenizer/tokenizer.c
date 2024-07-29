@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 11:15:34 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 12:35:55 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static t_token	*initialise_tokens(uint32_t word_count)
 
 	tokens = ft_calloc(word_count + 1, sizeof(t_token));
 	lst_memory(tokens, free_tokens, ADD);
+	tokens[word_count].token_type = TOKEN_EOL;
 	return (tokens);
 }
 
@@ -110,6 +111,5 @@ t_token	*lexical_analysis(const char *input, const char **env)
 			break ;
 		tokens[i++] = check_symbol_and_create_token(&input, env);
 	}
-	tokens[i].token_type = TOKEN_EOL;
 	return (tokens);
 }

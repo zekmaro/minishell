@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/09 23:43:36 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/06 18:22:00 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:52:21 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,6 @@ void	ft_putnbr_fd(int n, int fd);
 
 /* safe functions */
 
-void	ft_free(void **ptr);
+void	ft_free(void *ptr);
 
 #endif

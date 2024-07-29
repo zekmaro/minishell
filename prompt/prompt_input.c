@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/28 01:40:30 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/28 15:58:45 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static uint8_t	handle_single_char_input(char **input, char buffer[], \
 		if (ft_isprint(buffer[0]))
 			return (*do_refresh = handle_new_character_to_input(input, buffer[0], &cursor_position_current[1], input_length_current), 1);
 		else if (buffer[0] == EOT && input_length_current == 0)
-			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, CLEAN), 1);
+			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), ft_free(&*input), lst_memory(NULL, NULL, CLEAN), 1);
 	}
 	else
 	{
@@ -179,7 +179,6 @@ char	*prompt_get_input(t_prompt *prompt)
 
 	cursor_position_base = prompt->prompt_length + 1;
 	input = ft_calloc(PROMPT_INPUT_BUFFER_SIZE, sizeof(*input));
-	lst_memory(input, free, ADD);
 	terminal_raw_mode_enable(ECHOCTL | ICANON);
 	handle_input(prompt, input, cursor_position_base);
 	terminal_raw_mode_disable(ECHOCTL | ICANON);

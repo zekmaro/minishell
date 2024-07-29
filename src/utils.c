@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 16:00:56 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/29 21:23:37 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	ft_close(int fd, const char *specifier)
 		return (0);
 	if (close(fd) == -1)
 	{
-		p_stderr(2, "pipex: %s: ", specifier);
+		p_stderr(2, "minishell: %s: ", specifier);
 		perror("close");
 		lst_memory(NULL, NULL, CLEAN);
 	}
