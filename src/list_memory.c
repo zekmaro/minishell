@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:21:13 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:19 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/24 17:05:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	lst_memory(void *mem, void (*del)(void *c), int mode)
 		return (terminal_raw_mode_disable(), \
 				lst_list_clean(&list), exit(EXIT_FAILURE));
 	if (mode == END)
-		return (terminal_raw_mode_disable(), lst_list_clean(&list));
+		return (terminal_raw_mode_disable(), lst_list_clean(&list), exit(EXIT_SUCCESS));
 	if (mode == FREE)
 		return (lst_node_del_clean(&list, mem));
 	if (!mem)

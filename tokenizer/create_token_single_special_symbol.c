@@ -6,17 +6,17 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:36:57 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 15:40:43 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 14:20:30 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	is_single_special(const char *input)
+int	is_single_special(const char input)
 {
-	return ((*input == '<')
-		|| (*input == '>')
-		|| (*input == '|'));
+	return ((input == '<')
+		|| (input == '>')
+		|| (input == '|'));
 }
 
 t_token	create_token_single_special_symbol(const char **input)
@@ -26,9 +26,7 @@ t_token	create_token_single_special_symbol(const char **input)
 	char		*temp_move;
 
 	i = 0;
-	while (*input[i] && *input[i] == ' ')
-		i++;
-	temp_move = ft_strchr(&(*input)[i], ' ');
+	temp_move = (char *)*input;
 	if (**input == '<')
 		temp_token = create_token(TOKEN_REDIRECT_OUT, &(*input)[i]);
 	else if (**input == '>')
@@ -41,6 +39,10 @@ t_token	create_token_single_special_symbol(const char **input)
 		*input = temp_move + 1;
 	}
 	else
+	{
+		temp_move = (char *)*input;
 		*input += ft_strlen(*input);
+		*temp_move = 0;
+	}
 	return (temp_token);
 }

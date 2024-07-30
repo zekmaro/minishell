@@ -6,7 +6,7 @@
         "request": "launch",
         "program": "${workspaceRoot}/minishell",
         "args": ["test_in", "cat", "grep e", "grep h", "out"],
-        "stopAtEntry": true,
+        "stopAtEntry": false,
         "cwd": "${workspaceRoot}",
         "environment": [],
         "externalConsole": false,

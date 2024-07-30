@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/23 15:46:40 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 14:41:17 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ t_token	create_token_double_special_symbol(char **input)
 	else
 		token_type = TOKEN_OR;
 	temp_token = create_token(token_type, NULL);
+	**input = 0;
 	*input += 2;
 	return (temp_token);
 }

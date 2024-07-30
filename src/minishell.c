@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/24 10:51:30 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/26 15:38:25 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <sys/ioctl.h>
 
 int32_t	g_signal_flag;
 
@@ -25,6 +26,18 @@ void	setup(char **path_variable)
 	setup_signal_handlers();
 	ft_printf(SCREEN_CLEAR);
 	ft_printf(CURSOR_MOVE_HOME);
+}
+
+void	pwd_update(const char **environment)
+{
+	char	*pwd;
+	char	*old_pwd;
+	char	**env_pwd;
+
+	env_pwd = NULL;
+	pwd = getenv("PWD");
+	environment_variable_value_change(environment, "PWD", pwd);
+	/*ft_free((void **)&pwd);*/
 }
 
 int	main(int argc, char **argv, const char **env)
@@ -51,9 +64,11 @@ int	main(int argc, char **argv, const char **env)
 		if (command_input && *command_input != '\n')
 		{
 			m_tokenizer(command_input, (const char **)environment, path_variable);
-			prompt->history_entries[prompt->history_count++] = prompt->command;
+			if (*command_input)
+				prompt->history_entries[prompt->history_count++] = prompt->command;
 		}
 		prompt->history_position_current = prompt->history_count;
+		/*pwd_update((const char **)environment);*/
 		lst_memory(command_input, NULL, FREE);
 	}
 }
