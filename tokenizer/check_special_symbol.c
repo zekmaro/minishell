@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 19:44:00 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 15:49:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/27 19:32:30 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ int	is_special_char(char c)
 
 int	ft_isspace(char c)
 {
-	return (c == ' ');
+	return (c == ' ' || c == '\t' || c == '\n' || c == '\v'
+		|| c == '\f' || c == '\r');
 }
 
 int	ft_is_single_quote(char c, int *second_quote_found)

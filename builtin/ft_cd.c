@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/24 16:51:17 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/27 11:19:17 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	ft_cd(const char **environment, const char **args)
 		return (ft_putendl_fd("minishell: cd: too many arguments", 1));
 	else if (args_size == 1)
 	{
-		path_home = environment_variable_get("HOME", environment);
+		path_home = environment_variable_value_get("HOME", environment);
 		if (chdir(path_home) != 0)
 			return (perror("cd"));
 	}

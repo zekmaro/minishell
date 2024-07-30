@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 14:36:03 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 14:41:51 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ t_token	*lexical_analysis(const char *input, const char **env)
 {
 	t_token		*tokens;
 	uint32_t	i;
+	char		*input_free;
 
 	tokens = initialise_tokens(get_word_count((char *)input));
 	i = 0;

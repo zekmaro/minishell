@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/30 14:36:47 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 14:47:43 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,11 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <readline/readline.h>
-# include <signal.h>
 # include <readline/history.h>
 # include <errno.h>
 # include <signal.h>
+# include <sys/ioctl.h>
+# include <stddef.h>
 
 # define PROMPT_COMMAND_STACK_SIZE 6
 # define PROMPT_INPUT_BUFFER_SIZE 4096
@@ -185,22 +186,23 @@ void		cursor_position_get(uint32_t cursor_position[2]);
 void		cursor_position_save(void);
 void		cursor_position_restore(void);
 
-uint8_t		handle_escape_sequence(t_prompt *prompt, char **input, uint32_t cursor_position_current[2]);
+bool		handle_escape_sequence(t_prompt *prompt, char buffer[], char **input, uint32_t cursor_position_current[2]);
 char		*prompt_get_input(t_prompt *prompt);
+bool	handle_multiple_character_to_input(	char **input, char buffer[], uint32_t *cursor_position_current, uint32_t prompt_length_current);
 
 /* Prompt Buffer Management */
 void		prompt_refresh_line(char *input, uint32_t cursor_position_base, uint32_t cursor_position_current[2]);
-void		prompt_buffer_size_manage(char **input, uint32_t old_size);
+char		*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t size_to_add);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 
 /* Redirections */
 void		execute(char **tokens, char **env);
 /* Tab Completion */
-uint32_t		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
+void		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
 
 /* Termios */
-void		terminal_raw_mode_enable();
-void 		terminal_raw_mode_disable();
+void		terminal_raw_mode_enable(int);
+void 		terminal_raw_mode_disable(int);
 
 /* Utils */
 int			ft_close(int fd, const char *specifier);

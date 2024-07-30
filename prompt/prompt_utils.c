@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 14:59:56 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/27 22:03:13 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,14 @@ static uint32_t	prompt_display(const char **environment)
 
 char	*prompt_get(t_prompt *prompt)
 {
-	terminal_raw_mode_enable();
+	char	*input;
+
 	prompt->prompt_length = prompt_display((const char **)prompt->env_ptr);
-	prompt_get_input(prompt);
+	input = prompt_get_input(prompt);
 	if (!prompt->command || !*prompt->command)
 		return (NULL);
-	terminal_raw_mode_disable();
-	return (ft_strdup(prompt->command));
+	terminal_raw_mode_disable(ECHOCTL);
+	return (ft_strdup(input));
 }
 
 t_prompt	*prompt_create(const char **env)

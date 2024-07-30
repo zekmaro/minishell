@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/25 14:00:56 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/27 11:27:50 by victor           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -84,7 +84,7 @@ test: $(TEST_OBJ) $(AST_OBJ) $(TOKEN_OBJ) $(LIBS) minishell.h
 
 clean:
 	make clean -C libft
-	rm -f $(OBJ) $(AST_OBJ) $(TEST_OBJ) $(TOKEN_OBJ) $(BUILDIN_OBJ)
+	rm -f $(OBJ) $(AST_OBJ) $(TEST_OBJ) $(TOKEN_OBJ) $(PROMPT_OBJ) $(BUILDIN_OBJ)
 
 fclean: clean
 	rm -f $(NAME) $(TEST_NAME)

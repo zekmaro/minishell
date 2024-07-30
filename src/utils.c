@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/08 12:07:59 by victor            #+#    #+#             */
-/*   Updated: 2024/07/20 18:49:53 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/27 18:24:23 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,17 +86,8 @@ int64_t	ft_read(int fd, char *character, char **input, uint32_t size_to_read)
 	bytes_read = read(fd, character, size_to_read);
 	if (bytes_read == -1)
 	{
-		if (errno == EINTR)
+		if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK || g_signal_flag == 1)
 			return (0);
-		else if (bytes_read < 0)
-		{
-			if (errno != EAGAIN && errno != EWOULDBLOCK)
-			{
-				perror("read");
-				exit(EXIT_FAILURE);
-			}
-			return (0);
-		}
 		ft_free((void **)input);
 		perror("read");
 		lst_memory(NULL, NULL, CLEAN);

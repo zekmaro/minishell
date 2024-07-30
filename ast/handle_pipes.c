@@ -6,11 +6,15 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/22 20:49:34 by andrejarama       #+#    #+#             */
-/*   Updated: 2024/07/23 11:20:13 by anarama          ###   ########.fr       */
+/*   Updated: 2024/07/28 00:44:18 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <sys/types.h>
+#include <sys/ioctl.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 void handle_pipe(t_ast *pipe_node)
 {
