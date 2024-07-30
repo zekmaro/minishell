@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/29 22:22:25 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 12:29:08 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ void		ft_export(char ***environment, const char **args);
 void		ft_exit();
 
 /* Commands */
-bool		buildin_execute(t_ast *node, const char **environment);
+bool		buildin_execute(t_ast *node, const char **environment, int *exit_status);
 void 		command_execute(char const *command_path, char const *argv[], char const **env);
 void		*m_tokenizer(const char *input, const char **env, const char *path_variable);
 /* Handle signal */

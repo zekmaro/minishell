@@ -6,13 +6,11 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/28 15:58:45 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 12:37:08 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <sys/ioctl.h>
-#define nop() {volatile int x; {x = 0;}}
 
 static void	handle_backspace(	char *input, \
 								uint32_t *cursor_position_current, \
@@ -76,7 +74,6 @@ static uint8_t	handle_single_char_input(char **input, char buffer[], \
 {
 	uint32_t	input_length_current;
 	uint32_t	new_buffer_length;
-	uint32_t	i;
 
 	input_length_current = ft_strlen(*input);
 	new_buffer_length = ft_strlen(buffer);
@@ -85,11 +82,10 @@ static uint8_t	handle_single_char_input(char **input, char buffer[], \
 		if (ft_isprint(buffer[0]))
 			return (*do_refresh = handle_new_character_to_input(input, buffer[0], &cursor_position_current[1], input_length_current), 1);
 		else if (buffer[0] == EOT && input_length_current == 0)
-			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), ft_free(&*input), lst_memory(NULL, NULL, CLEAN), 1);
+			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, CLEAN), 1);
 	}
 	else
 	{
-		i = 0;
 		*do_refresh = handle_multiple_character_to_input(input, buffer, &cursor_position_current[1], input_length_current);
 		return (1);
 	}
@@ -103,15 +99,6 @@ void	blocking_mode_toggle(int flag)
 		perror("ioctl");
 		exit(1);
 	}
-}
-
-void	your_sleep(int ms)
-{
-	volatile int i;
-
-	i = 1000000 * ms;
-	while (i--)
-		nop();
 }
 
 static char	*handle_input(	t_prompt *prompt, \
@@ -167,18 +154,20 @@ static char	*handle_input(	t_prompt *prompt, \
 				prompt_refresh_line(input, cursor_position_base, cursor_position);
 		}
 	}
-	prompt->command = input;
 	return (input);
 }
 
 char	*prompt_get_input(t_prompt *prompt)
 {
 	char		*input;
-	char		*new_line_terminator;
 	uint32_t	cursor_position_base;
 
 	cursor_position_base = prompt->prompt_length + 1;
 	input = ft_calloc(PROMPT_INPUT_BUFFER_SIZE, sizeof(*input));
+	if (!input)
+		return (perror("malloc"), NULL);
+	lst_memory(&input, ft_free, ADD);
+	prompt->command = input;
 	terminal_raw_mode_enable(ECHOCTL | ICANON);
 	handle_input(prompt, input, cursor_position_base);
 	terminal_raw_mode_disable(ECHOCTL | ICANON);

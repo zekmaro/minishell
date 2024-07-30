@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 16:09:34 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 13:53:12 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,10 @@ void	copy_matches(	const char *path, \
 	DIR				*tmp_dir;
 	struct dirent	*tmp_entry;
 
-	directory_entries = ft_calloc(get_matches_size(path, to_match) + 1, \
-									sizeof(*directory_entries));
+	if (*to_match == '*')
+		return (copy_matches(path, "0", directory_entries));
+	*directory_entries = ft_calloc(get_matches_size(path, to_match) + 1, \
+									sizeof(**directory_entries));
 	if (!directory_entries)
 		lst_memory(NULL, NULL, CLEAN);
 	ft_opendir(&tmp_dir, path);
@@ -91,10 +93,9 @@ t_token	expand_wildcard(const char **input)
 	input_path = determine_path((char *)*input);
 	if (input_path)
 	{
-		*input = input_path + 1;
+		*input = ft_strrchr(*input, 0) + 1;
 		input_path = tmp;
-		ft_putendl_fd(input_path, 1);
-		copy_matches("./builtin", *input, &directory_entries);
+		copy_matches(input_path, *input, &directory_entries);
 	}
 	else
 	{
@@ -110,7 +111,9 @@ t_token	create_token_word(const char **input)
 {
 	t_token	temp_token;
 	char	*temp_move;
+	char	*input_next;
 
+	input_next = NULL;
 	temp_move = (char *)*input;
 	while (*temp_move && !is_special_char(*temp_move))
 		temp_move++;
@@ -118,11 +121,14 @@ t_token	create_token_word(const char **input)
 	if (*temp_move == ' ')
 	{
 		*temp_move = 0;
-		*input = temp_move + 1;
+		input_next = temp_move + 1;
 	}
+	temp_move = ft_strchr(*input, '*');
+	if (temp_move)
+		return (expand_wildcard(input));
+	if (input_next)
+		*input = input_next;
 	else
-		*input = temp_move;
-	if (temp_move && ft_strchr(temp_move, '*'))
-		return (expand_wildcard((const char **)&temp_move));
+		*input = ft_strchr(*input, 0);
 	return (temp_token);
 }

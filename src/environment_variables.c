@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/26 15:25:03 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 12:08:45 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ char	**environment_create(const char **env)
 	uint32_t	i;
 
 	environment_new = ft_calloc(ENVIRONMENT_SIZE + 1, sizeof(*environment_new));
-	lst_memory(environment_new, free_split, ADD);
+	lst_memory(&environment_new, ft_free, ADD);
 	i = 0;
 	while (env[i])
 	{
-		environment_new[i] = ft_strdup(env[i]);
+		environment_new[i] = (char *)env[i];
 		if (!environment_new[i])
 			return (lst_memory(NULL, NULL, CLEAN), NULL);
 		i++;
@@ -80,11 +80,13 @@ char	**environment_variable_add(	char **environment,
 	variable_to_add = ft_calloc(variable_new_name_length \
 								+ variable_new_value_length + 2, \
 								sizeof(*variable_to_add));
+	lst_memory(&variable_to_add, ft_free, ADD);
 	ft_strlcpy(variable_to_add, variable_new_name, \
 				ft_strlen(variable_new_name) + 1);
 	ft_strlcpy(variable_to_add + variable_new_name_length, "=", 2);
-	ft_strlcpy(variable_to_add + variable_new_name_length + 1, \
-				variable_new_value, variable_new_value_length + 1);
+	if (variable_new_value)
+		ft_strlcpy(variable_to_add + variable_new_name_length + 1, \
+					variable_new_value, variable_new_value_length + 1);
 	environment[environment_length_current] = variable_to_add;
 	return (environment);
 }
@@ -96,19 +98,16 @@ void	environment_variable_remove(char **environment, const char *variable)
 	char		*to_remove;
 
 	i = 0;
-	to_remove = NULL;
 	variable_length = ft_strlen(variable);
 	while (environment[i])
 	{
 		if (ft_strncmp(environment[i], (char *)variable, variable_length) == 0)
 		{
-			to_remove = environment[i];
 			while (environment[i])
 			{
 				environment[i] = environment[i + 1];
 				i++;
 			}
-			ft_free((void **)&to_remove);
 			return ;
 		}
 		i++;
@@ -194,7 +193,7 @@ char	**environment_variable_get( const char *variable, \
 	{
 		if (ft_strncmp(variable_findable_name, environment[i], \
 						variable_length) == 0)
-			return (free(variable_findable_name), (char **)&environment[i]);
+			return (ft_free(&variable_findable_name), (char **)&environment[i]);
 		i++;
 	}
 	free(variable_findable_name);
@@ -220,5 +219,4 @@ void	environment_variable_value_change(const char **environment, const char *var
 	ft_strlcpy(new_variable + ft_strlen(new_variable), variable_new_value, ft_strlen(variable_new_value) + 1);
 	variable_to_change_free_ptr = *variable_to_change;
 	*variable_to_change = new_variable;
-	ft_free((void **)&variable_to_change_free_ptr);
 }

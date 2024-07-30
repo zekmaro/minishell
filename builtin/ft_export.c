@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/24 16:51:03 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 11:59:28 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,12 @@ static void	print_environment_a_la_export(char *variable)
 	variable_name = variable;
 	variable_value = ft_strchr(variable, '=');
 	if (variable_value)
+	{
 		*variable_value++ = 0;
-	ft_printf("declare -x %s=\"%s\"\n", variable_name, variable_value);
+		ft_printf("declare -x %s=\"%s\"\n", variable_name, variable_value);
+	}
+	else
+		ft_printf("declare -x %s=\"\"\n", variable_name);
 }
 
 static void	environment_print_sorted(const char **environment)
@@ -57,7 +61,6 @@ static void	environment_print_sorted(const char **environment)
 	i = 0;
 	while (tmp_env[i])
 		print_environment_a_la_export(tmp_env[i++]);
-	lst_memory(tmp_env, NULL, FREE);
 }
 
 void	variable_exists(const char **environment, const char *variable_name)
@@ -95,10 +98,10 @@ void	ft_export(char ***environment, const char **args)
 	while (args[i])
 	{
 		variable_name = (char *)args[i];
-		variable_exists((const char **)*environment, variable_name);
 		variable_value = ft_strchr(args[i], '=');
 		if (variable_value)
 			*variable_value++ = 0;
+		variable_exists((const char **)*environment, variable_name);
 		environment_variable_add(*environment, variable_name, variable_value);
 		i++;
 	}

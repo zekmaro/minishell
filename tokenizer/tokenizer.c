@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 12:35:55 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 12:30:41 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ void	free_tokens(void *token_ptr)
 	i = 0;
 	while (token[i].token_type != TOKEN_EOL)
 	{
-		if (token[i].token_type == TOKEN_ENV)
-			ft_free((void **)&token[i].token_value);
+		if (token[i].token_value)
+			ft_free(&token[i].token_value);
 		i++;
 	}
-	ft_free((void **)&token);
+	ft_free(&token);
 }
 
 static t_token	*initialise_tokens(uint32_t word_count)
