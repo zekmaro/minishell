@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/28 11:15:10 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 19:42:37 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,8 +37,7 @@ void	extract_word(	char **buffer, \
 
 	*buffer = ft_calloc(get_split_length(variable_pointers) \
 						+ ft_strlen(command_input) + 1, sizeof(*buffer));
-	if (!*buffer)
-		lst_memory(NULL, NULL, CLEAN);
+	lst_memory(buffer, free, ADD);
 	tmp = *buffer;
 	j = 0;
 	while (*command_input || variable_pointers[j])
@@ -105,21 +104,15 @@ char	*interpret_double_quotes(	const char **command_input, \
 									const char **environement, \
 									t_token_type *type)
 {
-	char		**variable_pointers;
 	char		*buffer;
-	uint32_t	variable_count;
 
-	variable_count = determine_variables(*command_input);
-	variable_pointers = ft_calloc(variable_count + 1, sizeof(char *));
 	buffer = NULL;
-	if (!ft_strchr(*command_input + 1, '\"') || !variable_pointers)
+	if (!ft_strchr(*command_input + 1, '\"'))
 		lst_memory(NULL, NULL, CLEAN);
 	*ft_strchr(*command_input + 1, '\"') = 0;
-	if (variable_count)
+	if (ft_strchr(*command_input, '$'))
 	{
-		extract_variable(variable_pointers, *command_input, \
-						environement, variable_count);
-		extract_word(&buffer, (char *)*command_input + 1, variable_pointers);
+		variable_expand((char **)command_input, &buffer, environement, (char *)*command_input + 1);
 		*type = TOKEN_ENV;
 	}
 	else
@@ -128,5 +121,5 @@ char	*interpret_double_quotes(	const char **command_input, \
 		buffer = (char *)*command_input + 1;
 	}
 	*command_input = ft_strchr(*command_input + 1, 0);
-	return ((*command_input)++, free(variable_pointers), buffer);
+	return ((*command_input)++, buffer);
 }

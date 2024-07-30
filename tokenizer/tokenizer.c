@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 12:30:41 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 19:18:10 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,8 @@
 void	free_tokens(void *token_ptr)
 {
 	t_token		*token;
-	uint32_t	i;
 
 	token = token_ptr;
-	i = 0;
-	while (token[i].token_type != TOKEN_EOL)
-	{
-		if (token[i].token_value)
-			ft_free(&token[i].token_value);
-		i++;
-	}
 	ft_free(&token);
 }
 
@@ -51,11 +43,6 @@ static t_token	check_symbol_and_create_token(const char **input,
 		return (create_token_quotes(input, env));
 	else
 		return (create_token_word(input));
-}
-
-static bool	is_token(char c)
-{
-	return (c == '>' || c == '|' || c == '<' || ft_isalnum(c));
 }
 
 static uint32_t	get_word_count(char *input)
@@ -99,7 +86,6 @@ t_token	*lexical_analysis(const char *input, const char **env)
 {
 	t_token		*tokens;
 	uint32_t	i;
-	char		*input_free;
 
 	tokens = initialise_tokens(get_word_count((char *)input));
 	i = 0;

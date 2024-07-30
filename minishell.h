@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/30 12:29:08 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 23:48:22 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,16 @@
 # define SCREEN_CLEAR "\033[2J"
 # define SCREEN_CLEAR_TO_EOF "\033[J"
 
+# define ENVIRONMENT_SIZE 512
 # define INITIAL_TOKEN_CAPACITY 16
 
 typedef struct s_prompt
 {
-	char		*command;
+	bool		exists;
 	uint32_t	prompt_length;
 	uint32_t	history_position_current;
 	uint32_t	history_count;
+	char		*command;
 	char		**history_entries;
 	char		**env_ptr;
 }				t_prompt;
@@ -199,8 +201,9 @@ char		*find_absolute_path(const char *path_variable, char *input);
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
-t_prompt	*prompt_create(const char **env);
-char		*prompt_get(t_prompt *prompt);
+t_prompt	prompt_create(const char **env);
+char		*prompt_get(const char **environment);
+uint32_t	prompt_display(const char **environment);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -208,13 +211,15 @@ void		cursor_position_save(void);
 void		cursor_position_restore(void);
 
 bool		handle_escape_sequence(t_prompt *prompt, char buffer[], char **input, uint32_t cursor_position_current[2]);
-char		*prompt_get_input(t_prompt *prompt);
-bool	handle_multiple_character_to_input(	char **input, char buffer[], uint32_t *cursor_position_current, uint32_t prompt_length_current);
+char		*prompt_get_input(t_prompt *prompt, uint32_t prompt_initial_size, const char *delimiter);
+bool		handle_multiple_character_to_input(	char **input, char buffer[], uint32_t *cursor_position_current, uint32_t prompt_length_current);
 
 /* Prompt Buffer Management */
 void		prompt_refresh_line(char *input, uint32_t cursor_position_base, uint32_t cursor_position_current[2]);
 char		*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t input_new_size);
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
+bool		handle_new_character_to_input(		char **input, char character, uint32_t *cursor_position_current, uint32_t prompt_length_current);
+void		blocking_mode_toggle(int flag);
 
 /* Redirections */
 void		execute(char **tokens, char **env);
@@ -279,6 +284,8 @@ char	*interpret_single_quote(const char *command_input);
 int			is_env_var(const char input);
 t_token		create_token_env_var(char **input, const char **env);
 void		extract_variable(char **variable_counter, const char *command_input, const char **environement, uint32_t variable_count);
+void		variable_expand(char **input, char **buffer, const char **environement, char *temp_move);
+
 
 /*create_token_quotes.c*/
 int			is_quote(const char input);
@@ -312,6 +319,9 @@ void		free_token(void *addr_token);
 void		free_tokens_arr(void *addr_tokens);
 void		print_tokens(t_token *tokens);
 void		**custom_realloc(void ***tokens, int old_capacity, int new_capacity);
+
+/* subshell.c */
+char	*execute_subshell(char *input, const char **environement);
 
 /*tokenizer.c*/
 t_token		*lexical_analysis(const char *input, const char **env);

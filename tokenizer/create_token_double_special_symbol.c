@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 14:41:17 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 23:04:20 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,14 @@ int	is_double_special(const char *input)
 		|| (ft_strncmp(input, "<<", 2) == 0)
 		|| (ft_strncmp(input, "&&", 2) == 0)
 		|| (ft_strncmp(input, "||", 2) == 0));
+}
+
+void	token_heredoc(t_token *token, char **input)
+{
+	static	t_prompt prompt;
+
+	prompt = (t_prompt){0};
+	/*token->token_value = prompt_get_input(&prompt);*/
 }
 
 t_token	create_token_double_special_symbol(char **input)

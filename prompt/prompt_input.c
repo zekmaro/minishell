@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 12:37:08 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 23:34:59 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ static void	handle_backspace(	char *input, \
 	ft_putstr_fd(CURSOR_MOVE_LEFT, 1);
 }
 
-static bool	handle_new_character_to_input(	char **input,
+bool	handle_new_character_to_input(		char **input,
 											char character,
 											uint32_t *cursor_position_current,
 											uint32_t prompt_length_current)
@@ -101,75 +101,92 @@ void	blocking_mode_toggle(int flag)
 	}
 }
 
+void	handle_rapid_input(char buffer[], uint32_t cursor_position[2], char *input, uint32_t cursor_position_base)
+{
+	int32_t	bytes_read;
+	bool	do_refresh;
+
+	blocking_mode_toggle(1);
+	bytes_read = 1;
+	do_refresh = true;
+	while (bytes_read > 0)
+	{
+		handle_single_char_input(&input, buffer, cursor_position, 0);
+		ft_bzero(buffer, 100);
+		bytes_read = ft_read(0, buffer, &input, 99);
+	}
+	blocking_mode_toggle(0);
+	if (do_refresh)
+		prompt_refresh_line(input, cursor_position_base, cursor_position);
+}
+
+void	handle_accepted_input(t_prompt *prompt, uint32_t cursor_position[2], char *input, char buffer[])
+{
+	bool	do_refresh;
+
+	do_refresh = true;
+	if (buffer[0] == ESC)
+		do_refresh = handle_escape_sequence(prompt, &buffer[1], &input, cursor_position);
+	else if (buffer[0] == '\t')
+		handle_tab(&input, (const char **)prompt->env_ptr, cursor_position);
+	else if (buffer[0] == DEL)
+		handle_backspace(input, &cursor_position[1], \
+				ft_strlen(input));
+	else
+		handle_single_char_input(&input, buffer, cursor_position, &do_refresh);
+	if (do_refresh == true)
+		prompt_refresh_line(input, prompt->prompt_length + 1, cursor_position);
+}
+
 static char	*handle_input(	t_prompt *prompt, \
 							char *input, \
-							uint32_t cursor_position_base)
+							uint32_t cursor_position[2], \
+							const char *delimiter)
 {
-	uint32_t	cursor_position[2];
 	char		buffer[100];
-	bool		do_refresh;
-	bool		ignore_newline;
+	uint32_t	delimiter_length;
 	int64_t		bytes_read;
+	uint32_t	cursor_position_base;
 
-	cursor_position_get(cursor_position);
-	cursor_position[1] = 0;
-	ignore_newline = false;
+	delimiter_length = ft_strlen(delimiter);
+	cursor_position_base = prompt->prompt_length + 1;
 	while (1)
-	{	
+	{
 		ft_bzero(buffer, 100);
 		bytes_read = ft_read(0, buffer, &input, 20);
 		if (g_signal_flag == 1)
-				
-			return (input[cursor_position[1]] = '^', input[cursor_position[1] + 1] = 'C', prompt_refresh_line(input, cursor_position_base, cursor_position), ft_putstr_fd("\n", 1), ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1), NULL);
-		if (bytes_read > 0)
-		{
-			do_refresh = true;
-			if (bytes_read > 4 && ignore_newline == false)
-			{
-				blocking_mode_toggle(1);
-				while (bytes_read > 0)
-				{
-					handle_single_char_input(&input, buffer, cursor_position, &do_refresh);
-					ft_bzero(buffer, 100);
-					bytes_read = ft_read(0, buffer, &input, 99);
-				}
-				blocking_mode_toggle(0);
-			}
-			else if (bytes_read >= 1)
-			{
-				if (buffer[0] == ESC)
-					do_refresh = handle_escape_sequence(prompt, &buffer[1], &input, cursor_position);
-				else if (buffer[0] == '\t')
-					handle_tab(&input, (const char **)prompt->env_ptr, \
-							&cursor_position[1]);
-				else if (buffer[0] == DEL)
-					handle_backspace(input, &cursor_position[1], \
-							ft_strlen(input));
-				else
-					handle_single_char_input(&input, buffer, cursor_position, &do_refresh);
-			}
-			if (ignore_newline == false && buffer[0] == '\n')
-				break;
-			if (do_refresh == true)
-				prompt_refresh_line(input, cursor_position_base, cursor_position);
-		}
+			return (prompt_refresh_line(input, cursor_position_base, cursor_position), NULL);
+		if (bytes_read > 15)
+			handle_rapid_input(buffer, cursor_position, input, cursor_position_base);
+		else if (buffer[0] == *delimiter && delimiter_length == 1)
+			break ;
+		else if (ft_strncmp(&buffer[0], delimiter, delimiter_length) == 0)
+			break ;
+		else if (bytes_read >= 1)
+			handle_accepted_input(prompt, cursor_position, input, buffer);
 	}
 	return (input);
 }
 
-char	*prompt_get_input(t_prompt *prompt)
+char	*prompt_get_input(t_prompt *prompt, uint32_t prompt_initial_size, const char *delimiter)
 {
 	char		*input;
-	uint32_t	cursor_position_base;
+	uint32_t	cursor_position[2];
 
-	cursor_position_base = prompt->prompt_length + 1;
-	input = ft_calloc(PROMPT_INPUT_BUFFER_SIZE, sizeof(*input));
+	input = ft_calloc(prompt_initial_size, sizeof(*input));
 	if (!input)
 		return (perror("malloc"), NULL);
-	lst_memory(&input, ft_free, ADD);
-	prompt->command = input;
+	lst_memory(input, free, ADD);
 	terminal_raw_mode_enable(ECHOCTL | ICANON);
-	handle_input(prompt, input, cursor_position_base);
+	cursor_position_get(cursor_position);
+	cursor_position[1] = 0;
+	input = handle_input(prompt, input, cursor_position, delimiter);
 	terminal_raw_mode_disable(ECHOCTL | ICANON);
-	return (prompt->command);
+	if (!input && g_signal_flag == 1)
+	{
+		ft_putstr_fd("^C", 1);
+		ft_putchar_fd('\n', 1);
+	}
+	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
+	return (input);
 }

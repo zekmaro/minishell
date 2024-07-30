@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/30 12:36:18 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 19:08:00 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	restore_fd(int original_stdin, int original_stdout)
 {
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
+	ft_close(original_stdin, "stdin in restore_fd");
+	ft_close(original_stdout, "stdout in restore_fd");
 }
 
 void	command_execute(const char *command_path,
@@ -120,15 +122,11 @@ void	*m_tokenizer(const char *input, const char **env,
 	int	error_catched;
 
 	error_catched = 0;
-	original_stdin = dup(STDIN_FILENO);
-	original_stdout = dup(STDOUT_FILENO);
-	lst_memory((void *)input, free, ADD);
 	tokens = lexical_analysis(input, env);
 	tree = parse_tokens(tokens);
 	if (error_catched)
 		skip_up_to_logical_operator(tree);
 	execute_commands(tree, path_variable, env, &error_catched);
 	lst_memory(tokens, NULL, FREE);
-	restore_fd(original_stdin, original_stdout);
 	return (NULL);
 }

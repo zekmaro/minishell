@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:02:39 by victor            #+#    #+#             */
-/*   Updated: 2024/07/27 19:04:53 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 20:01:38 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,15 @@ static void	handle_arrow_key_up(	t_prompt *prompt,
 									char **input,
 									uint32_t *cursor_position_current)
 {
-	uint32_t	prompt_history_count;
-
+	if (prompt->history_position_current == 0)
+		return ;
 	if (cursor_position_current[0] > 1)
 		ft_putstr_fd(CURSOR_MOVE_DOWN, 1);
-	if (prompt->history_count > 0 && prompt->history_position_current > 0)
-	{
-		prompt_history_count = prompt->history_count;
-		prompt->history_entries[prompt->history_position_current] = *input;
-		prompt->history_position_current--;
-		*input = prompt->history_entries[prompt->history_position_current];
-		cursor_position_current[1] = ft_strlen(*input);
-	}
+	if (prompt->history_position_current == prompt->history_count && \
+			prompt->history_entries[prompt->history_count] == 0)
+		prompt->history_entries[prompt->history_count] = *input;
+	*input = prompt->history_entries[--prompt->history_position_current];
+	cursor_position_current[1] = ft_strlen(*input);
 }
 
 static void	handle_arrow_key_down(	t_prompt *prompt,

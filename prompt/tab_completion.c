@@ -6,21 +6,28 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 17:22:34 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 00:06:54 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <sys/ioctl.h>
 
-static void	handle_tab_no_match(const char *input_path, const char **env)
+static void	handle_tab_no_match(const char *input_path, const char **env, uint32_t cursor_position_current[2])
 {
-	uint32_t		cursor_position_stored[2];
+	struct winsize	win;
 
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
 	cursor_position_save();
-	ft_putstr_fd("\n\r", 1);
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
+	ft_putstr_fd("\n\r", 1);
 	command_execute("/usr/bin/ls", (const char *[]){"ls", input_path, NULL}, env);
 	cursor_position_restore();
+	if (cursor_position_current[0] == win.ws_row)
+	{
+		ft_putchar_fd('\r', 1);
+		prompt_display(env);
+	}
 }
 
 static char	*determine_word(char *input, char **input_path, uint32_t cursor_position_current)
@@ -106,7 +113,7 @@ uint32_t	get_current_word_length(char *word)
 	return (ft_strlen(word));
 }
 
-void	handle_tab(char **input, const char **env, uint32_t *cursor_position_current)
+void	handle_tab(char **input, const char **env, uint32_t cursor_position_current[2])
 {
 	DIR				*directory_current;
 	char			*current_word;
@@ -114,8 +121,10 @@ void	handle_tab(char **input, const char **env, uint32_t *cursor_position_curren
 	char			*input_path;
 	uint32_t		current_word_length;
 
+	if (!*input[cursor_position_current[1] - (cursor_position_current[1] > 0)])
+		return (handle_tab_no_match(".", env, cursor_position_current));
 	input_path = NULL;
-	current_word = determine_word(*input, &input_path, *cursor_position_current);
+	current_word = determine_word(*input, &input_path, cursor_position_current[1]);
 	current_word_length = get_current_word_length(current_word);
 	if (input_path)
 		ft_opendir(&directory_current, input_path);
@@ -123,15 +132,11 @@ void	handle_tab(char **input, const char **env, uint32_t *cursor_position_curren
 		ft_opendir(&directory_current, "./");
 	next_word_match = find_next_match(current_word, current_word_length, directory_current);
 	if (!next_word_match && !current_word_length)
-		handle_tab_no_match(input_path, env);
+		handle_tab_no_match(input_path, env, cursor_position_current);
 	else
 	{
 		if (next_word_match)
 			handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
-		cursor_position_save();
-		ft_putstr_fd("\n\r", 1);
-		ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
-		cursor_position_restore();
 	}
 	closedir(directory_current);
 }

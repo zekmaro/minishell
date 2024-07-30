@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 12:33:45 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 19:17:55 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,6 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 		if (tokens[i].token_type != TOKEN_DONE)
 		{
 			fill_args(&args, count, tokens[i].token_value, &capacity);
-			if (tokens[i].token_type != TOKEN_ENV)
-				tokens[i].token_value = NULL;
 			tokens[i].token_type = TOKEN_DONE;
 			count++;
 		}
@@ -128,7 +126,7 @@ static t_ast	collect_redirection(t_token *token)
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
 			|| token[i].token_type == TOKEN_REDIRECT_APPEND)
 		   )		{
-			if  (token[i + 1].token_type == TOKEN_WORD || TOKEN_ENV)
+			if  (token[i + 1].token_type == TOKEN_WORD || token[i + 1].token_type == TOKEN_ENV)
 			{
 				if (token[i].token_type == TOKEN_REDIRECT_IN)
 				{
@@ -187,6 +185,5 @@ t_ast	*parse_tokens(t_token *tokens)
 			return (perror("minishell"), ft_free(&tree), NULL);
 		i++;
 	}
-	/*print_branch(tree);*/
 	return (tree);
 }

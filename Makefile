@@ -6,14 +6,14 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/30 14:15:43 by vvobis           ###   ########.fr        #
+#    Updated: 2024/07/31 00:05:30 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g3
-#-fsanitize=leak,undefined,address
+CFLAGS		:= -Wall -Wextra -g3 
+# -fsanitize=leak,undefined,address
 
 # DIRECTORIES
 SRCDIR		:= src
@@ -46,7 +46,8 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token.c \
 				tokenizer/string_utils.c \
 				tokenizer/quotes.c \
-				tokenizer/tokenizer.c
+				tokenizer/tokenizer.c \
+				tokenizer/subshell.c
 
 BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_pwd.c builtin/ft_unset.c \

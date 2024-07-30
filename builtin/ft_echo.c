@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 11:39:04 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/28 11:53:24 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 17:56:04 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,10 @@ int32_t	ft_echo(char **args)
 			ft_putchar_fd(' ', 1);
 			i++;
 		}
-		ft_putendl_fd(args[i], 1);
+		if (args[i] && args[i][ft_strlen(args[i]) - (ft_strlen(args[i]) > 0)] == '\n')
+			ft_putstr_fd(args[i], 1);
+		else
+			ft_putendl_fd(args[i], 1);
 	}
 	return (0);
 }

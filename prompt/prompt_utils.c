@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 12:35:56 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 23:57:31 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	prompt_destroy(void *prompt)
 	ft_free(&prompt_ptr);
 }
 
-static uint32_t	prompt_display(const char **environment)
+uint32_t	prompt_display(const char **environment)
 {
 	char		*pwd;
 	uint32_t	prompt_length;
@@ -34,33 +34,35 @@ static uint32_t	prompt_display(const char **environment)
 	return (prompt_length);
 }
 
-char	*prompt_get(t_prompt *prompt)
+char	*prompt_get(const char **environment)
 {
-	char	*input;
+	char			*input;
+	static t_prompt prompt;
 
-	prompt->prompt_length = prompt_display((const char **)prompt->env_ptr);
-	input = prompt_get_input(prompt);
-	if (!prompt->command || !*prompt->command)
+	if (!prompt.exists)
+		prompt = prompt_create(environment);
+	prompt.prompt_length = prompt_display((const char **)prompt.env_ptr);
+	prompt.command = prompt_get_input(&prompt, PROMPT_INPUT_BUFFER_SIZE, "\n");
+	if (!prompt.command || !*prompt.command)
 		return (NULL);
-	terminal_raw_mode_disable(ECHOCTL);
-	return (ft_strdup(input));
+	prompt.history_entries[prompt.history_count] = prompt.command;
+	prompt.history_count++;
+	prompt.history_position_current = prompt.history_count;
+	input = ft_strdup(prompt.command);
+	if (!input)
+		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), NULL);
+	return (input);
 }
 
-t_prompt	*prompt_create(const char **env)
+t_prompt	prompt_create(const char **env)
 {
-	t_prompt	*tmp;
+	t_prompt	tmp;
 
-	tmp = ft_calloc(1, sizeof(*tmp));
-	if (!tmp)
-		return (NULL);
-	tmp->history_entries = ft_calloc(1024, sizeof(*tmp->history_entries));
-	if (!tmp->history_entries)
-	{
-		ft_free((void **)&tmp);
-		return (NULL);
-	}
-	tmp->history_count = 0;
-	tmp->env_ptr = (char **)env;
-	lst_memory(tmp, prompt_destroy, ADD);
+	tmp = (t_prompt){0};
+	tmp.history_entries = ft_calloc(16, sizeof(*tmp.history_entries));
+	lst_memory(tmp.history_entries, free, ADD);
+	tmp.history_count = 0;
+	tmp.env_ptr = (char **)env;
+	tmp.exists = true;
 	return (tmp);
 }

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/07 17:48:41 by vvobis            #+#    #+#             */
-/*   Updated: 2024/04/07 17:52:16 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 21:15:43 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,5 @@ void	ft_putstr_fd(char *str, int fd)
 {
 	if (!str)
 		return ;
-	while (*str)
-		ft_putchar_fd(*str++, fd);
+	write(1, str, ft_strlen(str));
 }

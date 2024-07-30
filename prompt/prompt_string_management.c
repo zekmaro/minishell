@@ -3,10 +3,9 @@
 /*                                                        :::      ::::::::   */
 /*   prompt_string_management.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */ /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 08:16:45 by victor            #+#    #+#             */
-/*   Updated: 2024/07/28 15:55:22 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 17:41:35 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +55,10 @@ char	*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t size_t
 		size_multiplier = (old_size / PROMPT_INPUT_BUFFER_SIZE) + 2;
 		input_free_ptr = *input;
 		*input = ft_calloc(1, size_multiplier * PROMPT_INPUT_BUFFER_SIZE + 1);
-		ft_free(input_free_ptr);
 		if (!*input)
 			lst_memory(NULL, NULL, CLEAN);
 		ft_memcpy(*input, input_free_ptr, old_size);
+		ft_free(&input_free_ptr);
 	}
 	return (*input);
 }

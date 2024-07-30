@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 12:42:14 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/30 18:47:49 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ int	execute_command(t_ast *command, const char **env)
 {
 	int		status;
 	pid_t	pid;
+	int		stdout_fd;
 
+	stdout_fd = dup(STDOUT_FILENO);
 	ft_fork(&pid, "execute command");
 	if (pid == 0)
 	{
@@ -51,6 +53,8 @@ int	execute_command(t_ast *command, const char **env)
 		waitpid(pid, &status, 0);
 		if (WIFEXITED(status))
 		{
+			dup2(stdout_fd, STDOUT_FILENO);
+			ft_close(stdout_fd, "in execute command parent");
 			return (WEXITSTATUS(status));
 		}
 	}
@@ -90,9 +94,6 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 void	handle_command(t_ast *current, const char *path_variable,
 					const char **env, int *exit_status)
 {
-	int		stdout_fd;
-
-	stdout_fd = dup(STDOUT_FILENO);
 	if (current->connection_type == TREE_PIPE)
 	{
 		ft_pipe(current->pipefd, "in handle_command");
@@ -103,5 +104,4 @@ void	handle_command(t_ast *current, const char *path_variable,
 				current->args[0]);
 		*exit_status = execute_command(current, env);
 	}
-	dup2(stdout_fd, STDOUT_FILENO);
 }
