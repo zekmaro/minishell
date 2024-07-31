@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/30 19:08:00 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/31 09:35:57 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 					const char **env, int *error_catched)
 {
 	static int	exit_status;
-	t_tree_connection_type connection_type;
 	uint32_t	i;
 
 	exit_status = *error_catched;
@@ -117,8 +116,6 @@ void	*m_tokenizer(const char *input, const char **env,
 {
 	t_token	*tokens;
 	t_ast	*tree;
-	int		original_stdin;
-	int		original_stdout;
 	int	error_catched;
 
 	error_catched = 0;

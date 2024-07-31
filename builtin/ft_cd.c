@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 20:41:45 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/31 08:26:58 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,7 @@
 static void	pwd_update(const char **environment)
 {
 	char	*pwd;
-	char	*old_pwd;
-	char	**env_pwd;
 
-	env_pwd = NULL;
 	pwd = getcwd(NULL, 0);
 	environment_variable_value_change(environment, "PWD", pwd);
 	ft_free(&pwd);
@@ -26,7 +23,6 @@ static void	pwd_update(const char **environment)
 
 void	ft_cd(const char **environment, const char **args)
 {
-	int32_t		return_value;
 	uint32_t	args_size;
 	char		*path_home;
 

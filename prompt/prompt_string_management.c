@@ -47,7 +47,6 @@ void	prompt_refresh_line(char *input, uint32_t cursor_position_base, uint32_t cu
 char	*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t size_to_add)
 {
 	char		*input_free_ptr;
-	uint32_t	new_size;
 	uint32_t	size_multiplier;
 
 	if ((old_size + size_to_add) % PROMPT_INPUT_BUFFER_SIZE > (PROMPT_INPUT_BUFFER_SIZE - size_to_add))

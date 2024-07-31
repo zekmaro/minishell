@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/28 21:08:16 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 08:26:11 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	**custom_realloc(void ***args, int old_capacity, int new_capacity)
 {
-	int		i;
 	void	**new_args;
 
 	new_args = ft_calloc(new_capacity + 1, sizeof(void *));

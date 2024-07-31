@@ -6,14 +6,14 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 00:06:54 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/31 10:20:57 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <sys/ioctl.h>
 
-static void	handle_tab_no_match(const char *input_path, const char **env, uint32_t cursor_position_current[2])
+static void	handle_tab_no_match(const char *input_path, const char **env, uint32_t cursor_position_current[2], t_prompt *prompt)
 {
 	struct winsize	win;
 
@@ -26,7 +26,9 @@ static void	handle_tab_no_match(const char *input_path, const char **env, uint32
 	if (cursor_position_current[0] == win.ws_row)
 	{
 		ft_putchar_fd('\r', 1);
-		prompt_display(env);
+		ft_putstr_fd(GREEN, 1);
+		ft_putstr_fd(prompt->prompt, 1);
+		ft_putstr_fd(RESET, 1);
 	}
 }
 
@@ -80,11 +82,12 @@ uint32_t	find_last_matching_char(const char *current_word, const char *next_word
 	return (i);
 }
 
-static char *find_next_match(char *current_word, uint32_t current_word_length, DIR *directory_current)
+static char *find_next_match(char *current_word, uint32_t current_word_length, DIR *directory_current, bool *is_directory)
 {
 	struct	dirent	*directory_entry;
 	char			*next_word_match;
 
+	*is_directory = false;
 	next_word_match = NULL;
 	if (!current_word || !directory_current || !*current_word)
 		return (NULL);
@@ -94,7 +97,11 @@ static char *find_next_match(char *current_word, uint32_t current_word_length, D
 		if (directory_entry == NULL)
 			break ;
 		if (ft_strncmp(current_word, directory_entry->d_name, current_word_length) == 0)
+		{
 			next_word_match = directory_entry->d_name;
+			if (directory_entry->d_type == DT_DIR)
+				*is_directory = true;
+		}
 	}
 	return (next_word_match);
 }
@@ -113,16 +120,17 @@ uint32_t	get_current_word_length(char *word)
 	return (ft_strlen(word));
 }
 
-void	handle_tab(char **input, const char **env, uint32_t cursor_position_current[2])
+void	handle_tab(char **input, const char **env, uint32_t cursor_position_current[2], t_prompt *prompt)
 {
 	DIR				*directory_current;
 	char			*current_word;
 	char			*next_word_match;
 	char			*input_path;
 	uint32_t		current_word_length;
+	bool			is_directory;
 
-	if (!*input[cursor_position_current[1] - (cursor_position_current[1] > 0)])
-		return (handle_tab_no_match(".", env, cursor_position_current));
+	if (!(*input)[cursor_position_current[1] - (cursor_position_current[1] > 0)])
+		return (handle_tab_no_match(".", env, cursor_position_current, prompt));
 	input_path = NULL;
 	current_word = determine_word(*input, &input_path, cursor_position_current[1]);
 	current_word_length = get_current_word_length(current_word);
@@ -130,13 +138,15 @@ void	handle_tab(char **input, const char **env, uint32_t cursor_position_current
 		ft_opendir(&directory_current, input_path);
 	else
 		ft_opendir(&directory_current, "./");
-	next_word_match = find_next_match(current_word, current_word_length, directory_current);
-	if (!next_word_match && !current_word_length)
-		handle_tab_no_match(input_path, env, cursor_position_current);
-	else
-	{
-		if (next_word_match)
-			handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
-	}
+	next_word_match = find_next_match(current_word, current_word_length, directory_current, &is_directory);
 	closedir(directory_current);
+	if (!next_word_match)
+		return handle_tab_no_match(input_path, env, cursor_position_current, prompt);
+	handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
+	cursor_position_save();
+	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
+	cursor_position_restore();
+	if (is_directory)
+		handle_new_character_to_input(input, '/', cursor_position_current, ft_strlen(*input));
+	ft_free(&input_path);
 }

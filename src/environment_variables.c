@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 23:45:43 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/31 08:25:08 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ void	environment_variable_remove(char **environment, const char *variable)
 {
 	uint32_t	i;
 	uint32_t	variable_length;
-	char		*to_remove;
 
 	i = 0;
 	variable_length = ft_strlen(variable);
@@ -193,7 +192,6 @@ void	environment_variable_value_change(const char **environment, const char *var
 {
 	char		**variable_to_change;
 	char		*new_variable;
-	char		*variable_to_change_free_ptr;
 	uint32_t	new_variable_length;
 
 	variable_to_change = environment_variable_get(variable_name, environment);
@@ -207,6 +205,5 @@ void	environment_variable_value_change(const char **environment, const char *var
 	ft_strlcpy(new_variable, variable_name, ft_strlen(variable_name) + 1);
 	ft_strlcpy(new_variable + ft_strlen(new_variable), "=", 2);
 	ft_strlcpy(new_variable + ft_strlen(new_variable), variable_new_value, ft_strlen(variable_new_value) + 1);
-	variable_to_change_free_ptr = *variable_to_change;
 	*variable_to_change = new_variable;
 }

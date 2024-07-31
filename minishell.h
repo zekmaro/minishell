@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/30 23:48:22 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/31 10:36:36 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@
 typedef struct s_prompt
 {
 	bool		exists;
+	char		*prompt;
+	uint32_t	(*prompt_display_func)();
 	uint32_t	prompt_length;
 	uint32_t	history_position_current;
 	uint32_t	history_count;
@@ -203,7 +205,10 @@ char		*find_absolute_path(const char *path_variable, char *input);
 void		prompt_destroy(void *prompt);
 t_prompt	prompt_create(const char **env);
 char		*prompt_get(const char **environment);
-uint32_t	prompt_display(const char **environment);
+uint32_t	prompt_display_string_set(t_prompt *prompt, const char **environment, const char *prompt_string);
+void	handle_arrow_key_up(	t_prompt *prompt,
+									char **input,
+									uint32_t cursor_position_current[2]);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -212,7 +217,7 @@ void		cursor_position_restore(void);
 
 bool		handle_escape_sequence(t_prompt *prompt, char buffer[], char **input, uint32_t cursor_position_current[2]);
 char		*prompt_get_input(t_prompt *prompt, uint32_t prompt_initial_size, const char *delimiter);
-bool		handle_multiple_character_to_input(	char **input, char buffer[], uint32_t *cursor_position_current, uint32_t prompt_length_current);
+bool		handle_multiple_character_to_input(	char **input, char buffer[], uint32_t cursor_position_current[2], uint32_t prompt_length_current);
 
 /* Prompt Buffer Management */
 void		prompt_refresh_line(char *input, uint32_t cursor_position_base, uint32_t cursor_position_current[2]);
@@ -224,7 +229,7 @@ void		blocking_mode_toggle(int flag);
 /* Redirections */
 void		execute(char **tokens, char **env);
 /* Tab Completion */
-void		handle_tab(char **input, const char **env, uint32_t *cursor_position_current);
+void		handle_tab(char **input, const char **env, uint32_t cursor_position_current[2], t_prompt *prompt);
 
 /* Termios */
 void		terminal_raw_mode_enable(int);
@@ -321,7 +326,7 @@ void		print_tokens(t_token *tokens);
 void		**custom_realloc(void ***tokens, int old_capacity, int new_capacity);
 
 /* subshell.c */
-char	*execute_subshell(char *input, const char **environement);
+char		*execute_subshell(char *input, const char **environement);
 
 /*tokenizer.c*/
 t_token		*lexical_analysis(const char *input, const char **env);
@@ -343,16 +348,19 @@ void		append_node(t_ast **head, t_ast *new_node);
 void		clear_ast(void *head);
 int			is_redirection(t_token_type	token_type);
 /*handle_command.c*/
-void	handle_command(t_ast *current, const char *path_variable,
+void		handle_command(t_ast *current, const char *path_variable,
 					const char **env, int *exit_status);
 /*handle_fds.c*/
-void	redirect_fd_into_file(t_ast *command);
-void	handle_fds_child_proccess(t_ast *command);
-void	handle_fds_parent_proccess(t_ast *command);
+void		redirect_fd_into_file(t_ast *command);
+void		handle_fds_child_proccess(t_ast *command);
+void		handle_fds_parent_proccess(t_ast *command);
+
 /*handle_logical_operator.c*/
 void		handle_logical_operator(t_ast **logical_node, int exit_status);
+
 /* handle_pipes.c */
 void		handle_pipe(t_ast *pipe_node, int *error_catched);
+
 /*handle_redirs.c*/
 void		handle_redir(t_ast *redir_node, t_ast **head, int *error_catched);
 
