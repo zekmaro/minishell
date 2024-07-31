@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:40:20 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 10:39:52 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 13:48:22 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,12 @@ static void	handle_backspace(	char *input,
 								uint32_t *cursor_position_current,
 								uint32_t input_length_current)
 {
-	if (*cursor_position_current <= 0)
+	if (cursor_position_current[1] <= 0)
 		return ;
-	(*cursor_position_current)--;
-	ft_memmove(&input[*cursor_position_current], \
-				&input[*cursor_position_current + 1], \
-				input_length_current - *cursor_position_current);
+	cursor_position_current[1]--;
+	ft_memmove(&input[cursor_position_current[1]], \
+				&input[cursor_position_current[1] + 1], \
+				input_length_current - cursor_position_current[1]);
 	ft_putstr_fd(CURSOR_MOVE_LEFT, 1);
 }
 
@@ -33,16 +33,16 @@ bool	handle_new_character_to_input(		char **input,
 	bool	do_refresh;
 
 	do_refresh = false;
-	prompt_buffer_size_manage(input, prompt_length_current, ft_strlen(*input) * 2);
-	if (*cursor_position_current < prompt_length_current)
+	*input = prompt_buffer_size_manage(input, prompt_length_current, ft_strlen(*input) * 2);
+	if (cursor_position_current[1] < prompt_length_current)
 	{
-		ft_memmove(&(*input)[*cursor_position_current + 1], \
-				&(*input)[*cursor_position_current], \
-				prompt_length_current - *cursor_position_current);
+		ft_memmove(&(*input)[cursor_position_current[1] + 1], \
+				&(*input)[cursor_position_current[1]], \
+				prompt_length_current - cursor_position_current[1]);
 		do_refresh = true;
 	}
-	(*input)[*cursor_position_current] = character;
-	(*cursor_position_current)++;
+	(*input)[cursor_position_current[1]] = character;
+	cursor_position_current[1]++;
 	return (do_refresh);
 }
 
@@ -80,7 +80,7 @@ static uint8_t	handle_single_char_input(char **input, char buffer[], \
 	if (new_buffer_length == 1)
 	{
 		if (ft_isprint(buffer[0]))
-			return (*do_refresh = handle_new_character_to_input(input, buffer[0], &cursor_position_current[1], input_length_current), 1);
+			return (*do_refresh = handle_new_character_to_input(input, buffer[0], cursor_position_current, input_length_current), 1);
 		else if (buffer[0] == EOT && input_length_current == 0)
 			return (ft_putstr_fd("\n", 1), terminal_raw_mode_disable(ECHOCTL), lst_memory(NULL, NULL, CLEAN), 1);
 	}
@@ -120,20 +120,18 @@ void	handle_rapid_input(char buffer[], uint32_t cursor_position[2], char *input,
 		prompt_refresh_line(input, cursor_position_base, cursor_position);
 }
 
-void	handle_accepted_input(t_prompt *prompt, uint32_t cursor_position[2], char *input, char buffer[])
+void	handle_accepted_input(t_prompt *prompt, uint32_t cursor_position[2], char **input, char buffer[])
 {
 	bool	do_refresh;
 
 	do_refresh = true;
 	if (buffer[0] == ESC)
-		do_refresh = handle_escape_sequence(prompt, &buffer[1], &input, cursor_position);
+		do_refresh = handle_escape_sequence(prompt, &buffer[1], input, cursor_position);
 	else if (buffer[0] == '\t')
-		handle_tab(&input, (const char **)prompt->env_ptr, cursor_position, prompt);
+		handle_tab(input, (const char **)prompt->env_ptr, prompt);
 	else if (buffer[0] == DEL)
-	{
-		handle_backspace(input, &cursor_position[1], \
-				ft_strlen(input));
-	}
+		handle_backspace(*input, cursor_position, \
+				ft_strlen(*input));
 	else if (buffer[0] == '\n')
 	{
 		ft_putstr_fd(prompt->prompt, 1);
@@ -142,9 +140,9 @@ void	handle_accepted_input(t_prompt *prompt, uint32_t cursor_position[2], char *
 		return ;
 	}
 	else
-		handle_single_char_input(&input, buffer, cursor_position, &do_refresh);
+		handle_single_char_input(input, buffer, cursor_position, &do_refresh);
 	if (do_refresh == true)
-		prompt_refresh_line(input, prompt->prompt_length + 1, cursor_position);
+		prompt_refresh_line(*input, prompt->prompt_length + 1, cursor_position);
 }
 
 static char	*handle_input(	t_prompt *prompt, \
@@ -160,7 +158,7 @@ static char	*handle_input(	t_prompt *prompt, \
 	if (!delimiter)
 		delimiter = "\n";
 	delimiter_length = ft_strlen(delimiter);
-	cursor_position_base = prompt->prompt_length + 1;
+	cursor_position_base = prompt->prompt_length;
 	while (1)
 	{
 		ft_bzero(buffer, 100);
@@ -173,27 +171,38 @@ static char	*handle_input(	t_prompt *prompt, \
 				|| ft_strncmp(&buffer[0], delimiter, delimiter_length) == 0)
 			break ;
 		else if (bytes_read >= 1)
-			handle_accepted_input(prompt, cursor_position, input, buffer);
+			handle_accepted_input(prompt, cursor_position, &input, buffer);
 	}
 	return (input);
+}
+
+void	prompt_handle_history(t_prompt *prompt, char *input)
+{
+	if (!input)
+		return ;
+	prompt->command = input;
+	prompt->history_entries[prompt->history_count] = prompt->command;
+	prompt->history_count++;
+	prompt->history_position_current = prompt->history_count;
 }
 
 char	*prompt_get_input(t_prompt *prompt, uint32_t prompt_initial_size, const char *delimiter)
 {
 	char		*input;
-	uint32_t	cursor_position[2];
 
 	input = ft_calloc(prompt_initial_size, sizeof(*input));
 	if (!input)
 		return (perror("malloc"), NULL);
 	lst_memory(input, free, ADD);
-	terminal_raw_mode_enable(ECHOCTL | ICANON);
 	prompt->prompt_length = prompt_display_string_set(prompt, (const char **)prompt->env_ptr, NULL);
-	cursor_position_get(cursor_position);
-	cursor_position[1] = 0;
-	input = handle_input(prompt, input, cursor_position, delimiter);
+	prompt->prompt_display_func(prompt->prompt);
+	terminal_raw_mode_enable(ECHOCTL | ICANON);
+	cursor_position_get(prompt->cursor_position);
+	prompt->cursor_position[1] = 0;
+	input = handle_input(prompt, input, prompt->cursor_position, delimiter);
+	terminal_raw_mode_disable(ECHOCTL | ICANON);
 	if (!input || !*input)
 		return (NULL);
-	terminal_raw_mode_disable(ECHOCTL | ICANON);
+	prompt_handle_history(prompt, input);
 	return (input);
 }

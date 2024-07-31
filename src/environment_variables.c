@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 11:56:00 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 08:25:08 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 13:35:10 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 char	**environment_create(const char **env)
 {
 	char		**environment_new;
+	char		*pwd;
 	uint32_t	i;
 
 	environment_new = ft_calloc(ENVIRONMENT_SIZE + 1, sizeof(*environment_new));
@@ -25,6 +26,14 @@ char	**environment_create(const char **env)
 		environment_new[i] = (char *)env[i];
 		i++;
 	}
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+	{
+		perror("getcwd");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+	environment_variable_value_change((const char **)environment_new, "PWD", pwd);
+	ft_free(&pwd);
 	return (environment_new);
 }
 

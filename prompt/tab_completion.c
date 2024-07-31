@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 10:20:57 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 13:46:41 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,21 @@ static void	handle_tab_no_match(const char *input_path, const char **env, uint32
 	command_execute("/usr/bin/ls", (const char *[]){"ls", input_path, NULL}, env);
 	cursor_position_restore();
 	if (cursor_position_current[0] == win.ws_row)
-	{
-		ft_putchar_fd('\r', 1);
-		ft_putstr_fd(GREEN, 1);
-		ft_putstr_fd(prompt->prompt, 1);
-		ft_putstr_fd(RESET, 1);
-	}
+		prompt->prompt_display_func(prompt->prompt);
+}
+
+static void	handle_tab_yes_match(t_prompt *prompt, const char *next_word_match, char **input, uint32_t current_word_length)
+{
+	struct winsize	win;
+
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
+	handle_multiple_character_to_input(input, (char *)next_word_match + current_word_length, prompt->cursor_position, ft_strlen(*input));
+	cursor_position_save();
+	ft_putstr_fd("\n\r", 1);
+	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
+	cursor_position_restore();
+	if (prompt->cursor_position[0] == win.ws_row)
+		prompt->prompt_display_func(prompt->prompt);
 }
 
 static char	*determine_word(char *input, char **input_path, uint32_t cursor_position_current)
@@ -120,7 +129,7 @@ uint32_t	get_current_word_length(char *word)
 	return (ft_strlen(word));
 }
 
-void	handle_tab(char **input, const char **env, uint32_t cursor_position_current[2], t_prompt *prompt)
+void	handle_tab(char **input, const char **env, t_prompt *prompt)
 {
 	DIR				*directory_current;
 	char			*current_word;
@@ -129,24 +138,21 @@ void	handle_tab(char **input, const char **env, uint32_t cursor_position_current
 	uint32_t		current_word_length;
 	bool			is_directory;
 
-	if (!(*input)[cursor_position_current[1] - (cursor_position_current[1] > 0)])
-		return (handle_tab_no_match(".", env, cursor_position_current, prompt));
+	if (!(*input)[(prompt->cursor_position)[1] - ((prompt->cursor_position)[1] > 0)])
+		return (handle_tab_no_match(".", env, prompt->cursor_position, prompt));
 	input_path = NULL;
-	current_word = determine_word(*input, &input_path, cursor_position_current[1]);
+	current_word = determine_word(*input, &input_path, prompt->cursor_position[1]);
 	current_word_length = get_current_word_length(current_word);
-	if (input_path)
-		ft_opendir(&directory_current, input_path);
+	if (input_path) ft_opendir(&directory_current, input_path);
 	else
 		ft_opendir(&directory_current, "./");
 	next_word_match = find_next_match(current_word, current_word_length, directory_current, &is_directory);
 	closedir(directory_current);
 	if (!next_word_match)
-		return handle_tab_no_match(input_path, env, cursor_position_current, prompt);
-	handle_multiple_character_to_input(input, next_word_match + current_word_length, cursor_position_current, ft_strlen(*input));
-	cursor_position_save();
-	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
-	cursor_position_restore();
-	if (is_directory)
-		handle_new_character_to_input(input, '/', cursor_position_current, ft_strlen(*input));
+		handle_tab_no_match(input_path, env, prompt->cursor_position, prompt);
+	else
+		handle_tab_yes_match(prompt, next_word_match, input, ft_strlen(current_word));
 	ft_free(&input_path);
+	if (is_directory)
+		handle_new_character_to_input(input, '/', prompt->cursor_position, ft_strlen(*input));
 }

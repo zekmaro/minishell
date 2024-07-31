@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 10:25:39 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 11:26:14 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@ void	token_heredoc_get(t_token *token, char **input)
 	char			*temp_move;
 
 	heredoc = (t_prompt){0};
+	temp_move = *input;
 	while (*input && ft_isspace(**input))
 		(*input)++;
 	if (*input && ft_isalnum(**input) && !is_double_special(*input) && !is_single_special(**input))
 	{
-		temp_move = *input;
 		while (*temp_move && (ft_isprint(*temp_move) && !ft_isspace(*temp_move) && !is_double_special(temp_move) && !is_single_special(*temp_move)))
 			temp_move++;
 		*temp_move = 0;
 	}
-	heredoc.prompt_length = prompt_display_string_set(NULL, "heredoc> ");
+	heredoc.prompt_length = prompt_display_string_set(&heredoc, NULL, "heredoc> ");
 	token_heredoc_input_get(&heredoc, *input);
 	*input = temp_move + 1;
 }

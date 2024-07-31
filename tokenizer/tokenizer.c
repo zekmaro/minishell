@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/30 19:18:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/31 14:29:33 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static t_token	check_symbol_and_create_token(const char **input,
 	else if (is_quote(**input))
 		return (create_token_quotes(input, env));
 	else
-		return (create_token_word(input));
+		return (create_token_word(input, env));
 }
 
 static uint32_t	get_word_count(char *input)

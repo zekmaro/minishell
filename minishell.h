@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 10:36:36 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 15:33:10 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 # include <signal.h>
 # include <sys/ioctl.h>
 # include <stddef.h>
+
+# define PWD 0
+# define CUSTOM 1
 
 # define PROMPT_COMMAND_STACK_SIZE 6
 # define PROMPT_INPUT_BUFFER_SIZE 4096
@@ -61,11 +64,14 @@
 # define ENVIRONMENT_SIZE 512
 # define INITIAL_TOKEN_CAPACITY 16
 
+# define UNIMPLEMENTED(descriptor) do { ft_printf("%s unimplemnted: file: %s line %d\n", descriptor, __FILE__, __LINE__); } while (0)
+
 typedef struct s_prompt
 {
 	bool		exists;
 	char		*prompt;
-	uint32_t	(*prompt_display_func)();
+	uint32_t	cursor_position[2];
+	void		(*prompt_display_func)(char *);
 	uint32_t	prompt_length;
 	uint32_t	history_position_current;
 	uint32_t	history_count;
@@ -203,12 +209,15 @@ char		*find_absolute_path(const char *path_variable, char *input);
 
 /* Prompt */
 void		prompt_destroy(void *prompt);
-t_prompt	prompt_create(const char **env);
+t_prompt	prompt_create(const char **env, uint8_t mode);
 char		*prompt_get(const char **environment);
 uint32_t	prompt_display_string_set(t_prompt *prompt, const char **environment, const char *prompt_string);
 void	handle_arrow_key_up(	t_prompt *prompt,
 									char **input,
 									uint32_t cursor_position_current[2]);
+
+/* Lexer */
+char	*evaluate_input(char **input, const char **environment);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -229,7 +238,7 @@ void		blocking_mode_toggle(int flag);
 /* Redirections */
 void		execute(char **tokens, char **env);
 /* Tab Completion */
-void		handle_tab(char **input, const char **env, uint32_t cursor_position_current[2], t_prompt *prompt);
+void		handle_tab(char **input, const char **env, t_prompt *prompt);
 
 /* Termios */
 void		terminal_raw_mode_enable(int);
@@ -303,7 +312,7 @@ int			is_single_special(const char input);
 t_token		create_token_single_special_symbol(const char **input);
 
 /*create_token_word.c*/
-t_token		create_token_word(const char **input);
+t_token		create_token_word(const char **input, const char **environment);
 
 /*create_token.c*/
 t_token		create_token(t_token_type token_type, const char *value);

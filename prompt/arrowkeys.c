@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:02:39 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 10:41:20 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 13:24:55 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	handle_arrow_key_up(	t_prompt *prompt,
 									char **input,
 									uint32_t cursor_position_current[2])
 {
-	if (prompt->history_position_current == 0)
+	if (prompt->history_position_current <= 0)
 		return ;
 	if (cursor_position_current[0] > 1)
 		ft_putstr_fd(CURSOR_MOVE_DOWN, 1);

@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/31 08:51:33 by victor           ###   ########.fr        #
+#    Updated: 2024/07/31 14:40:47 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,8 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/string_utils.c \
 				tokenizer/quotes.c \
 				tokenizer/tokenizer.c \
-				tokenizer/subshell.c
+				tokenizer/subshell.c \
+				tokenizer/evaluate_input.c
 
 BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_pwd.c builtin/ft_unset.c \

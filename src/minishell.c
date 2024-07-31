@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 09:32:51 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 14:58:12 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,18 @@ int	main(int argc, char **argv, const char **env)
 	while (1)
 	{
 		command_input = prompt_get((const char **)environment);
-		if (g_signal_flag == 1 || !command_input)
-		{
-			if (g_signal_flag == 1)
-				g_signal_flag = 0;
-			ft_free(&command_input);
-			continue ;
-		}
-		if (command_input)
-		{
-			lst_memory(command_input, free, ADD);
-			m_tokenizer(command_input, (const char **)environment, path_variable);
-		}
+		ft_putendl_fd(command_input, 1);
+		/*if (g_signal_flag == 1 || !command_input)*/
+		/*{*/
+		/*	if (g_signal_flag == 1)*/
+		/*		g_signal_flag = 0;*/
+		/*	ft_free(&command_input);*/
+		/*	continue ;*/
+		/*}*/
+		/*if (command_input)*/
+		/*{*/
+		/*	lst_memory(command_input, free, ADD);*/
+		/*	m_tokenizer(command_input, (const char **)environment, path_variable);*/
+		/*}*/
 	}
 }

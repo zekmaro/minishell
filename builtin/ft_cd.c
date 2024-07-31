@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 08:26:58 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 13:34:21 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@ static void	pwd_update(const char **environment)
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
+	if (!pwd)
+	{
+		perror("getcwd");
+		lst_memory(NULL, NULL, CLEAN);
+	}
 	environment_variable_value_change(environment, "PWD", pwd);
 	ft_free(&pwd);
 }

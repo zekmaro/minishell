@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 10:29:55 by victor           ###   ########.fr       */
+/*   Updated: 2024/07/31 15:00:42 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,19 @@ void	prompt_destroy(void *prompt)
 	ft_free(&prompt_ptr);
 }
 
+void	prompt_print_pwd(char *prompt)
+{
+	ft_putchar_fd('\r', 1);
+	ft_putstr_fd(GREEN, 1);
+	ft_printf("[%s]$ ", prompt);
+	ft_putstr_fd(RESET, 1);
+}
+
+void	prompt_print_custom_string(char *string)
+{
+	ft_putstr_fd(string, 1);
+}
+
 uint32_t	prompt_display_string_set(t_prompt *prompt, const char **environment, const char *prompt_string)
 {
 	char		*pwd;
@@ -30,15 +43,11 @@ uint32_t	prompt_display_string_set(t_prompt *prompt, const char **environment, c
 	{
 		pwd = environment_variable_value_get("PWD", environment);
 		prompt_string_length = ft_strlen(pwd) + 4;
-		ft_putstr_fd(GREEN, 1);
-		ft_printf("[%s]$ ", pwd);
-		ft_putstr_fd(RESET, 1);
 		prompt->prompt = pwd;
 	}
 	else
 	{
 		prompt_string_length = ft_strlen(prompt_string) + 1;
-		ft_putstr_fd(prompt_string, 1);
 		prompt->prompt = (char *)prompt_string;
 	}
 	return (prompt_string_length);
@@ -50,7 +59,7 @@ char	*prompt_get(const char **environment)
 	static t_prompt	prompt = {0};
 
 	if (!prompt.exists)
-		prompt = prompt_create(environment);
+		prompt = prompt_create(environment, PWD);
 	prompt.prompt = NULL;
 	prompt.command = prompt_get_input(&prompt, PROMPT_INPUT_BUFFER_SIZE, "\n");
 	if (!prompt.command || !*prompt.command)
@@ -58,16 +67,14 @@ char	*prompt_get(const char **environment)
 	if (g_signal_flag == 1 && (!prompt.command || !*prompt.command))
 		return (ft_putstr_fd("^C", 1), ft_putchar_fd('\n', 1), NULL);
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
-	prompt.history_entries[prompt.history_count] = prompt.command;
-	prompt.history_count++;
-	prompt.history_position_current = prompt.history_count;
+	evaluate_input(&prompt.command, environment);
 	input = ft_strdup(prompt.command);
 	if (!input)
 		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), NULL);
 	return (input);
 }
 
-t_prompt	prompt_create(const char **env)
+t_prompt	prompt_create(const char **env, uint8_t mode)
 {
 	t_prompt	tmp;
 
@@ -77,5 +84,9 @@ t_prompt	prompt_create(const char **env)
 	tmp.history_count = 0;
 	tmp.env_ptr = (char **)env;
 	tmp.exists = true;
+	if (mode == 0)
+		tmp.prompt_display_func = prompt_print_pwd;
+	else if (mode == 1)
+		tmp.prompt_display_func = prompt_print_custom_string;
 	return (tmp);
 }
