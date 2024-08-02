@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 15:33:10 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:52:21 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@
 # define DEL 127
 # define EOT 4
 # define ESC 27
+
+# define VARIABLE_TOKEN_SIZE 1024
 
 # define SCREEN_DISBLE_WRAPPING "\033[?7l"
 # define SCREEN_ENABLE_WRAPPING "\033[?7h"
@@ -135,12 +137,8 @@ typedef struct s_ast
     t_node_type		type;
 	t_token_type	token_type;
 	t_tree_connection_type connection_type;
-	struct s_ast	*left;
-    struct s_ast	*right;
     char 			**args;
-    char			*file_in;
-	char			*file_out;
-	char			*error_message;
+	char			*variable_pointers;
 	char			*path;
 	bool			has_redir_in;
 	bool			has_redir_out;
@@ -149,7 +147,6 @@ typedef struct s_ast
 	int				fd_out;
 	int				flags;
 	int				is_done;
-	int				exit_status;
 } t_ast;
 
 
@@ -217,7 +214,7 @@ void	handle_arrow_key_up(	t_prompt *prompt,
 									uint32_t cursor_position_current[2]);
 
 /* Lexer */
-char	*evaluate_input(char **input, const char **environment);
+char	**evaluate_input(char ***input, const char **environment);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -285,7 +282,7 @@ int			is_double_special(const char *input);
 t_token		create_token_double_special_symbol(char **input);
 
 /*quotes */
-char	*interpret_double_quotes(const char **command_input, const char **environement, t_token_type *type);
+char	*interpret_double_quotes(const char **command_inputi, t_token_type *type);
 uint32_t	determine_variables(const char *command_input);
 void	extract_variable(char **variable_pointers, \
 						const char *command_input, \

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 09:40:26 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:40:00 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ void	handle_command(t_ast *current, const char *path_variable,
 	}
 	if (!buildin_execute(current, env, exit_status))
 	{
+		evaluate_input(&current->args, env);
 		current->path = find_absolute_path(path_variable,
 				current->args[0]);
 		if (!current->path)

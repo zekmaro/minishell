@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:38:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 13:39:21 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:10:17 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ t_token	create_token_single_quote(const char **input)
 
 	temp_move = ft_strchr(*input + 1, '\'');
 	if (!temp_move)
+	{
 		p_stderr(2, "Missing closing quote in: %s\n", *input);
+		lst_memory(NULL, NULL, CLEAN);
+	}
 	temp_token = create_token(TOKEN_WORD, (*input) + 1);
 	if (temp_move)
 	{
@@ -47,8 +50,7 @@ t_token	create_token_quotes(const char **input, const char **env)
 	}
 	else if (**input == '\"')
 	{
-		temp_token.token_value = interpret_double_quotes(input, env, \
-											&temp_token.token_type);
+		temp_token.token_value = interpret_double_quotes(input, &temp_token.token_type);
 	}
 	return (temp_token);
 }

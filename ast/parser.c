@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 13:17:47 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 08:26:11 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:30:41 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	fill_args(char ***args, int count, char *token_value, int *capacity)
 	}
 	(*args)[count] = token_value;
 }
+
 /**/
 /*void	parse_logical_operator(t_ast **head, int *i, t_token *tokens)*/
 /*{*/

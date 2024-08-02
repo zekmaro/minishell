@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 14:34:28 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:14:41 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,31 +101,21 @@ char	*interpret_single_quote(const char *command_input)
 }
 
 char	*interpret_double_quotes(	const char **command_input, \
-									const char **environement, \
 									t_token_type *type)
 {
-	char		*buffer;
-	char		*temp_move;
+	char	*temp_move;
+	char	*return_string;
 
-	buffer = NULL;
 	temp_move = ft_strchr(*command_input + 1, '\"');
 	if (!temp_move)
 	{
 		p_stderr(2, "Invalid: missing closing quote: \"\n", NULL);
 		lst_memory(NULL, NULL, CLEAN);
 	}
-	ft_memmove((char *)*command_input, *command_input + 1, ft_strlen(*command_input));
 	*temp_move = 0;
-	if (ft_strchr(*command_input, '$'))
-	{
-		variable_expand((char **)command_input, &buffer, environement, (char *)*command_input + 1);
-		*type = TOKEN_ENV;
-	}
-	else
-	{
-		*type = TOKEN_WORD;
-		buffer = (char *)*command_input + 1;
-	}
-	ft_memmove(temp_move, temp_move + 1, ft_strlen(temp_move));
-	return (buffer);
+	ft_memmove((char *)*command_input, *command_input + 1, ft_strlen(*command_input));
+	return_string = (char *)*command_input;
+	*command_input = temp_move + 1;
+	*type = TOKEN_WORD;
+	return (*(char **)command_input);
 }

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/20 17:46:26 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 09:35:44 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:30:28 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 			&& tokens[i].token_type != TOKEN_OR \
 			&& tokens[i].token_type != TOKEN_PIPE)
 	{
-		if (tokens[i].token_type != TOKEN_DONE)
+		if (tokens[i].token_type != TOKEN_DONE && tokens[i].token_type != TOKEN_ENV && tokens[i].token_type != TOKEN_DOUBLE_QUOTE)
 		{
 			fill_args(&args, count, tokens[i].token_value, &capacity);
 			tokens[i].token_type = TOKEN_DONE;

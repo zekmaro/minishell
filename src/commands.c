@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 09:35:57 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/02 12:42:02 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,15 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 		i++;
 	}
 }
-
-void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)
-{
-	if (!logical_node->left || !logical_node->right)
-	{
-		printf("minishell: syntax error near unexpected token `&&'\n");
-		*error_catched = 1;
-	}
-}
+/**/
+/*void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)*/
+/*{*/
+/*	if (!logical_node->left || !logical_node->right)*/
+/*	{*/
+/*		printf("minishell: syntax error near unexpected token `&&'\n");*/
+/*		*error_catched = 1;*/
+/*	}*/
+/*}*/
 /**/
 /*void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)*/
 /*{*/
@@ -100,16 +100,17 @@ void	print_tokens(t_token *tokens)
 	printf("------------\n");
 }
 
-void	skip_up_to_logical_operator(t_ast *ast)
-{
-	while (ast)
-	{
-		if (ast->type == NODE_LOGICAL_OPERATOR)
-			break ;
-		ast->is_done = 1;
-		ast = ast->right;
-	}
-}
+/*void	skip_up_to_logical_operator(t_ast *ast)*/
+/*{*/
+/*	while (ast)*/
+/*	{*/
+/*		if (ast->type == NODE_LOGICAL_OPERATOR)*/
+/*			break ;*/
+/*		ast->is_done = 1;*/
+/*		ast = ast->right;*/
+/*	}*/
+/*}*/
+/**/
 
 void	*m_tokenizer(const char *input, const char **env,
 			const char *path_variable)
@@ -121,8 +122,8 @@ void	*m_tokenizer(const char *input, const char **env,
 	error_catched = 0;
 	tokens = lexical_analysis(input, env);
 	tree = parse_tokens(tokens);
-	if (error_catched)
-		skip_up_to_logical_operator(tree);
+	/*if (error_catched)*/
+	/*	skip_up_to_logical_operator(tree);*/
 	execute_commands(tree, path_variable, env, &error_catched);
 	lst_memory(tokens, NULL, FREE);
 	return (NULL);

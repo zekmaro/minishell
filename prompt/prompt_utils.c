@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 15:00:42 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 11:00:11 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ char	*prompt_get(const char **environment)
 	if (g_signal_flag == 1 && (!prompt.command || !*prompt.command))
 		return (ft_putstr_fd("^C", 1), ft_putchar_fd('\n', 1), NULL);
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 1);
-	evaluate_input(&prompt.command, environment);
 	input = ft_strdup(prompt.command);
 	if (!input)
 		return (perror("malloc"), lst_memory(NULL, NULL, CLEAN), NULL);
