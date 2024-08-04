@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/02 11:52:21 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 17:09:07 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,4 +380,12 @@ t_ast		parse_word(int *i, t_token *tokens);
 void		parse_logical_operator(t_ast **head, int *i, t_token *tokens);
 void		parse_redirection(t_ast **head, int *i, t_token *tokens);
 void		parse_pipe(t_ast **head, int *i, t_token *tokens);
+
+/*syntax_check.c*/
+void		check_valid_redir(t_token *token, int index,
+					int *error_catched);
+void		check_valid_pipe(t_token *token, int index,
+					int *error_catched);
+void		check_valid_logical_operator(t_token *token, int index,
+							int *error_catched);
 #endif

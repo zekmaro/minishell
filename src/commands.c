@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   commands.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/02 12:42:02 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 17:13:35 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,37 @@ void	print_tokens(t_token *tokens)
 /*}*/
 /**/
 
+int	check_syntax_errors(t_token *token)
+{
+	int error_catched;
+	int i;
+
+	error_catched = 0;
+	i = 0;
+	while (token[i].token_type != TOKEN_EOL)
+	{
+		if (token[i].token_type == TOKEN_REDIRECT_IN \
+			|| token[i].token_type == TOKEN_REDIRECT_OUT \
+			|| token[i].token_type == TOKEN_REDIRECT_APPEND)
+		{
+			check_valid_redir(token, i, &error_catched);
+		}
+		else if (token[i].token_type == TOKEN_PIPE)
+		{
+			check_valid_pipe(token, i, &error_catched);
+		}
+		else if (token[i].token_type == TOKEN_AND \
+				|| token[i].token_type == TOKEN_OR)
+		{
+			check_valid_logical_operator(token, i, &error_catched);
+		}
+		if (error_catched)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 void	*m_tokenizer(const char *input, const char **env,
 			const char *path_variable)
 {
@@ -121,6 +152,8 @@ void	*m_tokenizer(const char *input, const char **env,
 
 	error_catched = 0;
 	tokens = lexical_analysis(input, env);
+	if (!check_syntax_errors(tokens))
+		return (NULL);
 	tree = parse_tokens(tokens);
 	/*if (error_catched)*/
 	/*	skip_up_to_logical_operator(tree);*/
