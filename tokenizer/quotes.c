@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/02 11:14:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 17:44:09 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,9 @@ char	*interpret_double_quotes(	const char **command_input, \
 		lst_memory(NULL, NULL, CLEAN);
 	}
 	*temp_move = 0;
-	ft_memmove((char *)*command_input, *command_input + 1, ft_strlen(*command_input));
+	ft_memmove((char *)*command_input, \
+				*command_input + 1, \
+				ft_strlen(*command_input));
 	return_string = (char *)*command_input;
 	*command_input = temp_move + 1;
 	*type = TOKEN_WORD;

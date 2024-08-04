@@ -1,27 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   prompt_print.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
+/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 22:49:03 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 10:32:02 by vvobis           ###   ########.fr       */
+/*   Created: 2024/08/02 16:11:25 by vvobis            #+#    #+#             */
+/*   Updated: 2024/08/02 16:12:18 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_pwd(const char **environment, int32_t *exit_status)
+void	prompt_print_pwd(char *prompt)
 {
-	char	*pwd;
+	ft_putchar_fd('\r', 1);
+	ft_putstr_fd(GREEN, 1);
+	ft_printf("[%s]$ ", prompt);
+	ft_putstr_fd(RESET, 1);
+}
 
-	if (!environment)
-		*exit_status = 1;
-	else
-	{
-		*exit_status = 0;
-		pwd = environment_variable_value_get("PWD", environment);
-		ft_putendl_fd(pwd, 1);
-	}
+void	prompt_print_custom_string(char *string)
+{
+	ft_putstr_fd(string, 1);
 }

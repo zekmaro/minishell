@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:14:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:40:00 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 14:38:14 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,8 @@ void	handle_pipe_in_parent(t_ast *command)
 	ft_close(command->pipefd[0], "close in pipe_parent");
 }
 
-int	execute_command(t_ast *command, const char **env)
+int	execute_command(t_ast *command, const char **env, int32_t *exit_status)
 {
-	int		status;
 	pid_t	pid;
 	int		stdout_fd;
 
@@ -50,12 +49,12 @@ int	execute_command(t_ast *command, const char **env)
 			handle_pipe_in_parent(command);
 		if (command->has_redir_in || command->has_redir_out)
 			handle_fds_parent_proccess(command);
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
+		waitpid(pid, exit_status, 0);
+		if (WIFEXITED(*exit_status))
 		{
 			dup2(stdout_fd, STDOUT_FILENO);
 			ft_close(stdout_fd, "in execute command parent");
-			return (WEXITSTATUS(status));
+			return (WEXITSTATUS(*exit_status));
 		}
 	}
 	return (-1);
@@ -70,6 +69,8 @@ void	buildin_apply_pipe(t_ast *node)
 		ft_close(node->pipefd[0], "close in buildin_execute");
 		ft_close(node->pipefd[1], "close in buildin_execute");
 	}
+	if (node->has_redir_in || node->has_redir_out)
+		handle_fds_child_proccess(node);
 }
 
 bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
@@ -77,17 +78,17 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 	if (node->args[0] && !*node->args[0])
 		return (false);
 	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_echo(node->args), 1);
+		return (buildin_apply_pipe(node), ft_echo(node->args, exit_status), 1);
 	else if (ft_strncmp(node->args[0], "env", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_env(environment), 1);
+		return (buildin_apply_pipe(node), ft_env(environment, exit_status), 1);
 	else if (ft_strncmp(node->args[0], "cd", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_cd(environment, (const char **)node->args), 1);
+		return (buildin_apply_pipe(node), ft_cd(environment, (const char **)node->args, exit_status), 1);
 	else if (ft_strncmp(node->args[0], "unset", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_unset((char **)environment, (const char **)node->args), 1);
+		return (buildin_apply_pipe(node), ft_unset((char **)environment, (const char **)node->args, exit_status), 1);
 	else if (ft_strncmp(node->args[0], "export", ft_strlen(node->args[0])) == 0)
-		return (buildin_apply_pipe(node), ft_export((char ***)&environment, (const char **)node->args), 1);
+		return (buildin_apply_pipe(node), ft_export((char ***)&environment, (const char **)node->args, exit_status), 1);
 	else if (ft_strncmp(node->args[0], "exit", ft_strlen(node->args[0])) == 0)
-		return (lst_memory(NULL, NULL, END), 1);
+		return (ft_exit((const char **)node->args), 1);
 	return (0);
 }
 
@@ -100,12 +101,10 @@ void	handle_command(t_ast *current, const char *path_variable,
 	}
 	if (!buildin_execute(current, env, exit_status))
 	{
-		evaluate_input(&current->args, env);
-		current->path = find_absolute_path(path_variable,
-				current->args[0]);
+		current->path = find_absolute_path(path_variable, current->args[0]);
 		if (!current->path)
 			*exit_status = 127;
 		else
-			*exit_status = execute_command(current, env);
+			*exit_status = execute_command(current, env, exit_status);
 	}
 }

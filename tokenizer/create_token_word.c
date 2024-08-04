@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:40:09 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:15:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 10:44:08 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,27 +107,25 @@ t_token	expand_wildcard(const char **input)
 	return (temp_token);
 }
 
-t_token	create_token_word(const char **input, const char **environment)
+t_token	create_token_word(const char **input)
 {
 	t_token	temp_token;
 	char	*temp_move;
-	char	*buffer;
-	bool	has_variables;
 	char	*input_next;
-	char	quote_char_store;
 
-	input_next = NULL;
 	temp_move = (char *)*input;
-	has_variables = false;
-	buffer = NULL;
-	while (*temp_move && !is_special_char(*temp_move))
-		temp_move++;
+	input_next = NULL;
 	temp_token = create_token(TOKEN_WORD, *input);
-	if (*temp_move == ' ')
+	while (*temp_move && !ft_isspace(*temp_move))
 	{
-		*temp_move = 0;
-		input_next = temp_move + 1;
+		if (*temp_move == '\'' || *temp_move == '\"')
+			while (*temp_move && *temp_move != '\'' || *temp_move == '\"')
+				temp_move++;
+		temp_move++;
 	}
+	if (*temp_move)
+		input_next = temp_move + 1;
+	*temp_move = 0;
 	temp_move = ft_strchr(*input, '*');
 	if (temp_move)
 		return (expand_wildcard(input));

@@ -1,27 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_pwd.c                                           :+:      :+:    :+:   */
+/*   non_blocking_mode.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: victor </var/spool/mail/victor>            +#+  +:+       +#+        */
+/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 22:49:03 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 10:32:02 by vvobis           ###   ########.fr       */
+/*   Created: 2024/08/02 17:14:46 by vvobis            #+#    #+#             */
+/*   Updated: 2024/08/02 17:16:33 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_pwd(const char **environment, int32_t *exit_status)
+void	blocking_mode_toggle(int flag)
 {
-	char	*pwd;
-
-	if (!environment)
-		*exit_status = 1;
-	else
+	if (ioctl(0, FIONBIO, &flag) == -1)
 	{
-		*exit_status = 0;
-		pwd = environment_variable_value_get("PWD", environment);
-		ft_putendl_fd(pwd, 1);
+		perror("ioctl");
+		exit(1);
 	}
 }

@@ -6,21 +6,12 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:41:32 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/30 11:59:28 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/04 11:11:05 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <stdint.h>
-
-static void	ft_swap(char **ptr1, char **ptr2)
-{
-	char	*tmp;
-
-	tmp = *ptr1;
-	*ptr1 = *ptr2;
-	*ptr2 = tmp;
-}
 
 static void	print_environment_a_la_export(char *variable)
 {
@@ -43,6 +34,7 @@ static void	environment_print_sorted(const char **environment)
 	char		**tmp_env;
 	uint32_t	i;
 	uint32_t	split_size;
+	char	*tmp;
 
 	tmp_env = environment_create(environment);
 	split_size = get_split_size(environment);
@@ -53,7 +45,11 @@ static void	environment_print_sorted(const char **environment)
 		{
 			if (ft_strncmp(tmp_env[i], tmp_env[i + 1], \
 							ft_strlen(tmp_env[i])) > 0)
-				ft_swap(&tmp_env[i], &tmp_env[i + 1]);
+			{
+				tmp = tmp_env[i];
+				tmp_env[i] = tmp_env[i + 1];
+				tmp_env[i + 1] = tmp;
+			}
 			i++;
 		}
 		split_size--;
@@ -84,7 +80,7 @@ void	variable_exists(const char **environment, const char *variable_name)
 		*variable_name_terminator = '=';
 }
 
-void	ft_export(char ***environment, const char **args)
+void	ft_export(char ***environment, const char **args, int32_t *exit_status)
 {
 	uint32_t	args_size;
 	uint32_t	i;

@@ -6,13 +6,14 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/31 14:40:47 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/02 17:35:25 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g3 -fsanitize=leak,undefined,address
+CFLAGS		:= -Wall -Wextra -g3
+#-fsanitize=leak,undefined,address
 
 # DIRECTORIES
 SRCDIR		:= src
@@ -25,11 +26,14 @@ SRC			:=	src/commands.c src/environment_variables.c \
 				src/handle_signals.c src/input.c src/list_memory.c \
 				src/list.c src/minishell.c \
 				src/path_utils.c src/termios.c \
-				src/utils.c src/utils2.c
+				src/utils.c src/utils2.c src/utils3.c \
+				src/environment_variables_manip.c
 
 PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
 				prompt/prompt_utils.c prompt/tab_completion.c \
 				prompt/escape_sequences.c prompt/arrowkeys.c \
+				prompt/prompt_print.c prompt/tab_get_word.c \
+				prompt/non_blocking_mode.c prompt/prompt_handle_chars.c
 
 AST_SRC		:=	ast/ast_utils.c \
 				ast/handle_command.c ast/handle_fds.c \

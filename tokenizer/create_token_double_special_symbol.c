@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:35:12 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 11:26:14 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 17:43:40 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,9 @@ char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 {
 	char	*heredoc_input;
 
-	heredoc_input = prompt_get_input(heredoc, PROMPT_INPUT_BUFFER_SIZE, delimiter);
+	heredoc_input = prompt_get_input(heredoc, \
+									PROMPT_INPUT_BUFFER_SIZE, \
+									delimiter);
 	if (!heredoc_input || !*heredoc_input)
 		return (NULL);
 	return (heredoc_input);
@@ -32,20 +34,27 @@ char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 
 void	token_heredoc_get(t_token *token, char **input)
 {
-	static	t_prompt heredoc;
+	static t_prompt	heredoc;
 	char			*temp_move;
 
 	heredoc = (t_prompt){0};
 	temp_move = *input;
 	while (*input && ft_isspace(**input))
 		(*input)++;
-	if (*input && ft_isalnum(**input) && !is_double_special(*input) && !is_single_special(**input))
+	if (*input && ft_isalnum(**input) \
+		&& !is_double_special(*input) \
+		&& !is_single_special(**input))
 	{
-		while (*temp_move && (ft_isprint(*temp_move) && !ft_isspace(*temp_move) && !is_double_special(temp_move) && !is_single_special(*temp_move)))
+		while (*temp_move && (ft_isprint(*temp_move) \
+				&& !ft_isspace(*temp_move) \
+				&& !is_double_special(temp_move) \
+				&& !is_single_special(*temp_move)))
 			temp_move++;
 		*temp_move = 0;
 	}
-	heredoc.prompt_length = prompt_display_string_set(&heredoc, NULL, "heredoc> ");
+	heredoc.prompt_length = prompt_display_string_set(&heredoc, \
+													NULL, \
+													"heredoc> ");
 	token_heredoc_input_get(&heredoc, *input);
 	*input = temp_move + 1;
 }

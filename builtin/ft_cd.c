@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 14:10:08 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/31 13:34:21 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 10:08:44 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	pwd_update(const char **environment)
 	ft_free(&pwd);
 }
 
-void	ft_cd(const char **environment, const char **args)
+void	ft_cd(const char **environment, const char **args, int32_t *exit_status)
 {
 	uint32_t	args_size;
 	char		*path_home;
@@ -38,12 +38,13 @@ void	ft_cd(const char **environment, const char **args)
 	{
 		path_home = environment_variable_value_get("HOME", environment);
 		if (chdir(path_home) != 0)
-			return (perror("cd"));
+			return (*exit_status = 1, perror("cd"));
 	}
 	else
 	{
 		if (chdir(args[1]) != 0)
 			perror("cd");
 		pwd_update((const char **)environment);
+		*exit_status = 0;
 	}
 }

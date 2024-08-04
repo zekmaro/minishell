@@ -6,14 +6,17 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:53:58 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 13:46:41 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 17:03:44 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <sys/ioctl.h>
 
-static void	handle_tab_no_match(const char *input_path, const char **env, uint32_t cursor_position_current[2], t_prompt *prompt)
+void	handle_tab_no_match(const char *input_path, \
+								char **env, \
+								uint32_t cursor_position_current[2], \
+								t_prompt *prompt)
 {
 	struct winsize	win;
 
@@ -21,18 +24,25 @@ static void	handle_tab_no_match(const char *input_path, const char **env, uint32
 	cursor_position_save();
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
 	ft_putstr_fd("\n\r", 1);
-	command_execute("/usr/bin/ls", (const char *[]){"ls", input_path, NULL}, env);
+	command_execute("/usr/bin/ls", \
+					(const char *[]){"ls", input_path, NULL}, \
+					(const char **)env);
 	cursor_position_restore();
 	if (cursor_position_current[0] == win.ws_row)
 		prompt->prompt_display_func(prompt->prompt);
 }
 
-static void	handle_tab_yes_match(t_prompt *prompt, const char *next_word_match, char **input, uint32_t current_word_length)
+void	handle_tab_yes_match(	t_prompt *prompt, \
+									const char *next_word_match, \
+									char **input, \
+									uint32_t current_word_length)
 {
 	struct winsize	win;
 
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &win);
-	handle_multiple_character_to_input(input, (char *)next_word_match + current_word_length, prompt->cursor_position, ft_strlen(*input));
+	handle_multiple_character_to_input(input, \
+							(char *)(next_word_match + current_word_length), \
+							prompt->cursor_position, ft_strlen(*input));
 	cursor_position_save();
 	ft_putstr_fd("\n\r", 1);
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOF, 0);
@@ -41,23 +51,20 @@ static void	handle_tab_yes_match(t_prompt *prompt, const char *next_word_match, 
 		prompt->prompt_display_func(prompt->prompt);
 }
 
-static char	*determine_word(char *input, char **input_path, uint32_t cursor_position_current)
+char	*determine_word(char *input, \
+							char **input_path, \
+							uint32_t cursor_position_current)
 {
 	char			*current_word;
 	char			*current_word_path_end;
 	char			*tmp;
 	uint32_t		i;
 
-	if (!input || !*input)
-		return (NULL);
 	i = cursor_position_current - (cursor_position_current > 0);
 	current_word_path_end = NULL;
 	while (i > 0 && input[i] != ' ')
 		i--;
-	if (i)
-		current_word = &input[i + 1];
-	else
-		current_word = &input[i];
+	current_word = &input[i + (i > 0)];
 	tmp = ft_strchr(current_word, '/');
 	while (tmp)
 	{
@@ -66,14 +73,16 @@ static char	*determine_word(char *input, char **input_path, uint32_t cursor_posi
 	}
 	if (current_word_path_end)
 	{
-		*input_path = ft_substr(current_word, 0, current_word_path_end - current_word + 1);
+		*input_path = ft_substr(current_word, 0, \
+								current_word_path_end - current_word + 1);
 		current_word = current_word_path_end + 1;
 		return (current_word);
 	}
 	return (current_word);
 }
 
-uint32_t	find_last_matching_char(const char *current_word, const char *next_word_match)
+uint32_t	find_last_matching_char(const char *current_word, \
+									const char *next_word_match)
 {
 	uint32_t	i;
 	char		*current_word_without_path;
@@ -91,68 +100,17 @@ uint32_t	find_last_matching_char(const char *current_word, const char *next_word
 	return (i);
 }
 
-static char *find_next_match(char *current_word, uint32_t current_word_length, DIR *directory_current, bool *is_directory)
+void	handle_tab(char **input, t_prompt *prompt)
 {
-	struct	dirent	*directory_entry;
-	char			*next_word_match;
-
-	*is_directory = false;
-	next_word_match = NULL;
-	if (!current_word || !directory_current || !*current_word)
-		return (NULL);
-	while (1)
-	{
-		directory_entry = readdir(directory_current);
-		if (directory_entry == NULL)
-			break ;
-		if (ft_strncmp(current_word, directory_entry->d_name, current_word_length) == 0)
-		{
-			next_word_match = directory_entry->d_name;
-			if (directory_entry->d_type == DT_DIR)
-				*is_directory = true;
-		}
-	}
-	return (next_word_match);
-}
-
-uint32_t	get_current_word_length(char *word)
-{
-	char	*word_end;
-
-	if (!word)
-		return (0);
-	else if (*word == ' ')
-		return (1);
-	word_end = ft_strchr(word, ' ');
-	if (word_end)
-		return (word_end - word);
-	return (ft_strlen(word));
-}
-
-void	handle_tab(char **input, const char **env, t_prompt *prompt)
-{
-	DIR				*directory_current;
-	char			*current_word;
-	char			*next_word_match;
 	char			*input_path;
-	uint32_t		current_word_length;
 	bool			is_directory;
 
-	if (!(*input)[(prompt->cursor_position)[1] - ((prompt->cursor_position)[1] > 0)])
-		return (handle_tab_no_match(".", env, prompt->cursor_position, prompt));
+	if (!(*input)[(prompt->cursor_position)[1] \
+				- ((prompt->cursor_position)[1] > 0)])
+		return (handle_tab_no_match(".", prompt->env_ptr, \
+									prompt->cursor_position, \
+									prompt));
 	input_path = NULL;
-	current_word = determine_word(*input, &input_path, prompt->cursor_position[1]);
-	current_word_length = get_current_word_length(current_word);
-	if (input_path) ft_opendir(&directory_current, input_path);
-	else
-		ft_opendir(&directory_current, "./");
-	next_word_match = find_next_match(current_word, current_word_length, directory_current, &is_directory);
-	closedir(directory_current);
-	if (!next_word_match)
-		handle_tab_no_match(input_path, env, prompt->cursor_position, prompt);
-	else
-		handle_tab_yes_match(prompt, next_word_match, input, ft_strlen(current_word));
-	ft_free(&input_path);
-	if (is_directory)
-		handle_new_character_to_input(input, '/', prompt->cursor_position, ft_strlen(*input));
+	is_directory = false;
+	get_next_word_match(input, prompt, input_path, &is_directory);
 }

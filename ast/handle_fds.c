@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/25 18:17:10 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/29 23:11:22 by victor           ###   ########.fr       */
+/*   Updated: 2024/08/02 13:49:22 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,13 @@ void	handle_fds_child_proccess(t_ast *command)
 	if (command->has_redir_in)
 	{
 		dup2(command->fd_in, STDIN_FILENO);
-		close(command->fd_in);
+		ft_close(command->fd_in, "in child");
 		command->fd_in = -1;
 	}
 	if (command->has_redir_out)
 	{
 		dup2(command->fd_out, STDOUT_FILENO);
-		close(command->fd_out);
+		ft_close(command->fd_out, "in child");
 		command->fd_out = -1;
 	}
 }

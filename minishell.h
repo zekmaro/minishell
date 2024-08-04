@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/02 11:52:21 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 13:56:43 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,22 +165,22 @@ typedef struct s_clean
 	struct s_clean	*next;
 }					t_clean;
 
-extern int32_t g_signal_flag;
+extern volatile int32_t g_signal_flag;
 
 void set_non_blocking();
 /* Builtins */
-int32_t		ft_echo(char **args);
-void		ft_cd(const char **environment, const char **args);
-void		ft_pwd(const char **env);
-void		ft_env(const char **env);
-void		ft_unset(char **environment, const char **args);
-void		ft_export(char ***environment, const char **args);
-void		ft_exit();
+int32_t		ft_echo(char **args, int32_t *exit_status);
+void		ft_cd(const char **environment, const char **args, int32_t *exit_status);
+void		ft_pwd(const char **env, int32_t *exit_status);
+void		ft_env(const char **env, int32_t *exit_status);
+void		ft_unset(char **environment, const char **args, int32_t *exit_status);
+void		ft_export(char ***environment, const char **args, int32_t *exit_status);
+void		ft_exit(const char **args);
 
 /* Commands */
 bool		buildin_execute(t_ast *node, const char **environment, int *exit_status);
 void 		command_execute(char const *command_path, char const *argv[], char const **env);
-void		*m_tokenizer(const char *input, const char **env, const char *path_variable);
+void		*m_tokenizer(const char *input, const char **env, const char *path_variable, int *exit_status);
 /* Handle signal */
 void		handle_sigint(int sig);
 void		setup_signal_handlers();
@@ -213,8 +213,12 @@ void	handle_arrow_key_up(	t_prompt *prompt,
 									char **input,
 									uint32_t cursor_position_current[2]);
 
+/* Prompt_print.c */
+void	prompt_print_custom_string(char *string);
+void	prompt_print_pwd(char *prompt);
+
 /* Lexer */
-char	**evaluate_input(char ***input, const char **environment);
+char	**evaluate_input(char ***input, const char **environment, int32_t *exit_status);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);
@@ -231,12 +235,45 @@ char		*prompt_buffer_size_manage(char **input, uint32_t old_size, uint32_t input
 void		prompt_string_insert(char *string_to_insert, char **current_input, char *position_to_insert, uint32_t current_word_length);
 bool		handle_new_character_to_input(		char **input, char character, uint32_t *cursor_position_current, uint32_t prompt_length_current);
 void		blocking_mode_toggle(int flag);
+uint8_t		handle_single_char_input(	char **input, char buffer[], \
+										uint32_t cursor_position_current[2], \
+										bool *do_refresh);
+uint8_t		handle_single_char_input(	char **input, char buffer[], \
+										uint32_t cursor_position_current[2], \
+										bool *do_refresh);
+bool		handle_new_character_to_input(	char **input, \
+											char character, \
+											uint32_t *cursor_position_current, \
+											uint32_t prompt_length_current);
+/* Non Blocking mode */
 
 /* Redirections */
 void		execute(char **tokens, char **env);
 /* Tab Completion */
-void		handle_tab(char **input, const char **env, t_prompt *prompt);
+void		handle_tab(char **input, t_prompt *prompt);
+void		handle_tab_no_match(const char *input_path, \
+								char **env, \
+								uint32_t cursor_position_current[2], \
+								t_prompt *prompt);
+void		handle_tab_yes_match(	t_prompt *prompt, \
+									const char *next_word_match, \
+									char **input, \
+									uint32_t current_word_length);
+char		*determine_word(char *input, \
+							char **input_path, \
+							uint32_t cursor_position_current);
+void		get_next_word_match(	char **input, \
+									t_prompt *prompt, \
+									char *input_path, \
+									bool *is_directory);
 
+void		handle_rapid_input(	char buffer[], \
+								uint32_t cursor_position[2], \
+								char *input, \
+								uint32_t cursor_position_base);
+void	handle_backspace(	char *input, \
+							uint32_t *cursor_position_current, \
+							uint32_t input_length_current);
 /* Termios */
 void		terminal_raw_mode_enable(int);
 void 		terminal_raw_mode_disable(int);
@@ -309,7 +346,7 @@ int			is_single_special(const char input);
 t_token		create_token_single_special_symbol(const char **input);
 
 /*create_token_word.c*/
-t_token		create_token_word(const char **input, const char **environment);
+t_token		create_token_word(const char **input);
 
 /*create_token.c*/
 t_token		create_token(t_token_type token_type, const char *value);

@@ -6,15 +6,16 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/02 12:42:02 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 14:22:29 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-#include <stdio.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
+	ft_close(STDIN_FILENO, "restore_fd");
+	ft_close(STDOUT_FILENO, "restore fd");
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
 	ft_close(original_stdin, "stdin in restore_fd");
@@ -41,90 +42,59 @@ void	command_execute(const char *command_path,
 }
 
 void	execute_commands(t_ast *tree, const char *path_variable,
-					const char **env, int *error_catched)
+					const char **env, int *exit_status)
 {
-	static int	exit_status;
 	uint32_t	i;
+	int32_t		stdin_org;
+	int32_t		stdout_org;
 
-	exit_status = *error_catched;
+	stdin_org = dup(STDIN_FILENO);
+	stdout_org = dup(STDOUT_FILENO);
+	if (stdout_org == -1 || stdin_org == -1)
+	{
+		perror("dup");
+		lst_memory(NULL, NULL, CLEAN);
+	}
 	i = 0;
 	while (tree[i].type != NODE_END)
 	{
-		handle_command(&tree[i], path_variable, env, &exit_status);
-		if (tree[i].connection_type == TREE_LOGICAL_OR && exit_status == 0)
+		evaluate_input(&tree->args, env, exit_status);
+		handle_command(&tree[i], path_variable, env, exit_status);
+		if (tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0)
 			i++;
-		else if (tree[i].connection_type == TREE_LOGICAL_AND && exit_status != 0)
+		else if (tree[i].connection_type == TREE_LOGICAL_AND \
+				&& *exit_status != 0)
 			i++;
 		i++;
 	}
+	restore_fd(stdin_org, stdout_org);
 }
-/**/
-/*void	check_valid_logical_operator(t_ast *logical_node, int *error_catched)*/
-/*{*/
-/*	if (!logical_node->left || !logical_node->right)*/
-/*	{*/
-/*		printf("minishell: syntax error near unexpected token `&&'\n");*/
-/*		*error_catched = 1;*/
-/*	}*/
-/*}*/
-/**/
-/*void	traverse_tree(t_ast	*ast, t_ast **head, int *error_catched)*/
-/*{*/
-/*	while (ast)*/
-/*	{*/
-/*		if (ast->type == NODE_REDIRECTION)*/
-/*		{*/
-/*			handle_redir(ast, head, error_catched);*/
-/*		}*/
-/*		else if (ast->type == NODE_LOGICAL_OPERATOR)*/
-/*		{*/
-/*			check_valid_logical_operator(ast, error_catched);*/
-/*		}*/
-/*		if (*error_catched)*/
-/*			return ;*/
-/*		ast = ast->right;*/
-/*	}*/
-/*}*/
 
 void	print_tokens(t_token *tokens)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	printf("----TOKENS----\n");
 	while (tokens[i].token_type != TOKEN_EOL)
 	{
-		printf("Token: Type=%d, Value=%s\n", tokens[i].token_type, tokens[i].token_value);
+		printf("Token: Type=%d, Value=%s\n", \
+				tokens[i].token_type, tokens[i].token_value);
 		i++;
 	}
 	printf("------------\n");
 }
 
-/*void	skip_up_to_logical_operator(t_ast *ast)*/
-/*{*/
-/*	while (ast)*/
-/*	{*/
-/*		if (ast->type == NODE_LOGICAL_OPERATOR)*/
-/*			break ;*/
-/*		ast->is_done = 1;*/
-/*		ast = ast->right;*/
-/*	}*/
-/*}*/
-/**/
-
 void	*m_tokenizer(const char *input, const char **env,
-			const char *path_variable)
+			const char *path_variable, int *exit_status)
 {
 	t_token	*tokens;
 	t_ast	*tree;
-	int	error_catched;
 
-	error_catched = 0;
 	tokens = lexical_analysis(input, env);
+	print_tokens(tokens);
 	tree = parse_tokens(tokens);
-	/*if (error_catched)*/
-	/*	skip_up_to_logical_operator(tree);*/
-	execute_commands(tree, path_variable, env, &error_catched);
+	execute_commands(tree, path_variable, env, exit_status);
 	lst_memory(tokens, NULL, FREE);
 	return (NULL);
 }

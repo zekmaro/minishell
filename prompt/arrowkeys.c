@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:02:39 by victor            #+#    #+#             */
-/*   Updated: 2024/07/31 13:24:55 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 16:10:20 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,8 @@ bool	handle_escape_sequence(	t_prompt *prompt,
 	if (buffer[0] == 91 && buffer[1] == 65)
 		return (handle_arrow_key_up(prompt, input, cursor_position_current), 1);
 	else if (buffer[0] == 91 && buffer[1] == 66)
-		return (handle_arrow_key_down(prompt, input, cursor_position_current), 1);
+		return (handle_arrow_key_down(prompt, input, cursor_position_current), \
+										1);
 	else if (buffer[0] == 91 && buffer[1] == 67)
 		handle_arrow_key_right(cursor_position_current, prompt_length_current);
 	else if (buffer[0] == 91 && buffer[1] == 68)

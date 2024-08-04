@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 19:49:35 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/31 14:29:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/04 10:29:27 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,8 @@ static t_token	check_symbol_and_create_token(const char **input,
 		return (create_token_single_special_symbol(input));
 	else if (is_env_var(**input))
 		return (create_token_env_var((char **)input, env));
-	else if (is_quote(**input))
-		return (create_token_quotes(input, env));
 	else
-		return (create_token_word(input, env));
+		return (create_token_word(input));
 }
 
 static uint32_t	get_word_count(char *input)
@@ -63,18 +61,11 @@ static uint32_t	get_word_count(char *input)
 			i += 2;
 		else if (is_special_char(input[i]))
 			i++;
-		else if (is_quote(input[i]))
-		{
-			store_current_char = input[i++];
-			while (input[i] && input[i] != store_current_char)
-				i++;
-		}
 		else
 		{
 			while (input[i] && !ft_isspace(input[i]) \
 					&& !is_double_special(&input[i]) \
-					&& !is_single_special(input[i]) \
-					&& !is_quote(input[i]))
+					&& !is_single_special(input[i]))
 				i++;
 		}
 		word_count++;

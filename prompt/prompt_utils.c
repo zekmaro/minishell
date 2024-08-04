@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/07 19:23:40 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/02 11:00:11 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 16:12:19 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,9 @@ void	prompt_destroy(void *prompt)
 	ft_free(&prompt_ptr);
 }
 
-void	prompt_print_pwd(char *prompt)
-{
-	ft_putchar_fd('\r', 1);
-	ft_putstr_fd(GREEN, 1);
-	ft_printf("[%s]$ ", prompt);
-	ft_putstr_fd(RESET, 1);
-}
-
-void	prompt_print_custom_string(char *string)
-{
-	ft_putstr_fd(string, 1);
-}
-
-uint32_t	prompt_display_string_set(t_prompt *prompt, const char **environment, const char *prompt_string)
+uint32_t	prompt_display_string_set(	t_prompt *prompt, \
+										const char **environment, \
+										const char *prompt_string)
 {
 	char		*pwd;
 	uint32_t	prompt_string_length;
