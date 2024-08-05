@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 17:09:07 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/05 21:03:30 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,6 +258,9 @@ void		custom_memmove_strings(char **dest, char **src);
 int			get_tokens_count(char **tokens);
 void		custom_free_split(char **arr);
 void		handle_dollar_sign(char **single_token, char **env);
+
+/* Wildcards */
+void		check_and_expand_wildcards(t_token	**tokens);
 
 /* Environment_variable */
 
