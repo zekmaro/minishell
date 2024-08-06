@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/05 21:03:30 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/06 16:49:02 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -391,4 +391,7 @@ void		check_valid_pipe(t_token *token, int index,
 					int *error_catched);
 void		check_valid_logical_operator(t_token *token, int index,
 							int *error_catched);
+
+void check_and_expand_wildcards(t_token	**tokens_ptr);
+void	free_tokens(void *token_ptr);
 #endif

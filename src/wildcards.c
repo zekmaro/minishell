@@ -6,11 +6,33 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/05 22:39:55 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/06 17:45:40 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	*ft_realloc(void *ptr, int old_size, int new_size)
+{
+	void *new_ptr;
+
+	if (!new_size)
+	{
+		free(ptr);
+		return (NULL);
+	}
+	if (!ptr)
+	{
+		new_ptr = ft_calloc(new_size, 1);
+		return (new_ptr);
+	}
+	new_ptr = ft_calloc(new_size, 1);
+	if (!new_ptr)
+		return (NULL);
+	ft_memcpy(new_ptr, ptr, old_size);
+	// free(ptr);
+	return (new_ptr);
+}
 
 int	get_amount_tokens(t_token *tokens)
 {
@@ -37,11 +59,13 @@ int	wild_only_suffix(const char *pattern, const char *str,
 	size_t	len_str_suffix;
 	size_t	len_ptr;
 
-	len_ptr = ft_strlen(ptr);
-	str_suffix = ft_strchr(pattern, *(ptr + 1));
+	len_ptr = ft_strlen(ptr + 1);
+	str_suffix = ft_strchr(str, *(ptr + 1));
+	if (!str_suffix)
+		return (-1);
 	len_str_suffix = ft_strlen(str_suffix);
 	if (len_str_suffix != len_ptr)
-		return (0);
+		return (-1);
 	return (ft_strncmp(ptr + 1, str_suffix, len_str_suffix));
 }
 
@@ -59,12 +83,13 @@ int	wild_only_prefix(const char *pattern, const char *str,
 int match_found(const char *pattern, const char *str)
 {
 	char	*ptr;
-	int result;
+	int		result;
 
 	ptr = ft_strchr(pattern, '*');
+	result = -1;
 	if (pattern[0] == '*' && *(ptr + 1) == '\0')
 	{
-		return (1);
+		return (0);
 	}
 	else if (pattern[0] == '*' && *(ptr + 1) != '\0')
 	{
@@ -76,8 +101,7 @@ int match_found(const char *pattern, const char *str)
 	}
 	else if (pattern[0] != '*' && *(ptr + 1) != '\0')
 	{
-		result = -1;
-		result += wild_only_suffix(pattern, str, ptr);
+		result = wild_only_suffix(pattern, str, ptr);
 		result += wild_only_prefix(pattern, str, ptr);
 	}
 	return (result);
@@ -103,16 +127,30 @@ char **expand_wildcard(const char *pattern)
 		perror("calloc wildcards");
 		lst_memory(NULL, NULL, CLEAN);
 	}
+	lst_memory(matches, free, ADD);
 	while (entry != NULL)
 	{
-		if (match_found(pattern, entry->d_name))
+		if (match_found(pattern, entry->d_name) == 0)
 		{
 			if (count >= capacity)
 			{
-				matches = realloc; // rewrite
+				matches = (char **)ft_realloc(matches, count * sizeof(char *),
+										(count * 2 + 1) * sizeof(char *));
+				if (!matches)
+				{
+					perror("calloc wildcards");
+					lst_memory(NULL, NULL, CLEAN);
+				}
+				lst_memory(matches, free, ADD);
 				capacity *= 2;	
 			}
 			matches[count] = ft_strdup(entry->d_name);
+			if (!matches[count])
+			{
+				perror("strdup wildcards");
+				lst_memory(NULL, NULL, CLEAN);
+			}
+			lst_memory(matches[count], free, ADD);
 			count++;
 		}
 		entry = readdir(dir);
@@ -121,31 +159,96 @@ char **expand_wildcard(const char *pattern)
 	return (matches);
 }
 
-int	check_wildcard(t_token token)
+int	check_wildcard(char *str)
 {
-	return (ft_strchr(token.token_value, '*') != NULL);
+	if (!str)
+		return (0);
+	return (ft_strchr(str, '*') != NULL);
 }
 
-void check_and_expand_wildcards(t_token	**tokens)
+void	copy_tokens_with_wildcards(t_token *new_tokens, t_token *old_tokens, char **matches)
+{
+	int i;
+	int j;
+	int k;
+
+	i = 0;
+	j = 0;
+	k = 0;
+	while (old_tokens[i].token_type != TOKEN_EOL)
+	{
+		if (check_wildcard(old_tokens[i].token_value))
+		{
+			while (matches[j] != NULL)
+			{
+				new_tokens[k].token_value = matches[j];
+				new_tokens[k].token_type = TOKEN_WORD;
+				k++;
+				j++;
+			}
+			i++;
+		}
+		else
+		{
+			new_tokens[k].token_value = old_tokens[i].token_value;
+			new_tokens[k].token_type = old_tokens[i].token_type;
+			k++;
+			i++;
+		}
+	}
+	new_tokens[k].token_value = NULL;
+	new_tokens[k].token_type = TOKEN_EOL;
+}
+
+void	print_split(char **ptr)
+{
+	int i;
+
+	i = 0;
+	while (ptr[i])
+	{
+		printf("%s\n", ptr[i]);
+		i++;
+	}
+}
+void check_and_expand_wildcards(t_token	**tokens_ptr)
 {
 	char **matches;
+	t_token	*tokens;
+	t_token *new_tokens;
 	int	match_count;
 	int	size;
 	int i;
+	int wild_found = 0;
 
-	size = get_amount_tokens(*tokens);
+	tokens = *tokens_ptr;
+	size = get_amount_tokens(tokens);
+	new_tokens = NULL;
 	i = 0;
-	while ((*tokens)[i].token_type != TOKEN_EOL)
+	while (tokens[i].token_type != TOKEN_EOL)
 	{
-		if (check_wildcard((*tokens)[i]))
+		if (check_wildcard(tokens[i].token_value))
 		{
-			matches = expand_wildcard((*tokens)[i].token_value);
+			wild_found = 1;
+			matches = expand_wildcard(tokens[i].token_value);
 			if (matches)
 			{
 				match_count = get_tokens_count(matches);
 			}
-			// add logic to realloc the tokens
+			new_tokens = ft_calloc((size + match_count), sizeof(t_token));
+			copy_tokens_with_wildcards(new_tokens, tokens, matches);
+			tokens = new_tokens;
 		}
 		i++;
 	}
+	if (wild_found)
+	{
+		lst_memory(*tokens_ptr, NULL, FREE);
+		*tokens_ptr = tokens;
+		lst_memory(*tokens_ptr, free_tokens, ADD);	
+	}
 }
+
+// TODO: 
+// IMPROVE CODE
+// MULTIPLE WILDCARDS
