@@ -103,7 +103,7 @@ void	evaluate_double_quotes(char **input, uint32_t *i, uint32_t input_length)
 	temp_move = ft_strchr(*input, '\"');
 	if (!temp_move)
 	{
-		UNIMPLEMENTED("Error single quote missing");
+		UNIMPLEMENTED("Error double quote missing");
 		lst_memory(NULL, NULL, CLEAN);
 	}
 	while ((*input)[*i])

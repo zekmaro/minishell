@@ -106,11 +106,11 @@ static void	parse_branch(t_token *tokens, t_ast *branch)
 	branch->args = args;
 }
 
-static t_ast	collect_redirection(t_token *token)
+static t_ast	collect_redirection(t_token *token, const char **environment, bool has_syntax_error)
 {
 	uint32_t	i;
 	t_ast		branch;
-	
+
 	i = 0;
 	branch = (t_ast){0};
 	branch.fd_in = STDIN_FILENO;
@@ -118,25 +118,33 @@ static t_ast	collect_redirection(t_token *token)
 	while (token[i].token_type != TOKEN_EOL \
 			&& token[i].token_type != TOKEN_AND \
 			&& token[i].token_type != TOKEN_OR \
-			&& token[i].token_type != TOKEN_PIPE)
-
+			&& token[i].token_type != TOKEN_PIPE
+			&& branch.connection_type != TREE_INVALID)
 	{
-		if (token[i].token_type != TOKEN_DONE 
+		if (token[i].token_type != TOKEN_DONE
 			&& (token[i].token_type == TOKEN_REDIRECT_IN \
 			|| token[i].token_type == TOKEN_REDIRECT_OUT \
-			|| token[i].token_type == TOKEN_REDIRECT_APPEND)
-		   )		{
-			if  (token[i + 1].token_type == TOKEN_WORD || token[i + 1].token_type == TOKEN_ENV)
+			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
+			|| token[i].token_type == TOKEN_HEREDOC)
+		   )
+		{
+			if  (token[i + 1].token_type == TOKEN_WORD || token[i + 1].token_type == TOKEN_ENV || has_syntax_error)
 			{
 				if (token[i].token_type == TOKEN_REDIRECT_IN)
 				{
+					if (has_syntax_error)
+						return (branch);
 					if (branch.has_redir_in == true)
 						ft_close(branch.fd_in, "fd_in in collect_redirection");
 					ft_open(&branch.fd_in, token[i + 1].token_value, O_RDONLY, 0644);
+					if (branch.fd_in == -1)
+						branch.connection_type = TREE_INVALID;
 					branch.has_redir_in = true;
 				}
 				else if (token[i].token_type == TOKEN_REDIRECT_OUT)
 				{
+					if (has_syntax_error)
+						return (branch);
 					if (branch.has_redir_out == true)
 						ft_close(branch.fd_out, "fd_out in collect_redirection");
 					ft_open(&branch.fd_out, token[i + 1].token_value, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -144,19 +152,22 @@ static t_ast	collect_redirection(t_token *token)
 				}
 				else if (token[i].token_type == TOKEN_REDIRECT_APPEND)
 				{
+					if (has_syntax_error)
+						return (branch);
 					if (branch.has_redir_out == true)
 						ft_close(branch.fd_in, "fd_append in collect_redirection");
 					ft_open(&branch.fd_in, token[i + 1].token_value, O_WRONLY | O_CREAT | O_APPEND, 0644);
 					branch.has_redir_out = true;
 				}
+				else if (token[i].token_type == TOKEN_HEREDOC)
+				{
+					token_heredoc_get(&token[i], token[i + 1].token_value, environment);
+					token[i + 1].token_type = TOKEN_DONE;
+					continue ;
+				}
 				token[i].token_type = TOKEN_DONE;
 				token[i + 1].token_type = TOKEN_DONE;
 				i++;
-			}
-			else
-			{
-				branch.type = NODE_INVALID;
-				return (branch);
 			}
 		}
 		i++;
@@ -164,11 +175,47 @@ static t_ast	collect_redirection(t_token *token)
 	return (branch);
 }
 
-t_ast	*parse_tokens(t_token *tokens)
+int	check_syntax_errors(t_token *token)
+{
+	int error_catched;
+	int i;
+
+	error_catched = 0;
+	i = 0;
+	while (token[i].token_type != TOKEN_EOL \
+			&& token[i].token_type != TOKEN_AND \
+			&& token[i].token_type != TOKEN_OR \
+			&& token[i].token_type != TOKEN_PIPE)
+	{
+		if (token[i].token_type == TOKEN_REDIRECT_IN \
+			|| token[i].token_type == TOKEN_REDIRECT_OUT \
+			|| token[i].token_type == TOKEN_REDIRECT_APPEND \
+			|| token[i].token_type == TOKEN_HEREDOC)
+		{
+			check_valid_redir(token, i, &error_catched);
+		}
+		else if (token[i].token_type == TOKEN_PIPE)
+		{
+			check_valid_pipe(token, i, &error_catched);
+		}
+		else if (token[i].token_type == TOKEN_AND \
+				|| token[i].token_type == TOKEN_OR)
+		{
+			check_valid_logical_operator(token, i, &error_catched);
+		}
+		if (error_catched)
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+t_ast	*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_status)
 {
 	t_ast	*tree;
 	int		i;
 	uint32_t	tree_count;
+	bool		has_syntax_error;
 
 	if (!tokens)
 		return (NULL);
@@ -177,13 +224,20 @@ t_ast	*parse_tokens(t_token *tokens)
 	tree = ft_calloc(tree_count + 1, sizeof(t_ast));
 	lst_memory(tree, tree_destroy, ADD);
 	tree[tree_count].type = NODE_END;
-	while (tree[i].type != NODE_END)
+	has_syntax_error = false;
+	while (tree[i].type != NODE_END && !has_syntax_error)
 	{
-		tree[i] = collect_redirection(tokens);
+		if (!check_syntax_errors(&tokens[i]))
+			has_syntax_error = true;
+		tree[i] = collect_redirection(tokens, environment, has_syntax_error);
 		parse_branch(tokens, &tree[i]);
-		if (tree[i].type == NODE_INVALID)
-			return (perror("minishell"), ft_free(&tree), NULL);
 		i++;
+	}
+	if (has_syntax_error == true)
+	{
+		*exit_status = 2;
+		lst_memory(tree, NULL, FREE);
+		return (NULL);
 	}
 	return (tree);
 }

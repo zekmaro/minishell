@@ -34,7 +34,7 @@ static t_token	check_symbol_and_create_token(const char **input,
 					const char **env)
 {
 	if (is_double_special(*input))
-		return (create_token_double_special_symbol((char **)input));
+		return (create_token_double_special_symbol((char **)input, env));
 	else if (is_single_special(**input))
 		return (create_token_single_special_symbol(input));
 	else if (is_env_var(**input))

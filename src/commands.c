@@ -6,16 +6,17 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 14:22:29 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/06 19:18:57 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <unistd.h>
 
 void	restore_fd(int original_stdin, int original_stdout)
 {
-	ft_close(STDIN_FILENO, "restore_fd");
-	ft_close(STDOUT_FILENO, "restore fd");
+	ft_close(STDIN_FILENO, "STDIN in restore_fd");
+	ft_close(STDOUT_FILENO, "STDOUT in restore_fd");
 	dup2(original_stdin, STDIN_FILENO);
 	dup2(original_stdout, STDOUT_FILENO);
 	ft_close(original_stdin, "stdin in restore_fd");
@@ -58,12 +59,16 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 	i = 0;
 	while (tree[i].type != NODE_END)
 	{
+		if (tree[i].connection_type == TREE_INVALID)
+		{
+			i++;
+			continue ;
+		}
 		evaluate_input(&tree->args, env, exit_status);
 		handle_command(&tree[i], path_variable, env, exit_status);
-		if (tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0)
+		if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
 			i++;
-		else if (tree[i].connection_type == TREE_LOGICAL_AND \
-				&& *exit_status != 0)
+		else if ((tree[i].connection_type == TREE_LOGICAL_AND && *exit_status != 0))
 			i++;
 		i++;
 	}
@@ -92,9 +97,10 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_ast	*tree;
 
 	tokens = lexical_analysis(input, env);
-	print_tokens(tokens);
-	tree = parse_tokens(tokens);
-	execute_commands(tree, path_variable, env, exit_status);
+	/*print_tokens(tokens);*/
+	tree = parse_tokens(tokens, env, exit_status);
+	if (tree)
+		execute_commands(tree, path_variable, env, exit_status);
 	lst_memory(tokens, NULL, FREE);
 	return (NULL);
 }

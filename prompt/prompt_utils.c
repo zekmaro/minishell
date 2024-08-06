@@ -31,7 +31,7 @@ uint32_t	prompt_display_string_set(	t_prompt *prompt, \
 	if (environment)
 	{
 		pwd = environment_variable_value_get("PWD", environment);
-		prompt_string_length = ft_strlen(pwd) + 4;
+		prompt_string_length = ft_strlen(pwd) + 5;
 		prompt->prompt = pwd;
 	}
 	else
@@ -50,6 +50,9 @@ char	*prompt_get(const char **environment)
 	if (!prompt.exists)
 		prompt = prompt_create(environment, PWD);
 	prompt.prompt = NULL;
+	prompt.prompt_length = prompt_display_string_set(&prompt, \
+													environment, \
+													NULL);
 	prompt.command = prompt_get_input(&prompt, PROMPT_INPUT_BUFFER_SIZE, "\n");
 	if (!prompt.command || !*prompt.command)
 		return (NULL);
@@ -72,9 +75,9 @@ t_prompt	prompt_create(const char **env, uint8_t mode)
 	tmp.history_count = 0;
 	tmp.env_ptr = (char **)env;
 	tmp.exists = true;
-	if (mode == 0)
+	if (mode == PWD)
 		tmp.prompt_display_func = prompt_print_pwd;
-	else if (mode == 1)
+	else if (mode == CUSTOM)
 		tmp.prompt_display_func = prompt_print_custom_string;
 	return (tmp);
 }

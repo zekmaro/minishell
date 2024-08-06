@@ -11,6 +11,10 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 void	handle_pipe_in_child(t_ast *command)
 {
@@ -26,12 +30,30 @@ void	handle_pipe_in_parent(t_ast *command)
 	ft_close(command->pipefd[0], "close in pipe_parent");
 }
 
-int	execute_command(t_ast *command, const char **env, int32_t *exit_status)
+void	execute_parent(t_ast *command, int32_t *exit_status, pid_t pid)
 {
-	pid_t	pid;
 	int		stdout_fd;
 
 	stdout_fd = dup(STDOUT_FILENO);
+	if (stdout_fd == -1)
+		lst_memory(NULL, NULL, CLEAN);
+	if (command->connection_type == TREE_PIPE)
+		handle_pipe_in_parent(command);
+	if (command->has_redir_in || command->has_redir_out)
+		handle_fds_parent_proccess(command);
+	waitpid(pid, exit_status, 0);
+	if (WIFEXITED(*exit_status))
+	{
+		dup2(stdout_fd, STDOUT_FILENO);
+		ft_close(stdout_fd, "in execute command parent");
+		*exit_status = WEXITSTATUS(*exit_status);
+	}
+}
+
+void	execute_command(t_ast *command, const char **env, int32_t *exit_status)
+{
+	pid_t	pid;
+
 	ft_fork(&pid, "execute command");
 	if (pid == 0)
 	{
@@ -44,27 +66,13 @@ int	execute_command(t_ast *command, const char **env, int32_t *exit_status)
 		lst_memory(NULL, NULL, CLEAN);
 	}
 	else
-	{
-		if (command->connection_type == TREE_PIPE)
-			handle_pipe_in_parent(command);
-		if (command->has_redir_in || command->has_redir_out)
-			handle_fds_parent_proccess(command);
-		waitpid(pid, exit_status, 0);
-		if (WIFEXITED(*exit_status))
-		{
-			dup2(stdout_fd, STDOUT_FILENO);
-			ft_close(stdout_fd, "in execute command parent");
-			return (WEXITSTATUS(*exit_status));
-		}
-	}
-	return (-1);
+		execute_parent(command, exit_status, pid);
 }
 
 void	buildin_apply_pipe(t_ast *node)
 {
 	if (node->connection_type == TREE_PIPE)
 	{
-		ft_dup2(node->pipefd[1], STDOUT_FILENO, "dup2 in buildin_execute");
 		ft_dup2(node->pipefd[0], STDIN_FILENO, "dup2 in buildin_execute");
 		ft_close(node->pipefd[0], "close in buildin_execute");
 		ft_close(node->pipefd[1], "close in buildin_execute");
@@ -95,16 +103,32 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 void	handle_command(t_ast *current, const char *path_variable,
 					const char **env, int *exit_status)
 {
-	if (current->connection_type == TREE_PIPE)
+	int32_t		stdin_org;
+	int32_t		stdout_org;
+
+	stdin_org = dup(STDIN_FILENO);
+	stdout_org = dup(STDOUT_FILENO);
+	if (stdout_org == -1 || stdin_org == -1)
 	{
-		ft_pipe(current->pipefd, "in handle_command");
+		return (perror("dup"), lst_memory(NULL, NULL, CLEAN));
 	}
+	if (current->connection_type == TREE_PIPE)
+		ft_pipe(current->pipefd, "in handle_command");
 	if (!buildin_execute(current, env, exit_status))
 	{
 		current->path = find_absolute_path(path_variable, current->args[0]);
 		if (!current->path)
 			*exit_status = 127;
 		else
-			*exit_status = execute_command(current, env, exit_status);
+			execute_command(current, env, exit_status);
 	}
+	else
+	{
+		if (current->connection_type == TREE_PIPE)
+			ft_dup2(stdout_org, STDOUT_FILENO, "in handle_command");
+		if (current->has_redir_in || current->has_redir_out)
+			return (restore_fd(stdin_org, stdout_org));
+	}
+	ft_close(stdout_org, "in hanlde_command");
+	ft_close(stdin_org, "in hanlde_command");
 }

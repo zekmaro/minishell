@@ -119,7 +119,7 @@ t_token	create_token_word(const char **input)
 	while (*temp_move && !ft_isspace(*temp_move))
 	{
 		if (*temp_move == '\'' || *temp_move == '\"')
-			while (*temp_move && *temp_move != '\'' || *temp_move == '\"')
+			while (*temp_move && (*temp_move != '\'' || *temp_move == '\"'))
 				temp_move++;
 		temp_move++;
 	}
@@ -127,8 +127,6 @@ t_token	create_token_word(const char **input)
 		input_next = temp_move + 1;
 	*temp_move = 0;
 	temp_move = ft_strchr(*input, '*');
-	if (temp_move)
-		return (expand_wildcard(input));
 	if (input_next)
 		*input = input_next;
 	else

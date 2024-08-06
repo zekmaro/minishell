@@ -23,13 +23,13 @@ uint8_t	handle_single_char_input(	char **input, char buffer[], \
 	new_buffer_length = ft_strlen(buffer);
 	if (new_buffer_length == 1)
 	{
-		if (ft_isprint(buffer[0]))
+		if (ft_isprint(buffer[0]) || buffer[0] == '\n')
 		{
 			return (*do_refresh = \
 					handle_new_character_to_input(input, buffer[0], \
 						cursor_position_current, input_length_current), 1);
 		}
-		else if (buffer[0] == EOT && input_length_current == 0)
+		else if (buffer[0] == EOT && (input_length_current == 0 || (*input)[input_length_current - 1] == '\n'))
 			return (ft_putstr_fd("\n", 1), \
 					terminal_raw_mode_disable(ECHOCTL), \
 					g_signal_flag = 2, 1);

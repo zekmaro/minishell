@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 void	handle_accepted_input(	t_prompt *prompt, \
 								uint32_t cursor_position[2], \
@@ -30,15 +32,34 @@ void	handle_accepted_input(	t_prompt *prompt, \
 				ft_strlen(*input));
 	else if (buffer[0] == '\n')
 	{
-		ft_putstr_fd(prompt->prompt, 1);
-		cursor_position[1] = prompt->prompt_length + 1;
+		handle_new_character_to_input(input, buffer[0], cursor_position, \
+										ft_strlen(*input));
+		prompt->prompt_display_func(prompt->prompt);
 		cursor_position[0]++;
 		return ;
 	}
 	else
 		handle_single_char_input(input, buffer, cursor_position, &do_refresh);
 	if (do_refresh == true && g_signal_flag != 2)
-		prompt_refresh_line(*input, prompt->prompt_length + 1, cursor_position);
+		prompt_refresh_line(*input, prompt->prompt_length, cursor_position);
+}
+
+static bool	is_delimiter(char *input, const char *delimiter)
+{
+	char		*tmp;
+	uint32_t	delimiter_length;
+
+	if (*delimiter == '\n')
+		return (true);
+	delimiter_length = ft_strlen(delimiter);
+	tmp = ft_strrchr(input - (*input == '\n' && ft_strlen(input) > 0), '\n');
+	if (tmp)
+		if (tmp++ && ((*tmp == *delimiter && delimiter_length == 1) || ft_strncmp(tmp, delimiter, delimiter_length) == 0))
+			return (*tmp = 0, true);
+	if ((*input == *delimiter && delimiter_length == 1) \
+		|| ft_strncmp(input, delimiter, delimiter_length) == 0)
+		return (*input = 0, true);
+	return (false);
 }
 
 static char	*handle_input(	t_prompt *prompt, \
@@ -47,11 +68,9 @@ static char	*handle_input(	t_prompt *prompt, \
 							const char *delimiter)
 {
 	char		buffer[100];
-	uint32_t	delimiter_length;
 	int64_t		bytes_read;
 	uint32_t	cursor_position_base;
 
-	delimiter_length = ft_strlen(delimiter);
 	cursor_position_base = prompt->prompt_length;
 	while (1)
 	{
@@ -59,14 +78,17 @@ static char	*handle_input(	t_prompt *prompt, \
 		bytes_read = ft_read(0, buffer, &input, 20);
 		if (g_signal_flag == 1)
 			return (ft_putstr_fd("^C\n", 1), NULL);
-		if (bytes_read > 15)
+		if (bytes_read > 5)
 			handle_rapid_input(buffer, cursor_position, input, \
 								cursor_position_base);
-		else if ((buffer[0] == *delimiter && delimiter_length == 1) \
-				|| ft_strncmp(&buffer[0], delimiter, delimiter_length) == 0)
-			break ;
 		else if (bytes_read >= 1)
+		{
+			bytes_read = ft_strlen(buffer);
+			if (buffer[bytes_read - (bytes_read > 0)] == '\n')
+				if (is_delimiter(input, delimiter))
+					break ;
 			handle_accepted_input(prompt, cursor_position, &input, buffer);
+		}
 		if (g_signal_flag == 2)
 			return (NULL);
 	}
@@ -93,8 +115,6 @@ char	*prompt_get_input(	t_prompt *prompt, \
 	if (!input)
 		return (perror("malloc"), NULL);
 	lst_memory(input, free, ADD);
-	prompt->prompt_length = prompt_display_string_set(prompt, \
-							(const char **)prompt->env_ptr, NULL);
 	prompt->prompt_display_func(prompt->prompt);
 	terminal_raw_mode_enable(ECHOCTL | ICANON);
 	cursor_position_get(prompt->cursor_position);

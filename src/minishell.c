@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:22:34 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 14:19:13 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/06 19:12:39 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,10 @@ int	main(int argc, const char **argv, const char **env)
 			if (g_signal_flag == 1)
 				g_signal_flag = 0;
 			else if (g_signal_flag == 2)
+			{
+				ft_putstr_fd("exit\n", 1);
 				lst_memory(NULL, NULL, CLEAN);
+			}
 			continue ;
 		}
 		if (command_input)

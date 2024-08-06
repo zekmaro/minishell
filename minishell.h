@@ -6,7 +6,7 @@
 /*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/04 13:56:43 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/06 16:21:30 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,7 @@ typedef enum
 	TREE_PIPE = 7,
 	TREE_LOGICAL_AND,
 	TREE_LOGICAL_OR,
+	TREE_INVALID
 } t_tree_connection_type;
 
 typedef struct s_token
@@ -115,7 +116,7 @@ typedef struct s_token
 	char			*token_value;
 }	t_token;
 
-typedef enum 
+typedef enum
 {
 	NODE_INVALID = 1,
 	NODE_END,
@@ -132,7 +133,7 @@ typedef enum e_file_type
 	REDIRECT_APPEND
 }	t_file_type;
 
-typedef struct s_ast 
+typedef struct s_ast
 {
     t_node_type		type;
 	t_token_type	token_type;
@@ -316,7 +317,8 @@ int			ft_is_double_quote(char c, int *second_double_found);
 
 /*create_token_double_special_symbol.c*/
 int			is_double_special(const char *input);
-t_token		create_token_double_special_symbol(char **input);
+t_token		create_token_double_special_symbol(char **input, const char **environmnet);
+void		token_heredoc_get(t_token *token, const char *delimiter, const char **environment);
 
 /*quotes */
 char	*interpret_double_quotes(const char **command_inputi, t_token_type *type);
@@ -408,7 +410,14 @@ void		handle_pipe(t_ast *pipe_node, int *error_catched);
 void		handle_redir(t_ast *redir_node, t_ast **head, int *error_catched);
 
 /*parse_tokens.c*/
-t_ast		*parse_tokens(t_token *tokens);
+t_ast		*parse_tokens(t_token *tokens, const char **environment, int32_t *exit_status);
+
+/* Syntac_check.c */
+void	check_valid_logical_operator(t_token *token, int index, int *error_catched);
+void	check_valid_pipe(t_token *token, int index, int *error_catched);
+void	check_valid_redir(t_token *token, int index, int *error_catched);
+void	print_error_redir(t_token_type token_type);
+void	print_error_logical_operator(t_token_type token_type);
 
 void	restore_fd(int original_stdin, int original_stdout);
 /*parser.c*/

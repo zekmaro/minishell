@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
 #include <sys/types.h>
 
 void	cursor_position_save(void)
@@ -32,11 +33,22 @@ void	prompt_refresh_line(char *input, \
 							uint32_t cursor_position_base, \
 							uint32_t cursor_position_current[2])
 {
+	char		*tmp;
+	uint32_t	cursor_position_store;
+
+	cursor_position_store = cursor_position_current[1];
+	tmp = ft_strrchr(input, '\n');
+	if (tmp)
+	{
+		input = tmp + 1;
+		cursor_position_current[1] = 0;
+	}
 	cursor_position_set(cursor_position_current[0], cursor_position_base);
 	ft_putstr_fd(SCREEN_CLEAR_TO_EOL, 1);
 	ft_putstr_fd(input, 1);
 	cursor_position_set(cursor_position_current[0], \
 						cursor_position_current[1] + cursor_position_base);
+	cursor_position_current[1] = cursor_position_store;
 }
 
 char	*prompt_buffer_size_manage(	char **input, \

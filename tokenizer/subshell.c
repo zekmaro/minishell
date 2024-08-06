@@ -11,21 +11,25 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdint.h>
 
 static void	subshell_child_execute(	char *input, \
 									const char **environement, \
 									int32_t pipefd[2])
 {
 	char	*path_variable;
+	int32_t exit_status;
 
+	exit_status = 0;
 	path_variable = environment_variable_value_get("PATH", environement);
 	if (!path_variable)
 		return ;
 	ft_close(pipefd[0], "pipefd[0] in child parent");
 	ft_dup2(pipefd[1], STDOUT_FILENO, "execute_subshell stdout");
 	ft_close(pipefd[1], "close in execute_subshell");
-	m_tokenizer(input, environement, path_variable);
+	m_tokenizer(input, environement, path_variable, &exit_status);
 	lst_memory(NULL, NULL, END);
+	exit(exit_status);
 }
 
 static void	subshell_parent_execute(char *input_subshell, int32_t pipefd[2])

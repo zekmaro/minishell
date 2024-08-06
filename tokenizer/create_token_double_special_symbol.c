@@ -23,43 +23,41 @@ int	is_double_special(const char *input)
 char	*token_heredoc_input_get(t_prompt *heredoc, const char *delimiter)
 {
 	char	*heredoc_input;
+	char	*tmp;
 
 	heredoc_input = prompt_get_input(heredoc, \
 									PROMPT_INPUT_BUFFER_SIZE, \
 									delimiter);
 	if (!heredoc_input || !*heredoc_input)
+	{
+		if (g_signal_flag == 2 || g_signal_flag == 1)
+			g_signal_flag = 0;
 		return (NULL);
+	}
+	else
+	{
+		tmp = ft_strrchr(heredoc_input, '\n');
+		if (tmp)
+			*tmp = 0;
+	}
 	return (heredoc_input);
 }
 
-void	token_heredoc_get(t_token *token, char **input)
+void	token_heredoc_get(t_token *token, const char *delimiter, const char **environment)
 {
-	static t_prompt	heredoc;
+	static t_prompt	heredoc = {0};
 	char			*temp_move;
 
-	heredoc = (t_prompt){0};
-	temp_move = *input;
-	while (*input && ft_isspace(**input))
-		(*input)++;
-	if (*input && ft_isalnum(**input) \
-		&& !is_double_special(*input) \
-		&& !is_single_special(**input))
-	{
-		while (*temp_move && (ft_isprint(*temp_move) \
-				&& !ft_isspace(*temp_move) \
-				&& !is_double_special(temp_move) \
-				&& !is_single_special(*temp_move)))
-			temp_move++;
-		*temp_move = 0;
-	}
+	if (heredoc.exists == false)
+    	heredoc = prompt_create(environment, CUSTOM);
 	heredoc.prompt_length = prompt_display_string_set(&heredoc, \
 													NULL, \
 													"heredoc> ");
-	token_heredoc_input_get(&heredoc, *input);
-	*input = temp_move + 1;
+	token->token_value = token_heredoc_input_get(&heredoc, delimiter);
+	token->token_type = TOKEN_WORD;
 }
 
-t_token	create_token_double_special_symbol(char **input)
+t_token	create_token_double_special_symbol(char **input, const char **environment)
 {
 	t_token			temp_token;
 	t_token_type	token_type;
@@ -67,7 +65,7 @@ t_token	create_token_double_special_symbol(char **input)
 	if (ft_strncmp(*input, ">>", 2) == 0)
 		token_type = TOKEN_REDIRECT_APPEND;
 	else if (ft_strncmp(*input, "<<", 2) == 0)
-		token_heredoc_get(&temp_token, input);
+	   token_type = TOKEN_HEREDOC;
 	else if (ft_strncmp(*input, "&&", 2) == 0)
 		token_type = TOKEN_AND;
 	else

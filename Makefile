@@ -6,7 +6,7 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/02 17:35:25 by vvobis           ###   ########.fr        #
+#    Updated: 2024/08/06 16:48:54 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,8 @@ PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
 AST_SRC		:=	ast/ast_utils.c \
 				ast/handle_command.c ast/handle_fds.c \
 				ast/parse_tokens.c ast/parser.c \
-				ast/handle_pipes.c ast/handle_logical_operator.c 
+				ast/handle_pipes.c ast/handle_logical_operator.c \
+				ast/syntax_check.c
 
 TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_double_special_symbol.c \
