@@ -6,13 +6,13 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/08/06 14:47:39 by anarama          ###   ########.fr        #
+#    Updated: 2024/08/07 14:53:01 by anarama          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g3 -fsanitize=leak,undefined,address
+CFLAGS		:= -Wall -Wextra -g3
 
 # DIRECTORIES
 SRCDIR		:= src

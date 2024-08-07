@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/07 12:51:01 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/07 14:51:17 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ int	wild_only_prefix(const char *pattern, const char *str,
 	size_t	len_str_prefix;
 
 	len_str_prefix = adr_next_wild - pattern;
+	if (str[0] == *(adr_next_wild + 1)) // check for the *.*
+		return (-1);
 	return (ft_strncmp(pattern, str, len_str_prefix));
 }
 
@@ -104,7 +106,6 @@ int	handle_middle(const char *pattern, const char *str)
 	while (adr_next_wild)
 	{
 		*((char *)adr_next_wild) = 0;
-		printf("WE ARE SEARCHING: '%s' IN  STR: '%s'\n", current_position_in_pattern, current_position_in_str);
 		len_current_pattern = adr_next_wild - current_position_in_pattern;
 		result = ft_strnstr(str, current_position_in_pattern, ft_strlen(str));
 		*((char *)adr_next_wild) = '*';
@@ -123,7 +124,6 @@ int	handle_middle(const char *pattern, const char *str)
 int match_found(const char *pattern, const char *str)
 {
 	char	*adr_next_wild;
-	int		result;
 	int		len_prefix;
 
 	if (*pattern == '*' && *(pattern + 1) == '\0')
@@ -147,12 +147,14 @@ char **expand_wildcard(const char *pattern)
 	int	capacity;
 	int	count;
 	DIR *dir;
+	int flag_match_found;
 
 	matches = NULL;
 	ft_opendir(&dir, ".");
 	entry = readdir(dir);
 	count = 0;
 	capacity = 10;
+	flag_match_found = 0;
 	matches = ft_calloc(capacity + 1, sizeof(char *));
 	if (!matches)
 	{
@@ -162,10 +164,9 @@ char **expand_wildcard(const char *pattern)
 	lst_memory(matches, free, ADD);
 	while (entry != NULL)
 	{
-		printf("CHECKING: %s\n", entry->d_name);
 		if (match_found(pattern, entry->d_name) == 0)
 		{
-			printf("MATCH FOUND: %s\n", entry->d_name);
+			flag_match_found = 1;
 			if (count >= capacity)
 			{
 				matches = (char **)ft_realloc(matches, count * sizeof(char *),
@@ -190,6 +191,8 @@ char **expand_wildcard(const char *pattern)
 		entry = readdir(dir);
 	}
 	closedir(dir);
+	if (flag_match_found == 0)
+		return (NULL);
 	return (matches);
 }
 
@@ -253,7 +256,7 @@ void check_and_expand_wildcards(t_token	**tokens_ptr)
 	int	match_count;
 	int	size;
 	int i;
-	int wild_found = 0;
+	int match_found = 0;
 
 	tokens = *tokens_ptr;
 	size = get_amount_tokens(tokens);
@@ -263,26 +266,24 @@ void check_and_expand_wildcards(t_token	**tokens_ptr)
 	{
 		if (check_wildcard(tokens[i].token_value))
 		{
-			wild_found = 1;
 			matches = expand_wildcard(tokens[i].token_value);
 			if (matches)
 			{
+				match_found = 1;
 				match_count = get_tokens_count(matches);
+				new_tokens = ft_calloc((size + match_count), sizeof(t_token));
+				copy_tokens_with_wildcards(new_tokens, tokens, matches);
+				tokens = new_tokens;	
 			}
-			printf("MATCHES: \n");
-			print_split(matches);
-			// new_tokens = ft_calloc((size + match_count), sizeof(t_token));
-			// copy_tokens_with_wildcards(new_tokens, tokens, matches);
-			// tokens = new_tokens;
 		}
 		i++;
 	}
-	// if (wild_found)
-	// {
-	// 	lst_memory(*tokens_ptr, NULL, FREE);
-	// 	*tokens_ptr = tokens;
-	// 	lst_memory(*tokens_ptr, free_tokens, ADD);	
-	// }
+	if (match_found)
+	{
+		lst_memory(*tokens_ptr, NULL, FREE);
+		*tokens_ptr = tokens;
+		lst_memory(*tokens_ptr, free_tokens, ADD);	
+	}
 }
 
 // TODO: 
