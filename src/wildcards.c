@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/07 14:51:17 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/07 17:29:59 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,13 +208,15 @@ void	copy_tokens_with_wildcards(t_token *new_tokens, t_token *old_tokens, char *
 	int i;
 	int j;
 	int k;
+	int flag;
 
 	i = 0;
 	j = 0;
 	k = 0;
+	flag = 1;
 	while (old_tokens[i].token_type != TOKEN_EOL)
 	{
-		if (check_wildcard(old_tokens[i].token_value))
+		if (flag == 1 && check_wildcard(old_tokens[i].token_value))
 		{
 			while (matches[j] != NULL)
 			{
@@ -223,6 +225,7 @@ void	copy_tokens_with_wildcards(t_token *new_tokens, t_token *old_tokens, char *
 				k++;
 				j++;
 			}
+			flag = 0;
 			i++;
 		}
 		else
@@ -271,9 +274,12 @@ void check_and_expand_wildcards(t_token	**tokens_ptr)
 			{
 				match_found = 1;
 				match_count = get_tokens_count(matches);
-				new_tokens = ft_calloc((size + match_count), sizeof(t_token));
+				if (new_tokens != NULL)
+					lst_memory(new_tokens, free, ADD);
+				new_tokens = ft_realloc(new_tokens, size * sizeof(t_token), (size + match_count) * sizeof(t_token));
+				size = size + match_count - 1;
 				copy_tokens_with_wildcards(new_tokens, tokens, matches);
-				tokens = new_tokens;	
+				tokens = new_tokens;
 			}
 		}
 		i++;
@@ -286,7 +292,4 @@ void check_and_expand_wildcards(t_token	**tokens_ptr)
 	}
 }
 
-// TODO: 
-// IMPROVE CODE
-// MULTIPLE WILDCARDS
-// REWRITE CHECK_WILDCARD
+// REFACTOR THE CODE 
