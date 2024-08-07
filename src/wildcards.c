@@ -6,11 +6,12 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/06 17:45:40 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/07 12:51:01 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdio.h>
 
 void	*ft_realloc(void *ptr, int old_size, int new_size)
 {
@@ -52,62 +53,93 @@ int	get_amount_tokens(t_token *tokens)
 // "ft_*\0"
 // "ft_*.c\0"
 
-int	wild_only_suffix(const char *pattern, const char *str,
-				char *ptr)
+int	wild_only_suffix(const char *str, const char *ptr)
 {
 	char	*str_suffix;
 	size_t	len_str_suffix;
 	size_t	len_ptr;
 
-	len_ptr = ft_strlen(ptr + 1);
-	str_suffix = ft_strchr(str, *(ptr + 1));
+	len_ptr = ft_strlen(ptr);
+	str_suffix = ft_strchr(str, *ptr);
 	if (!str_suffix)
 		return (-1);
 	len_str_suffix = ft_strlen(str_suffix);
 	if (len_str_suffix != len_ptr)
 		return (-1);
-	return (ft_strncmp(ptr + 1, str_suffix, len_str_suffix));
+	return (ft_strncmp(ptr, str_suffix, len_str_suffix));
 }
 
 int	wild_only_prefix(const char *pattern, const char *str,
-				char *ptr)
+				char *adr_next_wild)
 {
-	char *temp;
 	size_t	len_str_prefix;
 
-	temp = ft_strchr(str, *(ptr - 1));
-	len_str_prefix = temp - str;
+	len_str_prefix = adr_next_wild - pattern;
 	return (ft_strncmp(pattern, str, len_str_prefix));
+}
+
+int	handle_suffix(const char *current_position_in_pattern,
+				const char	*current_position_in_str)
+{
+	if (*current_position_in_pattern != '\0')
+	{
+		if (wild_only_suffix(current_position_in_str, current_position_in_pattern) != 0)
+			return (-1);
+	}
+	return (0);
+}
+
+int	handle_middle(const char *pattern, const char *str)
+{
+	const char	*current_position_in_pattern;
+	const char	*current_position_in_str;
+	char	*adr_next_wild;
+	char	*result;
+	int		len_current_pattern;
+
+	adr_next_wild = ft_strchr(pattern, '*');
+	current_position_in_pattern = pattern;
+	current_position_in_str = str;
+	result = 0;
+	while (adr_next_wild)
+	{
+		*((char *)adr_next_wild) = 0;
+		printf("WE ARE SEARCHING: '%s' IN  STR: '%s'\n", current_position_in_pattern, current_position_in_str);
+		len_current_pattern = adr_next_wild - current_position_in_pattern;
+		result = ft_strnstr(str, current_position_in_pattern, ft_strlen(str));
+		*((char *)adr_next_wild) = '*';
+		if (!result)
+		{
+			return (-1);
+		}
+		current_position_in_str = result + len_current_pattern;
+		current_position_in_pattern = adr_next_wild + 1;
+		adr_next_wild = ft_strchr(current_position_in_pattern, '*');
+	}
+	return (handle_suffix(current_position_in_pattern,
+				current_position_in_str));
 }
 
 int match_found(const char *pattern, const char *str)
 {
-	char	*ptr;
+	char	*adr_next_wild;
 	int		result;
+	int		len_prefix;
 
-	ptr = ft_strchr(pattern, '*');
-	result = -1;
-	if (pattern[0] == '*' && *(ptr + 1) == '\0')
-	{
+	if (*pattern == '*' && *(pattern + 1) == '\0')
 		return (0);
-	}
-	else if (pattern[0] == '*' && *(ptr + 1) != '\0')
+	adr_next_wild = ft_strchr(pattern, '*');
+	if (adr_next_wild)
 	{
-		result = wild_only_suffix(pattern, str, ptr);
+		if (wild_only_prefix(pattern, str, adr_next_wild) != 0)
+			return (-1);
+		len_prefix = adr_next_wild - pattern;
+		pattern += len_prefix + 1;
+		str += len_prefix;
 	}
-	else if (pattern[0] != '*' && *(ptr + 1) == '\0')
-	{
-		result = wild_only_prefix(pattern, str, ptr);
-	}
-	else if (pattern[0] != '*' && *(ptr + 1) != '\0')
-	{
-		result = wild_only_suffix(pattern, str, ptr);
-		result += wild_only_prefix(pattern, str, ptr);
-	}
-	return (result);
+	return (handle_middle(pattern, str));
 }
 
-// case when not just '*'
 char **expand_wildcard(const char *pattern)
 {
 	struct dirent *entry;
@@ -130,8 +162,10 @@ char **expand_wildcard(const char *pattern)
 	lst_memory(matches, free, ADD);
 	while (entry != NULL)
 	{
+		printf("CHECKING: %s\n", entry->d_name);
 		if (match_found(pattern, entry->d_name) == 0)
 		{
+			printf("MATCH FOUND: %s\n", entry->d_name);
 			if (count >= capacity)
 			{
 				matches = (char **)ft_realloc(matches, count * sizeof(char *),
@@ -235,20 +269,23 @@ void check_and_expand_wildcards(t_token	**tokens_ptr)
 			{
 				match_count = get_tokens_count(matches);
 			}
-			new_tokens = ft_calloc((size + match_count), sizeof(t_token));
-			copy_tokens_with_wildcards(new_tokens, tokens, matches);
-			tokens = new_tokens;
+			printf("MATCHES: \n");
+			print_split(matches);
+			// new_tokens = ft_calloc((size + match_count), sizeof(t_token));
+			// copy_tokens_with_wildcards(new_tokens, tokens, matches);
+			// tokens = new_tokens;
 		}
 		i++;
 	}
-	if (wild_found)
-	{
-		lst_memory(*tokens_ptr, NULL, FREE);
-		*tokens_ptr = tokens;
-		lst_memory(*tokens_ptr, free_tokens, ADD);	
-	}
+	// if (wild_found)
+	// {
+	// 	lst_memory(*tokens_ptr, NULL, FREE);
+	// 	*tokens_ptr = tokens;
+	// 	lst_memory(*tokens_ptr, free_tokens, ADD);	
+	// }
 }
 
 // TODO: 
 // IMPROVE CODE
 // MULTIPLE WILDCARDS
+// REWRITE CHECK_WILDCARD

@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/06 21:20:49 by victor            #+#    #+#             */
-/*   Updated: 2024/08/06 17:35:54 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/07 12:07:27 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,10 +155,10 @@ void	*m_tokenizer(const char *input, const char **env,
 		return (NULL);
 	check_and_expand_wildcards(&tokens);
 	print_tokens(tokens);
-	tree = parse_tokens(tokens);
-	/*if (error_catched)*/
-	/*	skip_up_to_logical_operator(tree);*/
-	execute_commands(tree, path_variable, env, &error_catched);
+	// tree = parse_tokens(tokens);
+	// /*if (error_catched)*/
+	// /*	skip_up_to_logical_operator(tree);*/
+	// execute_commands(tree, path_variable, env, &error_catched);
 	lst_memory(tokens, NULL, FREE);
 	return (NULL);
 }
