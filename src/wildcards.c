@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/05 21:02:23 by anarama           #+#    #+#             */
-/*   Updated: 2024/08/08 13:50:02 by anarama          ###   ########.fr       */
+/*   Updated: 2024/08/08 17:20:02 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	*ft_realloc(void *ptr, int old_size, int new_size)
 	if (!new_ptr)
 		return (NULL);
 	ft_memcpy(new_ptr, ptr, old_size);
-	// free(ptr);
+	// free(ptr); lst memory should free it
 	return (new_ptr);
 }
 
@@ -46,31 +46,30 @@ int	get_amount_tokens(t_token *tokens)
 	return (i);
 }
 
-int	compare_suffix(const char *str, const char *ptr)
+int	compare_suffix(const char *current_position_in_str,
+			const char *current_position_in_pattern)
 {
-	char	*str_suffix;
-	size_t	len_str_suffix;
-	size_t	len_ptr;
+	const char	*suffix;
+	size_t	len_current_pattern;
+	size_t	len_current_str;
 
-	len_ptr = ft_strlen(ptr);
-	str_suffix = ft_strchr(str, *ptr);
-	if (!str_suffix)
+	len_current_pattern = ft_strlen(current_position_in_pattern);
+	len_current_str = ft_strlen(current_position_in_str);
+	if (len_current_pattern > len_current_str)
 		return (-1);
-	len_str_suffix = ft_strlen(str_suffix);
-	if (len_str_suffix != len_ptr)
-		return (-1);
-	return (ft_strncmp(ptr, str_suffix, len_str_suffix));
+	suffix = current_position_in_str + len_current_str - len_current_pattern;
+	return (ft_strncmp(current_position_in_pattern, suffix, len_current_pattern));
 }
 
 int	handle_prefix(const char *pattern, const char *str,
 				char *adr_next_wild)
 {
-	size_t	len_str_prefix;
+	size_t	len_prefix;
 
-	len_str_prefix = adr_next_wild - pattern;
-	if (str[0] == *(adr_next_wild + 1)) // check for the "*.*""
+	len_prefix = adr_next_wild - pattern;
+	if (str[0] == *(adr_next_wild + 1)) // check for the "*.*"
 		return (-1);
-	return (ft_strncmp(pattern, str, len_str_prefix));
+	return (ft_strncmp(pattern, str, len_prefix));
 }
 
 int	handle_suffix(const char *current_position_in_pattern,
@@ -143,52 +142,61 @@ void	lst_calloc(void **ptr, int num, int size)
 	lst_memory(*ptr, free, ADD);
 }
 
-char **expand_wildcard(const char *pattern)
+void	add_new_match(int *count, int *capacity,
+			char ***matches, char *entry_name)
 {
-	struct dirent *entry;
-	char **matches;
-	int	capacity;
-	int	count;
-	DIR *dir;
 	int flag_match_found;
 
-	matches = NULL;
-	flag_match_found = 0;
+	flag_match_found = 1;
+	if (*count >= *capacity)
+	{
+		*matches = (char **)ft_realloc(*matches, *count * sizeof(char *),
+								(*count * 2 + 1) * sizeof(char *));
+		if (!*matches)
+		{
+			perror("calloc wildcards");
+			lst_memory(NULL, NULL, CLEAN);
+		}
+		lst_memory(*matches, free, ADD);
+		*capacity *= 2;	
+	}
+	(*matches)[*count] = ft_strdup(entry_name);
+	if (!(*matches)[*count])
+	{
+		perror("strdup wildcards");
+		lst_memory(NULL, NULL, CLEAN);
+	}
+	lst_memory((*matches)[*count], free, ADD);
+	(*count)++;
+}
+
+char **expand_wildcard(const char *pattern)
+{
+	struct dirent	*entry;
+	char			**matches;
+	DIR				*dir;
+	int				capacity;
+	int				count;
+
 	capacity = 10;
+	matches = NULL;
 	count = 0;
 	ft_opendir(&dir, ".");
 	entry = readdir(dir);
 	lst_calloc((void **)&matches, capacity + 1, sizeof(char *));
 	while (entry != NULL)
 	{
+		printf("checking: %s\n", entry->d_name);
 		if (match_found(pattern, entry->d_name) == 0)
 		{
-			flag_match_found = 1;
-			if (count >= capacity)
-			{
-				matches = (char **)ft_realloc(matches, count * sizeof(char *),
-										(count * 2 + 1) * sizeof(char *));
-				if (!matches)
-				{
-					perror("calloc wildcards");
-					lst_memory(NULL, NULL, CLEAN);
-				}
-				lst_memory(matches, free, ADD);
-				capacity *= 2;	
-			}
-			matches[count] = ft_strdup(entry->d_name);
-			if (!matches[count])
-			{
-				perror("strdup wildcards");
-				lst_memory(NULL, NULL, CLEAN);
-			}
-			lst_memory(matches[count], free, ADD);
-			count++;
+			printf("match found\n");
+			add_new_match(&count, &capacity,
+					&matches, entry->d_name);
 		}
 		entry = readdir(dir);
 	}
 	closedir(dir);
-	if (flag_match_found == 0)
+	if (count == 0)
 		return (NULL);
 	return (matches);
 }
