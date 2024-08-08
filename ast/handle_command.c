@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -25,8 +26,8 @@ void	handle_pipe_in_child(t_ast *command)
 
 void	handle_pipe_in_parent(t_ast *command)
 {
-	ft_close(command->pipefd[1], "close in pipe_parent");
 	ft_dup2(command->pipefd[0], STDIN_FILENO, "dup2 in pipe_parent");
+	ft_close(command->pipefd[1], "close in pipe_parent");
 	ft_close(command->pipefd[0], "close in pipe_parent");
 }
 
@@ -73,16 +74,20 @@ void	buildin_apply_pipe(t_ast *node)
 {
 	if (node->connection_type == TREE_PIPE)
 	{
-		ft_dup2(node->pipefd[0], STDIN_FILENO, "dup2 in buildin_execute");
-		ft_close(node->pipefd[0], "close in buildin_execute");
+		ft_dup2(node->pipefd[1], STDOUT_FILENO, "dup2 in buildin_execute");
+		// ft_close(node->pipefd[0], "close in buildin_execute");
 		ft_close(node->pipefd[1], "close in buildin_execute");
 	}
 	if (node->has_redir_in || node->has_redir_out)
+	{
 		handle_fds_child_proccess(node);
+	}
 }
 
 bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 {
+	bool	is_buildin;
+
 	if (node->args[0] && !*node->args[0])
 		return (false);
 	if (ft_strncmp(node->args[0], "echo", ft_strlen(node->args[0])) == 0)
@@ -103,15 +108,11 @@ bool	buildin_execute(t_ast *node, const char **environment, int *exit_status)
 void	handle_command(t_ast *current, const char *path_variable,
 					const char **env, int *exit_status)
 {
-	int32_t		stdin_org;
 	int32_t		stdout_org;
 
-	stdin_org = dup(STDIN_FILENO);
 	stdout_org = dup(STDOUT_FILENO);
-	if (stdout_org == -1 || stdin_org == -1)
-	{
-		return (perror("dup"), lst_memory(NULL, NULL, CLEAN));
-	}
+	if (stdout_org == -1)
+		return (perror("dup"));
 	if (current->connection_type == TREE_PIPE)
 		ft_pipe(current->pipefd, "in handle_command");
 	if (!buildin_execute(current, env, exit_status))
@@ -125,10 +126,10 @@ void	handle_command(t_ast *current, const char *path_variable,
 	else
 	{
 		if (current->connection_type == TREE_PIPE)
-			ft_dup2(stdout_org, STDOUT_FILENO, "in handle_command");
-		if (current->has_redir_in || current->has_redir_out)
-			return (restore_fd(stdin_org, stdout_org));
+		{
+			ft_dup2(current->pipefd[0], STDIN_FILENO, "in hanlde_command");
+			ft_close(current->pipefd[0], "in handle_command");
+			ft_dup2(stdout_org, STDOUT_FILENO, "dup2 in handle_command");
+		}
 	}
-	ft_close(stdout_org, "in hanlde_command");
-	ft_close(stdin_org, "in hanlde_command");
 }

@@ -6,7 +6,7 @@
 /*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:00:19 by vvobis            #+#    #+#             */
-/*   Updated: 2024/08/02 17:04:49 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/07 19:03:58 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,9 @@ void	get_next_word_match(	char **input, \
 			prompt->cursor_position[1]);
 	current_word_length = get_current_word_length(current_word);
 	if (input_path)
-		ft_opendir(&directory_current, input_path);
+		directory_current = opendir(input_path);
 	else
-		ft_opendir(&directory_current, "./");
+		directory_current = opendir("./");
 	next_word_match = find_next_match(current_word, current_word_length, \
 										directory_current, is_directory);
 	if (!next_word_match)

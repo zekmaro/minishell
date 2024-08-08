@@ -48,12 +48,12 @@ void	handle_fds_parent_proccess(t_ast *command)
 {
 	if (command->has_redir_in)
 	{
-		close(command->fd_in);
+		ft_close(command->fd_in, "in hanlde_fds_parents");
 		command->fd_in = -1;
 	}
 	if (command->has_redir_out)
 	{
-		close(command->fd_out);
+		ft_close(command->fd_out, "in hanlde_fds_parents");
 		command->fd_out = -1;
 	}
 }

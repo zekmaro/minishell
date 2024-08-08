@@ -65,6 +65,8 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 			continue ;
 		}
 		evaluate_input(&tree->args, env, exit_status);
+		if (*exit_status == -1)
+			return (*exit_status = 2, (void)0);
 		handle_command(&tree[i], path_variable, env, exit_status);
 		if ((tree[i].connection_type == TREE_LOGICAL_OR && *exit_status == 0))
 			i++;
@@ -97,7 +99,7 @@ void	*m_tokenizer(const char *input, const char **env,
 	t_ast	*tree;
 
 	tokens = lexical_analysis(input, env);
-	/*print_tokens(tokens);*/
+	print_tokens(tokens);
 	tree = parse_tokens(tokens, env, exit_status);
 	if (tree)
 		execute_commands(tree, path_variable, env, exit_status);
