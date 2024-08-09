@@ -219,7 +219,7 @@ void	prompt_print_custom_string(char *string);
 void	prompt_print_pwd(char *prompt);
 
 /* Lexer */
-char	**evaluate_input(char ***input, const char **environment, int32_t *exit_status);
+void	evaluate_input(char ***input, const char **environment, int32_t *exit_status, bool error_caught);
 
 /* Cursor Manipulation */
 void		cursor_position_get(uint32_t cursor_position[2]);

@@ -32,17 +32,27 @@ static void	subshell_child_execute(	char *input, \
 	exit(exit_status);
 }
 
-static void	subshell_parent_execute(char *input_subshell, int32_t pipefd[2])
+void	manage_buffer_size_subshel(char **input_subshell, uint32_t *buffer_size)
+{
+	uint32_t	buffer_strlen;
+
+	buffer_strlen = ft_strlen(*input_subshell);
+	if (buffer_strlen == *buffer_size - 101)
+		prompt_buffer_size_manage(input_subshell, *buffer_size, *buffer_size * 2);
+	*buffer_size *= 2;
+}
+
+static void	subshell_parent_execute(char **input_subshell, int32_t pipefd[2])
 {
 	int64_t		bytes_read;
-	uint32_t	i;
-	char		c;
+	uint32_t	current_buffer_size;
+	uint32_t	string_size;
 
 	ft_close(pipefd[1], "close in execute_subshell");
-	i = 0;
+	string_size = 0;
 	while (1)
 	{
-		bytes_read = read(pipefd[0], &c, 1);
+		bytes_read = read(pipefd[0], *input_subshell + string_size, 100);
 		if (bytes_read == -1)
 		{
 			perror("read");
@@ -50,9 +60,8 @@ static void	subshell_parent_execute(char *input_subshell, int32_t pipefd[2])
 		}
 		else if (bytes_read == 0)
 			break ;
-		prompt_buffer_size_manage(&input_subshell, i, i * 2);
-		input_subshell[i] = c;
-		i++;
+		else
+			string_size += bytes_read;
 	}
 	ft_close(pipefd[0], "pipefd[0] in subshell parent");
 }
@@ -72,6 +81,6 @@ char	*execute_subshell(char *input, const char **environement)
 	if (pid == 0)
 		subshell_child_execute(input, environement, pipefd);
 	else
-		subshell_parent_execute(input_subshell, pipefd);
+		subshell_parent_execute(&input_subshell, pipefd);
 	return (input_subshell);
 }

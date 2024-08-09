@@ -107,7 +107,8 @@ uint32_t	evaluate_variable(	char **input, \
 	i = 0;
 	while (input_new[i])
 	{
-		skip_single_quotes(input_new, &i, &in_double_quotes);
+		if (skip_single_quotes(input_new, &i, &in_double_quotes))
+			return (true);
 		if (input_new[i] == '$')
 		{
 			ft_memmove(&input_new[i], &input_new[i + 1], *input_length - i);
@@ -126,13 +127,13 @@ uint32_t	evaluate_variable(	char **input, \
 
 bool	evaluate_double_quotes(char **input, uint32_t *i, uint32_t *input_length)
 {
-	ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i + 2);
+	ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i + 1);
 	(*input_length)--;
 	while ((*input)[*i])
 	{
 		if ((*input)[*i] == '\"')
 		{
-			ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i + 2);
+			ft_memmove(&(*input)[*i], &(*input)[*i + 1], *input_length - *i + 1);
 			(*i)--;
 			(*input_length)--;
 			return (false);
@@ -155,12 +156,11 @@ bool	evaluate_single_quotes(char **input, uint32_t *i, uint32_t *input_length)
 	return (false);
 }
 
-char	**evaluate_input(char ***input, const char **environment, int32_t *exit_status)
+void	evaluate_input(char ***input, const char **environment, int32_t *exit_status, bool error_caught)
 {
 	uint32_t	input_length;
 	uint32_t	i;
 	uint32_t	j;
-	bool		error_caught;
 
 	i = 0;
 	error_caught = false;
@@ -181,7 +181,4 @@ char	**evaluate_input(char ***input, const char **environment, int32_t *exit_sta
 		}
 		i++;
 	}
-	if (error_caught)
-		*exit_status = -1;
-	return (*input);
 }

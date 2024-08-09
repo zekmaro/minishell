@@ -52,8 +52,8 @@ bool	handle_new_character_to_input(		char **input,
 
 	do_refresh = false;
 	*input = prompt_buffer_size_manage(input, \
-										prompt_length_current, \
-										ft_strlen(*input) * 2);
+								prompt_length_current, \
+								ft_strlen(*input) * 2);
 	if (cursor_position_current[1] < prompt_length_current)
 	{
 		ft_memmove(&(*input)[cursor_position_current[1] + 1], \
@@ -77,9 +77,9 @@ bool	handle_multiple_character_to_input(	char **input,
 	do_refresh = false;
 	buffer_length = ft_strlen(buffer);
 	*input = prompt_buffer_size_manage(input, \
-										prompt_length_current, \
-										prompt_length_current \
-										+ buffer_length + 1);
+								prompt_length_current, \
+								prompt_length_current \
+								+ buffer_length + 1);
 	if (cursor_position_current[1] < prompt_length_current - 1)
 	{
 		ft_memmove(&(*input)[cursor_position_current[1] + buffer_length], \

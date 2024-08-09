@@ -64,7 +64,7 @@ void	execute_commands(t_ast *tree, const char *path_variable,
 			i++;
 			continue ;
 		}
-		evaluate_input(&tree->args, env, exit_status);
+		evaluate_input(&tree->args, env, exit_status, 0);
 		if (*exit_status == -1)
 			return (*exit_status = 2, (void)0);
 		handle_command(&tree[i], path_variable, env, exit_status);

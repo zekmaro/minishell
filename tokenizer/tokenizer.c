@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <stdbool.h>
 
 void	free_tokens(void *token_ptr)
 {
@@ -33,6 +34,9 @@ static t_token	*initialise_tokens(uint32_t word_count)
 static t_token	check_symbol_and_create_token(const char **input,
 					const char **env)
 {
+	bool	syntax_error;
+
+	syntax_error = false;
 	if (is_double_special(*input))
 		return (create_token_double_special_symbol((char **)input, env));
 	else if (is_single_special(**input))
