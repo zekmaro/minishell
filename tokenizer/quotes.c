@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quotes.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vvobis <marvin@42.fr>                      +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 16:56:11 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/26 16:14:24 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/02 17:44:09 by vvobis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,15 @@ void	extract_word(	char **buffer, \
 
 	*buffer = ft_calloc(get_split_length(variable_pointers) \
 						+ ft_strlen(command_input) + 1, sizeof(*buffer));
-	if (!*buffer)
-		lst_memory(NULL, NULL, CLEAN);
+	lst_memory(buffer, free, ADD);
 	tmp = *buffer;
 	j = 0;
 	while (*command_input || variable_pointers[j])
 	{
 		i = 0;
 		while (*command_input && *command_input != '$')
-			*(*buffer)++ = *command_input++;
-		if (*command_input)
+			**buffer++ = *command_input++;
+		if (*command_input != 0)
 			command_input++;
 		while (variable_pointers[j] && variable_pointers[j][i])
 			*(*buffer)++ = variable_pointers[j][i++];
@@ -102,31 +101,23 @@ char	*interpret_single_quote(const char *command_input)
 }
 
 char	*interpret_double_quotes(	const char **command_input, \
-									const char **environement, \
 									t_token_type *type)
 {
-	char		**variable_pointers;
-	char		*buffer;
-	uint32_t	variable_count;
+	char	*temp_move;
+	char	*return_string;
 
-	variable_count = determine_variables(*command_input);
-	variable_pointers = ft_calloc(variable_count + 1, sizeof(char *));
-	buffer = NULL;
-	if (!ft_strchr(*command_input + 1, '\"') || !variable_pointers)
+	temp_move = ft_strchr(*command_input + 1, '\"');
+	if (!temp_move)
+	{
+		p_stderr(2, "Invalid: missing closing quote: \"\n", NULL);
 		lst_memory(NULL, NULL, CLEAN);
-	*ft_strchr(*command_input + 1, '\"') = 0;
-	if (variable_count)
-	{
-		extract_variable(variable_pointers, *command_input, \
-						environement, variable_count);
-		extract_word(&buffer, (char *)*command_input + 1, variable_pointers);
-		*type = TOKEN_ENV;
 	}
-	else
-	{
-		*type = TOKEN_WORD;
-		buffer = (char *)*command_input + 1;
-	}
-	*command_input = ft_strchr(*command_input + 1, 0);
-	return ((*command_input)++, free(variable_pointers), buffer);
+	*temp_move = 0;
+	ft_memmove((char *)*command_input, \
+				*command_input + 1, \
+				ft_strlen(*command_input));
+	return_string = (char *)*command_input;
+	*command_input = temp_move + 1;
+	*type = TOKEN_WORD;
+	return (*(char **)command_input);
 }

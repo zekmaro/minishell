@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/14 16:18:42 by vvobis            #+#    #+#             */
-/*   Updated: 2024/07/24 12:31:33 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/30 11:08:27 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	free_split(void *back)
 	free_back = (char **)back;
 	while (*free_back)
 	{
-		ft_free((void **)free_back);
+		ft_free((void *)free_back);
 		free_back++;
 	}
 	ft_free(&back);

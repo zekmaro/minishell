@@ -6,13 +6,14 @@
 #    By: anarama <anarama@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/05 12:24:47 by victor            #+#    #+#              #
-#    Updated: 2024/07/27 11:27:50 by victor           ###   ########.fr        #
+#    Updated: 2024/08/06 16:48:54 by vvobis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILER AND FLAGS
 CC			:= cc
-CFLAGS		:= -Wall -Wextra -g
+CFLAGS		:= -Wall -Wextra -g3
+#-fsanitize=leak,undefined,address
 
 # DIRECTORIES
 SRCDIR		:= src
@@ -25,15 +26,20 @@ SRC			:=	src/commands.c src/environment_variables.c \
 				src/handle_signals.c src/input.c src/list_memory.c \
 				src/list.c src/minishell.c \
 				src/path_utils.c src/termios.c \
-				src/utils.c src/utils2.c
+				src/utils.c src/utils2.c src/utils3.c \
+				src/environment_variables_manip.c
 
 PROMPT_SRC	:= 	prompt/prompt_input.c prompt/prompt_string_management.c \
 				prompt/prompt_utils.c prompt/tab_completion.c \
 				prompt/escape_sequences.c prompt/arrowkeys.c \
+				prompt/prompt_print.c prompt/tab_get_word.c \
+				prompt/non_blocking_mode.c prompt/prompt_handle_chars.c
 
-AST_SRC		:=	ast/ast_create_node.c ast/ast_print.c ast/ast_utils.c \
-				ast/parse_tokens.c ast/parser.c ast/handle_redirs.c \
-				ast/handle_pipes.c
+AST_SRC		:=	ast/ast_utils.c \
+				ast/handle_command.c ast/handle_fds.c \
+				ast/parse_tokens.c ast/parser.c \
+				ast/handle_pipes.c ast/handle_logical_operator.c \
+				ast/syntax_check.c
 
 TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token_double_special_symbol.c \
@@ -44,7 +50,9 @@ TOKEN_SRC	:=	tokenizer/check_special_symbol.c \
 				tokenizer/create_token.c \
 				tokenizer/string_utils.c \
 				tokenizer/quotes.c \
-				tokenizer/tokenizer.c
+				tokenizer/tokenizer.c \
+				tokenizer/subshell.c \
+				tokenizer/evaluate_input.c
 
 BUILDIN_SRC :=	builtin/ft_echo.c builtin/ft_env.c \
 				builtin/ft_pwd.c builtin/ft_unset.c \

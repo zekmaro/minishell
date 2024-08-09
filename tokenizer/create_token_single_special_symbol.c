@@ -6,7 +6,7 @@
 /*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/21 12:36:57 by anarama           #+#    #+#             */
-/*   Updated: 2024/07/26 14:20:30 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/07/28 19:45:39 by victor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,9 @@ t_token	create_token_single_special_symbol(const char **input)
 	i = 0;
 	temp_move = (char *)*input;
 	if (**input == '<')
-		temp_token = create_token(TOKEN_REDIRECT_OUT, &(*input)[i]);
-	else if (**input == '>')
 		temp_token = create_token(TOKEN_REDIRECT_IN, &(*input)[i]);
+	else if (**input == '>')
+		temp_token = create_token(TOKEN_REDIRECT_OUT, &(*input)[i]);
 	else
 		temp_token = create_token(TOKEN_PIPE, &(*input)[i]);
 	if (temp_move)
