@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: andrejarama <andrejarama@student.42.fr>    +#+  +:+       +#+        */
+/*   By: anarama <anarama@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:16:38 by victor            #+#    #+#             */
-/*   Updated: 2024/08/06 16:21:30 by vvobis           ###   ########.fr       */
+/*   Updated: 2024/08/06 16:49:02 by anarama          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -297,6 +297,9 @@ int			get_tokens_count(char **tokens);
 void		custom_free_split(char **arr);
 void		handle_dollar_sign(char **single_token, char **env);
 
+/* Wildcards */
+void		check_and_expand_wildcards(t_token	**tokens);
+
 /* Environment_variable */
 
 void		environment_variable_print(const char *variable, const char **environment);
@@ -428,4 +431,14 @@ void		parse_logical_operator(t_ast **head, int *i, t_token *tokens);
 void		parse_redirection(t_ast **head, int *i, t_token *tokens);
 void		parse_pipe(t_ast **head, int *i, t_token *tokens);
 
+/*syntax_check.c*/
+void		check_valid_redir(t_token *token, int index,
+					int *error_catched);
+void		check_valid_pipe(t_token *token, int index,
+					int *error_catched);
+void		check_valid_logical_operator(t_token *token, int index,
+							int *error_catched);
+
+void check_and_expand_wildcards(t_token	**tokens_ptr);
+void	free_tokens(void *token_ptr);
 #endif
